@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_daily_pokemon">
+
+    <fragment
+        android:id="@+id/nav_daily_pokemon"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.home.HomeFragment"
+        android:label="@string/menu_daily_pokemon"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_play"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.play.PlayFragment"
+        android:label="@string"
+        tools:layout="@layout/fragment_play" />
+
+    <fragment
+        android:id="@+id/nav_pokemon_list"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.pokemonlist.PokemonListFragment"
+        android:label="@string/menu_pokemon_list"
+        tools:layout="@layout/fragment_pokemonlist" />
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.tools.ToolsFragment"
+        android:label="@string/menu_tools"
+        tools:layout="@layout/fragment_tools" />
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.share.ShareFragment"
+        android:label="@string/menu_share"
+        tools:layout="@layout/fragment_share" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.send.SendFragment"
+        android:label="@string/menu_send"
+        tools:layout="@layout/fragment_send" />
+</navigation>

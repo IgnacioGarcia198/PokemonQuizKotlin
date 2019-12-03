@@ -1,0 +1,87 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="dialogTheme">@style/CustomDialog</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
+    </style>
+
+    <style name="CustomDialog" parent="AppTheme.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!--<item name="android:windowIsFloating">false</item>-->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
+        <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="dialogTheme">@style/CustomDialog</item>
+        <item name="android:spinnerItemStyle">@style/CustomSpinnerItemStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/CustomSpinnerDropdownStyle</item>
+    </style>
+
+    <style name="CustomRadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="CustomProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:text">Loading...</item>
+    </style>
+
+    <style name="CustomSpinnerDropdownStyle">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:background">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="CustomSpinnerItemStyle">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+    </style>
+
+    <style name="AnswerCounterStyle">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
+        <item name="android:textSize">60sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AnswerCounterPrompt">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="AnswerCounterStyle.Right">
+        <item name="android:textColor">@color/rightAnswer</item>
+    </style>
+
+    <style name="AnswerCounterStyle.Wrong">
+        <item name="android:textColor">@color/wrongAnswer</item>
+    </style>
+
+    <style name="AnswerCounterPrompt.Right">
+        <item name="android:textColor">@color/rightAnswer</item>
+    </style>
+
+    <style name="AnswerCounterPrompt.Wrong">
+        <item name="android:textColor">@color/wrongAnswer</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>
