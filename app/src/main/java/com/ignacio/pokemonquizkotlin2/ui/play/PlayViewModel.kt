@@ -7,6 +7,9 @@ import androidx.annotation.IdRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.ignacio.pokemonquizgamekotlin.utils.CountBaseTimer
+import com.ignacio.pokemonquizgamekotlin.utils.CountUpDownTimer
+import com.ignacio.pokemonquizgamekotlin.utils.CountUpTimer
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
@@ -18,6 +21,7 @@ import com.ignacio.pokemonquizkotlin2.ui.home.PREFERENCE_FILE_NAME
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 const val FRESH_TIMEOUT_IN_MINUTES = 43200 // ONE WEEK
@@ -28,7 +32,10 @@ enum class GameState {
     REFRESHING_POKEMON, GETTING_QUESTION, GETTING_ANSWERS, WAITING_CHOICE, RIGHT_ANSWER, WRONG_ANSWER
 }
 
-class PlayViewModel(app : Application) : BaseViewModel(app) {
+class PlayViewModel(
+    app : Application,
+    private val questionsOrTime : Boolean,
+    private val limitValue : Int) : BaseViewModel(app) {
 
     /**
      * This is the job for all coroutines started by this ViewModel.
@@ -50,10 +57,10 @@ class PlayViewModel(app : Application) : BaseViewModel(app) {
     private val sharedPref = app.getSharedPreferences(PREFERENCE_FILE_NAME,
         Context.MODE_PRIVATE)
 
-    private val questionsOrTime = true
-    private val limitValue = 10
+    //private val questionsOrTime = false
     private var roundNumber = 0
     private var currentTime = 0L
+    private var animationTotalTime = 4000L
 
     private val _gameState = MutableLiveData<GameState>()
     val gameState : LiveData<GameState>
@@ -150,9 +157,26 @@ class PlayViewModel(app : Application) : BaseViewModel(app) {
         _imageVisible.value = View.VISIBLE
     }*/
 
+    private val _animationLevel = MutableLiveData<Float>(0f)
+    val animationLevel : LiveData<Float>
+    get() = _animationLevel
+
+    lateinit var timer: CountBaseTimer
+    var currentAnimationTime = 0L
+
     private fun initGame() {
-        if(questionsOrTime) {
+        val sdf = SimpleDateFormat("mm:ss",Locale.getDefault())
+        if(questionsOrTime) { // questions game
             Timber.i("questions game")
+
+
+            timer = object : CountUpTimer(100) {
+                override fun onTick(elapsedTime: Long) {
+                    _timeString.value = sdf.format(Date(elapsedTime))
+                }
+            }
+
+
             // init sth if needed
             if(roundNumber == 0) {
                 // start of the game(count from 0)
@@ -165,10 +189,37 @@ class PlayViewModel(app : Application) : BaseViewModel(app) {
                 nextRound()
             }
         }
-        else {
+        else { // time game
             Timber.i("time game")
             // case of time
-            //nextRound()
+            timer = object : CountUpDownTimer(100, (limitValue*1000).toLong()) {
+                override fun onFinish() {
+                    finishGame()
+                }
+
+                override fun onTick(elapsedTime: Long) {
+                    currentAnimationTime += interval
+                    _animationLevel.value = currentAnimationTime.toFloat()/animationTotalTime
+                }
+
+                override fun onDownTick(remainingTime: Long) {
+                    _timeString.value = sdf.format(Date(remainingTime))
+                }
+            }
+
+            // init sth if needed
+            /*if(currentTime == 0L) {
+                // start of the game(count from 0)
+
+                Timber.i("calling nextround")
+                nextRound()
+            }
+            else {
+                // resuming game
+                Timber.i("calling nextround")
+                nextRound()
+            }*/
+            nextRound()
         }
 
 
@@ -236,19 +287,35 @@ class PlayViewModel(app : Application) : BaseViewModel(app) {
         }
     }
 
+    fun onAnimationMaxed() {
+        // start next round!
+        resetAnimation()
+        onAnswerChosen(-1)
+    }
+    private fun resetAnimation() {
+        _animationLevel.value = 0f
+        currentAnimationTime = 0L
+    }
+
+    // loading image on glide failed
     fun onLoadImageFailed() {
+        timer.stop()
         _progressbarVisible.value = View.INVISIBLE
         //_radiogroupEnabled.value = false
     }
 
+    // loading image on glide succeeded
     fun onLoadImageSuccess() {
         _progressbarVisible.value = View.INVISIBLE
         _imageVisible.value = View.VISIBLE
         _radiogroupEnabled.value = true
+        timer.start()
     }
 
     fun onAnswerChosen(index : Int) {
         Timber.i("on answer choser: $index")
+        timer.pause()
+        resetAnimation()
         if(index == rightAnswerIndex) {
             // right answer
             _rightAnswersCount.value = _rightAnswersCount.value!!+1
@@ -266,24 +333,35 @@ class PlayViewModel(app : Application) : BaseViewModel(app) {
     fun onResultShown() {
         // reset everything for next round
         roundNumber ++
-        if(roundNumber < limitValue) {
-            nextRound()
+        if(questionsOrTime) {
+            if(roundNumber < limitValue) {
+                nextRound()
+            }
+            else {
+                finishGame()
+            }
         }
         else {
-            finishGame()
+            nextRound()
         }
     }
 
     fun finishGame() {
-        roundNumber = 0
+        timer.stop()
+        _radiogroupEnabled.value = false
+        _showRecords.value = true
+        //roundNumber = 0
         // go to game records fragment
     }
-    // show timer if we are using timer, and show animation of countdown
-    // event : select a radiobutton from answer options ->
-    // check order, etc its right answer
-    // show right answer custom toast, etc
 
-    // next round
+    // for showing records fragment
+    private val _showRecords = MutableLiveData<Boolean>(false)
+    val showRecords : LiveData<Boolean>
+    get() = _showRecords
+
+    fun showRecordsDone() {
+        _showRecords.value = false
+    }
 
     override fun onCleared() {
         super.onCleared()

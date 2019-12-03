@@ -21,7 +21,9 @@
             android:background="#ff80ab"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:animationLevel="@{viewModel.animationLevel}"
+            app:maxListener="@{viewModel.onAnimationMaxed}" />
 
         <ImageView
             android:id="@+id/questionImage"
@@ -119,6 +121,7 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@string/guess_the_pokemon_s_name"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintEnd_toEndOf="parent"

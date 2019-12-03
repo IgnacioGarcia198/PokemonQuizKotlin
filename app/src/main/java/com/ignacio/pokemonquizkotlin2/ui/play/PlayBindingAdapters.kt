@@ -3,6 +3,7 @@ package com.ignacio.pokemonquizkotlin2.ui.play
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.core.view.iterator
 import androidx.databinding.BindingAdapter
@@ -14,7 +15,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.ui.CustomProgressBar
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
 import timber.log.Timber
+
 
 /*@BindingAdapter("pokemonId")
 fun bindPokemonImage(imgView: ImageView, id : Int) {
@@ -178,5 +182,27 @@ fun RadioGroup.setChildrenEnabled(enabled: Boolean) {
 @BindingAdapter("enabled")
 fun setEnabled(radioGroup: RadioGroup, enabled : Boolean) {
     radioGroup.setChildrenEnabled(enabled)
+}
+
+@BindingAdapter("animationLevel", "maxListener")
+fun setAnimationLevel(textView: TextView, level : Float, maxListener : () -> Unit) {
+    val parent = textView.parent as ConstraintLayout
+    val totalHeight = parent.height - parent.paddingBottom-parent.paddingTop
+    //Timber.i("total height is $totalHeight")
+    Timber.i("level is $level and total height is $totalHeight")
+    val newHeight = (totalHeight*level).toInt()
+    Timber.i("new height is $newHeight")
+    textView.height = newHeight
+    Timber.i("new height in textview is ${textView.height}")
+    if(newHeight != 0 && newHeight >= totalHeight) {
+        //reset after 100ms or so
+        val scope = CoroutineScope(Dispatchers.Default)
+        scope.launch {
+            delay(100)
+            withContext(Dispatchers.Main) {
+                maxListener()
+            }
+        }
+    }
 }
 

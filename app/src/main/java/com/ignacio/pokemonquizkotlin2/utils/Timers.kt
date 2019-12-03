@@ -109,7 +109,7 @@ abstract class CountUpDownTimer(interval: Long, val initialTime : Long) : CountB
     }
 
     abstract fun onFinish()
-
+    abstract fun onDownTick(remainingTime: Long)
 }
 
 class CountUpDownHandler(val countUpDownTimer: CountUpDownTimer, looper: Looper) : Handler(looper) {
@@ -126,7 +126,8 @@ class CountUpDownHandler(val countUpDownTimer: CountUpDownTimer, looper: Looper)
                     onFinish()
                     return
                 }
-                onTick(remainingTime)
+                onTick(interval)
+                onDownTick(remainingTime)
                 val thistickduration = SystemClock.elapsedRealtime()-thistickStart
                 sendMessageDelayed(obtainMessage(CountBaseTimer.MSG), interval-thistickduration)
             }

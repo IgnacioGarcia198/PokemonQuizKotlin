@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -41,7 +42,10 @@ class PlayFragment : Fragment() {
     ): View? {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         playViewModel =
-            ViewModelProviders.of(this).get(PlayViewModel::class.java)
+                ViewModelProviders.of(this,PlayViewModelFactory(
+                    activity!!.application, false, 20
+                )).get(PlayViewModel::class.java)
+            //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
         playViewModel.radiogroupEnabled.observe(this, Observer {
@@ -54,7 +58,6 @@ class PlayFragment : Fragment() {
             Timber.i("lastResult is ${playViewModel.lastResult.value}")
             it?.let {
                 showResult(it)
-                playViewModel.onResultShown()
             }
         })
         return binding.root
@@ -81,10 +84,10 @@ class PlayFragment : Fragment() {
     private fun initToastTimer() {
 
         toastCountDown =
-            object : CountDownTimer(toastDurationInMilliSeconds, 500 /*Tick duration*/) {
+            object : CountDownTimer(toastDurationInMilliSeconds, 100 /*Tick duration*/) {
                 override fun onFinish() {
                     gameToast.cancel()
-                    //playViewModel.onResultShown()
+                    playViewModel.onResultShown()
                 }
 
                 override fun onTick(millisUntilFinished: Long) {}
