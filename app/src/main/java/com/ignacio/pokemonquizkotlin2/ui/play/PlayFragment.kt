@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.right_toast3.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
 
-class PlayFragment : Fragment(), ChooseQuizFragment.OnFragmentInteractionListener {
+class PlayFragment : Fragment() {
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
@@ -50,7 +50,7 @@ class PlayFragment : Fragment(), ChooseQuizFragment.OnFragmentInteractionListene
 
         playViewModel.showChooseQuizFragment.observe(this, Observer {
             if(it) {
-                showChooseQuizDialog()
+                //showChooseQuizDialog()
                 playViewModel.chooseQuizShown()
             }
         })
@@ -67,6 +67,9 @@ class PlayFragment : Fragment(), ChooseQuizFragment.OnFragmentInteractionListene
                 showResult(it)
             }
         })
+
+        val args = PlayFragmentArgs.fromBundle(arguments!!)
+        playViewModel.initGame(args.questionsOrTime,args.gameLength)
         return binding.root
     }
 
@@ -102,32 +105,4 @@ class PlayFragment : Fragment(), ChooseQuizFragment.OnFragmentInteractionListene
             }
     }
 
-    internal fun showChooseQuizDialog() {
-
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        val ft = activity?.supportFragmentManager?.beginTransaction()
-        ft?.let {
-            val chooseQuizFragment = activity?.supportFragmentManager?.findFragmentByTag("dialog")
-            if (chooseQuizFragment != null) {
-                ft.remove(chooseQuizFragment)
-            }
-            ft.addToBackStack(null)
-
-            // Create and show the dialog.
-            val newFragment =
-                ChooseQuizFragment.newInstance(this)
-
-            newFragment.show(ft, "dialog")
-        }
-
-
-        //newFragment.getDialog().getWindow()
-
-    }
-
-    override fun onFragmentInteraction(questionsOrTime: Boolean, value: Int) {
-        playViewModel.initGame(questionsOrTime, value)
-    }
 }

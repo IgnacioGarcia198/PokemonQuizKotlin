@@ -9,7 +9,7 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_daily_pokemon" />
         <item
-            android:id="@+id/nav_play"
+            android:id="@+id/nav_choose_quiz"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_play" />
         <item

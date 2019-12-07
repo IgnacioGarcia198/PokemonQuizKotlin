@@ -15,7 +15,14 @@
         android:id="@+id/nav_play"
         android:name="com.ignacio.pokemonquizkotlin2.ui.play.PlayFragment"
         android:label="@string/menu_play"
-        tools:layout="@layout/fragment_play" />
+        tools:layout="@layout/fragment_play" >
+        <argument
+            android:name="questionsOrTime"
+            app:argType="boolean" />
+        <argument
+            android:name="gameLength"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_pokemon_list"
@@ -40,6 +47,15 @@
         android:name="com.ignacio.pokemonquizkotlin2.ui.send.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
+    <fragment
+        android:id="@+id/nav_choose_quiz"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.choosequizdialog.ChooseQuizFragment"
+        android:label="ChooseQuizFragment" >
+        <action
+            android:id="@+id/action_nav_choose_quiz_to_nav_play"
+            app:destination="@+id/nav_play"
+            app:popUpTo="@+id/nav_daily_pokemon" />
+    </fragment>
 
 
 </navigation>
