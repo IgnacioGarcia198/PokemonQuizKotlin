@@ -51,11 +51,11 @@ fun setOnItemSelected(spinner: Spinner, viewModel : HomeViewModel?) {
 @BindingAdapter("initialPosition")
 fun setInitialPosition(spinner: Spinner, position : Int = 0) {
     spinner.doOnLayout { spinner.setSelection(position) }
-    spinner.onFocusChangeListener = object : View.OnFocusChangeListener {
+    /*spinner.onFocusChangeListener = object : View.OnFocusChangeListener {
         override fun onFocusChange(v: View?, hasFocus: Boolean) {
 
         }
-    }
+    }*/
 }
 
 

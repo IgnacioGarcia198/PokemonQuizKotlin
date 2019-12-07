@@ -14,7 +14,7 @@
     <fragment
         android:id="@+id/nav_play"
         android:name="com.ignacio.pokemonquizkotlin2.ui.play.PlayFragment"
-        android:label="@string"
+        android:label="@string/menu_play"
         tools:layout="@layout/fragment_play" />
 
     <fragment
@@ -40,4 +40,6 @@
         android:name="com.ignacio.pokemonquizkotlin2.ui.send.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
+
+
 </navigation>

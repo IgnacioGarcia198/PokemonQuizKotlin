@@ -22,13 +22,14 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
+import com.ignacio.pokemonquizkotlin2.ui.choosequizdialog.ChooseQuizFragment
 import kotlinx.android.synthetic.main.custom_progress_bar.*
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
 
-class PlayFragment : Fragment() {
+class PlayFragment : Fragment(), ChooseQuizFragment.OnFragmentInteractionListener {
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
@@ -42,12 +43,18 @@ class PlayFragment : Fragment() {
     ): View? {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         playViewModel =
-                ViewModelProviders.of(this,PlayViewModelFactory(
-                    activity!!.application, false, 20
-                )).get(PlayViewModel::class.java)
+                ViewModelProviders.of(this).get(PlayViewModel::class.java)
             //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
+
+        playViewModel.showChooseQuizFragment.observe(this, Observer {
+            if(it) {
+                showChooseQuizDialog()
+                playViewModel.chooseQuizShown()
+            }
+        })
+
         playViewModel.radiogroupEnabled.observe(this, Observer {
             Timber.i("radiogroup is enabled : ${customRadioGroup.isEnabled}")
         })
@@ -93,5 +100,34 @@ class PlayFragment : Fragment() {
                 override fun onTick(millisUntilFinished: Long) {}
 
             }
+    }
+
+    internal fun showChooseQuizDialog() {
+
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        val ft = activity?.supportFragmentManager?.beginTransaction()
+        ft?.let {
+            val chooseQuizFragment = activity?.supportFragmentManager?.findFragmentByTag("dialog")
+            if (chooseQuizFragment != null) {
+                ft.remove(chooseQuizFragment)
+            }
+            ft.addToBackStack(null)
+
+            // Create and show the dialog.
+            val newFragment =
+                ChooseQuizFragment.newInstance(this)
+
+            newFragment.show(ft, "dialog")
+        }
+
+
+        //newFragment.getDialog().getWindow()
+
+    }
+
+    override fun onFragmentInteraction(questionsOrTime: Boolean, value: Int) {
+        playViewModel.initGame(questionsOrTime, value)
     }
 }

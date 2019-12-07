@@ -33,9 +33,10 @@ enum class GameState {
 }
 
 class PlayViewModel(
-    app : Application,
-    private val questionsOrTime : Boolean,
-    private val limitValue : Int) : BaseViewModel(app) {
+    app : Application
+    //private val questionsOrTime : Boolean,
+    //private val limitValue : Int
+) : BaseViewModel(app) {
 
     /**
      * This is the job for all coroutines started by this ViewModel.
@@ -52,10 +53,21 @@ class PlayViewModel(
      */
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
+    private var questionsOrTime : Boolean = true
+    private var limitValue : Int = 0
 
     private val repository = PokemonRepository(getDatabase(app))
     private val sharedPref = app.getSharedPreferences(PREFERENCE_FILE_NAME,
         Context.MODE_PRIVATE)
+
+    // we will show the fragment just as we start.
+    private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
+    val showChooseQuizFragment : LiveData<Boolean>
+    get() = _showChooseQuizFragment
+
+    fun chooseQuizShown() {
+        _showChooseQuizFragment.value = false
+    }
 
     //private val questionsOrTime = false
     private var roundNumber = 0
@@ -107,6 +119,8 @@ class PlayViewModel(
         get() = _timeString
 
     init {
+        _showChooseQuizFragment.value = true // show fragment just started
+
         var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
         if(!dateIsFresh(lastRefreshMinutes)) {
             // if we have to update pokemon, show such message in the progressbar's textview
@@ -114,11 +128,13 @@ class PlayViewModel(
             Timber.i("calling refresh pokemon")
             refreshPokemon()
         }
-        else {
+
+        // TODO CALL INITGAME WITH PARAMETERS ON CLOSING THE DIALOG
+        /*else {
             // for testing
             Timber.i("calling initgame")
             initGame()
-        }
+        }*/
 
     }
 
@@ -134,7 +150,7 @@ class PlayViewModel(
                 Timber.i("calling refresh pokemon on the repository")
                 repository.refreshPokemon{
                     sharedPref.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).apply()
-                    initGame()
+                    //initGame()
                 }
                 // TODO: MOVE ERROR VARIABLES TO REPOSITORY OR SOMEWHERE GENERALIZE THEM?
                 //_eventNetworkError.value = false
@@ -164,7 +180,9 @@ class PlayViewModel(
     lateinit var timer: CountBaseTimer
     var currentAnimationTime = 0L
 
-    private fun initGame() {
+    fun initGame(questionsOrTime: Boolean, limitValue: Int) {
+        this.questionsOrTime = questionsOrTime
+        this.limitValue = limitValue
         val sdf = SimpleDateFormat("mm:ss",Locale.getDefault())
         if(questionsOrTime) { // questions game
             Timber.i("questions game")
@@ -175,7 +193,6 @@ class PlayViewModel(
                     _timeString.value = sdf.format(Date(elapsedTime))
                 }
             }
-
 
             // init sth if needed
             if(roundNumber == 0) {
@@ -207,18 +224,6 @@ class PlayViewModel(
                 }
             }
 
-            // init sth if needed
-            /*if(currentTime == 0L) {
-                // start of the game(count from 0)
-
-                Timber.i("calling nextround")
-                nextRound()
-            }
-            else {
-                // resuming game
-                Timber.i("calling nextround")
-                nextRound()
-            }*/
             nextRound()
         }
 

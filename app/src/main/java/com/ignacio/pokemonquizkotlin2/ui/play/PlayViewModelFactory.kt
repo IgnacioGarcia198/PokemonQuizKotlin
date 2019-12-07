@@ -12,7 +12,7 @@ class PlayViewModelFactory(
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(PlayViewModel::class.java)) {
-            return PlayViewModel(app, questionsOrTime, limitValue) as T
+            return PlayViewModel(app) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -26,6 +26,7 @@ class HomeFragment : Fragment() {
         /*if(spinnerPosition != 0) {
             binding.spinner.setSelection(spinnerPosition)
         }*/
+        hasOptionsMenu()
 
         return binding.root
     }
