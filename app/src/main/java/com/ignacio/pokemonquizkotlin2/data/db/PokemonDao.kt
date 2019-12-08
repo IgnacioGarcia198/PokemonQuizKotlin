@@ -1,9 +1,10 @@
 package com.ignacio.pokemonquizkotlin2.data.db
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.room.*
-import kotlinx.coroutines.Deferred
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface PokemonDao {
@@ -28,22 +29,4 @@ interface PokemonDao {
     // reset all usedAsQuestion
     @Query("UPDATE pokemonTable SET usedAsQuestion = 0")
     fun resetUsedAsQuestion()
-}
-
-@Database(entities = [DatabasePokemon::class],version = 1,exportSchema = false)
-abstract class PokemonDatabase : RoomDatabase() {
-    abstract val pokemonDao : PokemonDao
-}
-
-
-private lateinit var INSTANCE : PokemonDatabase
-
-fun getDatabase(context: Context) : PokemonDatabase {
-    synchronized(PokemonDatabase::class.java) {
-        if(!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(context.applicationContext,
-                PokemonDatabase::class.java, "videos.db").build()
-        }
-    }
-    return INSTANCE
 }

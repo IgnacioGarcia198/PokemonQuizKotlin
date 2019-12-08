@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.ignacio.pokemonquizkotlin2.ui.gamerecords.GameRecordsViewModel" />
+    </data>
+
+        <TableLayout
+            android:id="@+id/recordTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <HorizontalScrollView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recordRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            </HorizontalScrollView>
+        </TableLayout>
+</layout>
+    <!-- TODO I WOULD LIKE TO HAVE A LOOK IF I CAN USE HORIZONTAL SCROLL HERE AS MAIN LAYOUT...-->

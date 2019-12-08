@@ -1,23 +1,20 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.data.db.PokemonDatabase
+import com.ignacio.pokemonquizkotlin2.data.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.*
 
-class PokemonRepository (private val database: PokemonDatabase) {
+class PokemonRepository (private val database: MyDatabase) {
     //=======================================================
     // PART FOR HOMEVIEWMODEL
     //==========================================================

@@ -22,6 +22,10 @@
         <argument
             android:name="gameLength"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_nav_play_to_nav_game_records"
+            app:destination="@+id/nav_game_records"
+            app:popUpTo="@+id/nav_daily_pokemon" />
     </fragment>
 
     <fragment
@@ -31,10 +35,14 @@
         tools:layout="@layout/fragment_pokemonlist" />
 
     <fragment
-        android:id="@+id/nav_tools"
-        android:name="com.ignacio.pokemonquizkotlin2.ui.tools.ToolsFragment"
+        android:id="@+id/nav_game_records"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.gamerecords.GameRecordsFragment"
         android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
+        tools:layout="@layout/fragment_game_records" >
+        <argument
+            android:name="lastRecord"
+            app:argType="com.ignacio.pokemonquizkotlin2.data.db.GameRecord" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_share"

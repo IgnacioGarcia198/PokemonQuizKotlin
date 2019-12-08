@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -42,11 +43,16 @@ class PlayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
+        val args = PlayFragmentArgs.fromBundle(arguments!!)
+        //playViewModel.initGame(args.questionsOrTime,args.gameLength)
         playViewModel =
-                ViewModelProviders.of(this).get(PlayViewModel::class.java)
+                ViewModelProviders.of(this, PlayViewModelFactory(
+                    activity!!.application,args.questionsOrTime,args.gameLength))
+                    .get(PlayViewModel::class.java)
             //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
+
 
         playViewModel.showChooseQuizFragment.observe(this, Observer {
             if(it) {
@@ -68,8 +74,14 @@ class PlayFragment : Fragment() {
             }
         })
 
-        val args = PlayFragmentArgs.fromBundle(arguments!!)
-        playViewModel.initGame(args.questionsOrTime,args.gameLength)
+        playViewModel.showRecords.observe(this, Observer {
+            it?.let {
+                findNavController().navigate(PlayFragmentDirections.actionNavPlayToNavGameRecords(it))
+                playViewModel.showRecordsDone()
+            }
+        })
+
+
         return binding.root
     }
 

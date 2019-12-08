@@ -21,7 +21,7 @@
     </string-array>
 
     <integer-array name="questions_number_values">
-        <item>10</item>
+        <item>3</item>
         <item>20</item>
         <item>50</item>
         <item>100</item>
@@ -111,5 +111,15 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="record_title">Record</string>
+    <string name="records_header_title">Title</string>
+    <string name="records_header_speed">Speed</string>
+    <string name="records_header_hit_rate">Hit Rate</string>
+    <string name="records_header_date">Date</string>
+    <string name="records_header_game_mode">Game Mode</string>
+    <string name="records_header_game_length">Game Length</string>
+    <string name="game_mode_questions">Questions</string>
+    <string name="game_mode_time">Time</string>
+    <string name="record_default_title">Record</string>
 
 </resources>

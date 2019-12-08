@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="record"
+            type="com.ignacio.pokemonquizkotlin2.data.db.GameRecord" />
+    </data>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:clickable="true"
+        android:background="@android:drawable/list_selector_background"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="1"
+            tools:text="Record"
+            android:text="@string/record_default_title"/>
+
+        <TextView
+            android:id="@+id/speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="2"
+            android:text="@{String.valueOf(record.questionsPerSecond)}" />
+
+        <TextView
+            android:id="@+id/hitRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="3"
+            android:text="@{String.valueOf(record.hitRate)}"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="4"
+            android:text="@{record.recordTime.toString()}" />
+
+        <TextView
+            android:id="@+id/gameMode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="5"
+            android:text="@{record.gameMode ? @string/game_mode_questions : @string/game_mode_time}" />
+
+        <TextView
+            android:id="@+id/gameLength"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_column="6"
+            android:text="@{String.valueOf(record.gameLength)}" />
+    </TableRow>
+    </HorizontalScrollView>
+</layout>

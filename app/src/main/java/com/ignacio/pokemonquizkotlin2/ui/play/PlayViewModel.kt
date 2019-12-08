@@ -3,19 +3,17 @@ package com.ignacio.pokemonquizkotlin2.ui.play
 import android.app.Application
 import android.content.Context
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.ignacio.pokemonquizgamekotlin.utils.CountBaseTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpDownTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpTimer
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
-import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.PREFERENCE_FILE_NAME
 import kotlinx.coroutines.*
@@ -33,9 +31,9 @@ enum class GameState {
 }
 
 class PlayViewModel(
-    app : Application
-    //private val questionsOrTime : Boolean,
-    //private val limitValue : Int
+    app : Application,
+    private val questionsOrTime : Boolean = true,
+    private val limitValue : Int = 0
 ) : BaseViewModel(app) {
 
     /**
@@ -52,9 +50,6 @@ class PlayViewModel(
      * viewModelJob.cancel()
      */
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
-    private var questionsOrTime : Boolean = true
-    private var limitValue : Int = 0
 
     private val repository = PokemonRepository(getDatabase(app))
     private val sharedPref = app.getSharedPreferences(PREFERENCE_FILE_NAME,
@@ -128,13 +123,9 @@ class PlayViewModel(
             Timber.i("calling refresh pokemon")
             refreshPokemon()
         }
-
-        // TODO CALL INITGAME WITH PARAMETERS ON CLOSING THE DIALOG
-        /*else {
-            // for testing
-            Timber.i("calling initgame")
+        else {
             initGame()
-        }*/
+        }
 
     }
 
@@ -150,7 +141,7 @@ class PlayViewModel(
                 Timber.i("calling refresh pokemon on the repository")
                 repository.refreshPokemon{
                     sharedPref.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).apply()
-                    //initGame()
+                    initGame()
                 }
                 // TODO: MOVE ERROR VARIABLES TO REPOSITORY OR SOMEWHERE GENERALIZE THEM?
                 //_eventNetworkError.value = false
@@ -166,13 +157,6 @@ class PlayViewModel(
         }
     }
 
-    /*fun hideProgressBar() {
-        _progressbarVisible.value = View.INVISIBLE
-    }
-    fun showImage() {
-        _imageVisible.value = View.VISIBLE
-    }*/
-
     private val _animationLevel = MutableLiveData<Float>(0f)
     val animationLevel : LiveData<Float>
     get() = _animationLevel
@@ -180,9 +164,9 @@ class PlayViewModel(
     lateinit var timer: CountBaseTimer
     var currentAnimationTime = 0L
 
-    fun initGame(questionsOrTime: Boolean, limitValue: Int) {
-        this.questionsOrTime = questionsOrTime
-        this.limitValue = limitValue
+    fun initGame() {
+        //this.questionsOrTime = questionsOrTime
+        //this.limitValue = limitValue
         val sdf = SimpleDateFormat("mm:ss",Locale.getDefault())
         if(questionsOrTime) { // questions game
             Timber.i("questions game")
@@ -354,18 +338,30 @@ class PlayViewModel(
     fun finishGame() {
         timer.stop()
         _radiogroupEnabled.value = false
-        _showRecords.value = true
+        val hitRate = _rightAnswersCount.value!!.toFloat() / roundNumber
+        val speed =
+            if(questionsOrTime) roundNumber.toFloat() / timer.elapsedTime
+            else roundNumber.toFloat() / limitValue
+
+        _showRecords.value = GameRecord(
+            gameMode = questionsOrTime,
+            gameLength = limitValue,
+            questionsPerSecond = speed,
+            hitRate = hitRate,
+            recordTime = Date()
+        )
+
         //roundNumber = 0
         // go to game records fragment
     }
 
     // for showing records fragment
-    private val _showRecords = MutableLiveData<Boolean>(false)
-    val showRecords : LiveData<Boolean>
+    private val _showRecords = MutableLiveData<GameRecord?>()
+    val showRecords : LiveData<GameRecord?>
     get() = _showRecords
 
     fun showRecordsDone() {
-        _showRecords.value = false
+        _showRecords.value = null
     }
 
     override fun onCleared() {
