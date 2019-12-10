@@ -4,14 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
 
 open class BaseViewModel(val app : Application) : AndroidViewModel(app) {
-    protected val _responseState = MutableLiveData<PokemonResponseState>()
-    val responseState : LiveData<PokemonResponseState>
-        get() = _responseState
-
-    fun changeResponseState(newState : PokemonResponseState) {
-        _responseState.value = newState
+    val repository = PokemonRepository(getDatabase(app))
+    fun getResponseState() : LiveData<PokemonResponseState> {
+        return repository.responseState
     }
 }

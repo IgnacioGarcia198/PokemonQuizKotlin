@@ -3,17 +3,12 @@ package com.ignacio.pokemonquizkotlin2
 import android.os.Bundle
 import androidx.navigation.findNavController
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
-import android.view.MenuItem
-import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.ui.*
-import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.ActivityMainBinding
-import com.ignacio.pokemonquizkotlin2.ui.choosequizdialog.ChooseQuizFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -34,8 +29,7 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_daily_pokemon,
-            R.id.nav_pokemon_list),drawerLayout)
+            R.id.nav_daily_pokemon),drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         //setupActionBarWithNavController(this, navController, drawerLayout)
         binding.navView.setupWithNavController(navController)

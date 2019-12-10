@@ -24,9 +24,10 @@ data class NameUrlPair(
 )
 
 
-fun NetworkPokemonContainer.asDatabaseModel() : List<DatabasePokemon> {
-    var i = 1
-    return results.take(HomeViewModel.DOWNLOAD_SIZE).map {
+fun NetworkPokemonContainer.asDatabaseModel(offset : Int = 0, limit : Int = -1) : List<DatabasePokemon> {
+    var i = offset+1
+    val thelimit = if(limit == -1) HomeViewModel.DOWNLOAD_SIZE else limit
+    return results.take(thelimit).map {
         DatabasePokemon(i++, it!!.name,usedAsQuestion = false)
     }
 }

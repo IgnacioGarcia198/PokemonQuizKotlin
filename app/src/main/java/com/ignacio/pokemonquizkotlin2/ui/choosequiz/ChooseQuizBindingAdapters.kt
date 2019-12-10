@@ -1,15 +1,10 @@
-package com.ignacio.pokemonquizkotlin2.ui.choosequizdialog
+package com.ignacio.pokemonquizkotlin2.ui.choosequiz
 
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.core.view.doOnLayout
 import androidx.databinding.BindingAdapter
-import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.ui.play.PlayViewModel
-import timber.log.Timber
+
 // TODO: EVERYTHING IS COPIED FROM OTHER PLACE, CHANGE FUNCTIONS.
 
 

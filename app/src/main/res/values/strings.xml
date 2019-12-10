@@ -121,5 +121,12 @@
     <string name="game_mode_questions">Questions</string>
     <string name="game_mode_time">Time</string>
     <string name="record_default_title">Record</string>
+    <string name="averages_title">Averages</string>
+    <string name="type_pokemon_name_hint">Type pokemon name</string>
+    <string name="network_error_msg">Sorry, there was a network error. Please try later.</string>
+    <string name="db_error_msg">Sorry, there was a database error. Please try later.</string>
+    <string name="error_screen">Error Screen</string>
+    <string name="could_not_load_images">Could not load some images due to a network error.\n
+    Please try again with a better connection.</string>
 
 </resources>

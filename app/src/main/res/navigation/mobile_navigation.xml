@@ -57,7 +57,7 @@
         tools:layout="@layout/fragment_send" />
     <fragment
         android:id="@+id/nav_choose_quiz"
-        android:name="com.ignacio.pokemonquizkotlin2.ui.choosequizdialog.ChooseQuizFragment"
+        android:name="com.ignacio.pokemonquizkotlin2.ui.choosequiz.ChooseQuizFragment"
         android:label="ChooseQuizFragment" >
         <action
             android:id="@+id/action_nav_choose_quiz_to_nav_play"

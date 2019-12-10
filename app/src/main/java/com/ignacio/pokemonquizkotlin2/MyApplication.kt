@@ -1,10 +1,16 @@
 package com.ignacio.pokemonquizkotlin2
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+const val PREFERENCE_FILE_NAME = "customPrefs.pref"
 
 class MyApplication : Application() {
     override fun onCreate() {
@@ -16,6 +22,9 @@ class MyApplication : Application() {
     fun delayedInit() {
         applicationScope.launch {
             Timber.plant(Timber.DebugTree())
+            sharedPreferences = getSharedPreferences(
+                PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
         }
     }
+
 }

@@ -1,29 +1,30 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
 import android.app.Application
-import android.content.Context
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizgamekotlin.utils.CountBaseTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpDownTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpTimer
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
-import com.ignacio.pokemonquizkotlin2.ui.home.PREFERENCE_FILE_NAME
+import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
+import com.ignacio.pokemonquizkotlin2.utils.*
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-const val FRESH_TIMEOUT_IN_MINUTES = 43200 // ONE WEEK
-const val LAST_DB_REFRESH = "lastDbRefresh"
 const val NUMBER_OF_ANSWERS = 4
 
 enum class GameState {
@@ -51,9 +52,7 @@ class PlayViewModel(
      */
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private val repository = PokemonRepository(getDatabase(app))
-    private val sharedPref = app.getSharedPreferences(PREFERENCE_FILE_NAME,
-        Context.MODE_PRIVATE)
+    //private val repository = PokemonRepository(getDatabase(app))
 
     // we will show the fragment just as we start.
     private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
@@ -116,7 +115,7 @@ class PlayViewModel(
     init {
         _showChooseQuizFragment.value = true // show fragment just started
 
-        var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
+        var lastRefreshMinutes = sharedPreferences.getLong(LAST_DB_REFRESH,0)
         if(!dateIsFresh(lastRefreshMinutes)) {
             // if we have to update pokemon, show such message in the progressbar's textview
             _gameState.value = GameState.REFRESHING_POKEMON
@@ -124,23 +123,29 @@ class PlayViewModel(
             refreshPokemon()
         }
         else {
-            initGame()
+            val lastId = sharedPreferences.getInt(LAST_PAGING_POKEMON_ID_KEY,0)
+            if(lastId < HomeViewModel.DOWNLOAD_SIZE) {
+                refreshPokemon(lastId + 1, HomeViewModel.DOWNLOAD_SIZE - lastId)
+            }
+            else {
+                initGame()
+            }
         }
-
     }
 
-    private fun refreshPokemon() {
+    private fun refreshPokemon(offset : Int = 0, limit : Int = -1) {
         viewModelScope.launch {
             try {
-                //_gameState.value = GameState.REFRESHING_POKEMON
-                // change UI
                 _imageVisible.postValue(View.INVISIBLE)
                 _progressbarVisible.postValue(View.VISIBLE)
                 _progressbarText.postValue(app.getString(R.string.refreshing_pokemon_msg))
                 _radiogroupEnabled.postValue(false)
                 Timber.i("calling refresh pokemon on the repository")
-                repository.refreshPokemon{
-                    sharedPref.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).apply()
+                repository.changeResponseState(PokemonResponseState.LOADING)
+                repository.refreshPokemonPlay(offset,limit){
+                    repository.changeResponseState(PokemonResponseState.DONE)
+                    sharedPreferences.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).
+                        putInt(LAST_PAGING_POKEMON_ID_KEY, HomeViewModel.DOWNLOAD_SIZE).apply()
                     initGame()
                 }
                 // TODO: MOVE ERROR VARIABLES TO REPOSITORY OR SOMEWHERE GENERALIZE THEM?
@@ -151,8 +156,8 @@ class PlayViewModel(
                 // Show a Toast error message and hide the progress bar.
                 if(repository.pokemons.value!!.isEmpty()) {
                     Timber.e(e, "pokemon list is empty")
+                    repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
                 }
-                //_eventNetworkError.value = true
             }
         }
     }
@@ -225,10 +230,7 @@ class PlayViewModel(
     private fun nextRound() {
         //_radiogroupEnabled.value = false
         Timber.i("Launching nextRound coroutine")
-        // get non-used pokemon from db (pokemon for the image)
-        // show loading message
-        //_gameState.postValue(GameState.GETTING_QUESTION)
-        // change UI
+
         _radiogroupEnabled.postValue(false)
         _imageVisible.postValue(View.INVISIBLE)
         _progressbarVisible.postValue(View.VISIBLE)
@@ -237,11 +239,26 @@ class PlayViewModel(
 
 
         viewModelScope.launch {
-            try {
+            //var nextQuestionPokemon : Pokemon?
+            // answerList : List<String>
 
-                Timber.i("trying to get next pokemon")
-                val nextQuestionPokemon =
-                    repository.getNextRoundQuestionPokemon().await().asDomainModel()
+            try {
+                repository.changeResponseState(PokemonResponseState.LOADING)
+                var nextQuestionPokemon = repository.getNextRoundQuestionPokemon()?.asDomainModel()
+                //Timber.i("next pokemon is $nextQuestionPok")
+                //var nextQuestionPokemon = nextQuestionPok.asDomainModel()
+                Timber.i("next pokemon is $nextQuestionPokemon")
+                if(nextQuestionPokemon == null && networkIsOk(app)) {
+                    Timber.i("all pokemon used, resetting...")
+                    repository.resetUsedAsQuestionPlain()
+                    nextQuestionPokemon =
+                        repository.getNextRoundQuestionPokemon()!!.asDomainModel()
+                }
+                repository.updateUsedAsQuestion(nextQuestionPokemon!!.id, true)
+
+                // make function in Repository and inside it update pokemon in db (used as true).
+
+
                 questionPokemonId = nextQuestionPokemon.id
                 Timber.i("next id is $questionPokemonId")
 
@@ -253,24 +270,20 @@ class PlayViewModel(
                 val answerList = repository.getNextRoundAnswers(
                     questionPokemonId,
                     NUMBER_OF_ANSWERS - 1
-                ).await()
+                )
+                repository.changeResponseState(PokemonResponseState.DONE)
                 withContext(Dispatchers.Main) {
                     // add right answer in random place
                     rightAnswerIndex = Random().nextInt(NUMBER_OF_ANSWERS)
                     answerList.add(rightAnswerIndex, nextQuestionPokemon.name)
                     _nextRoundAnswers.value = answerList
 
-                    // hide loading message
-
-                    // resume timer
-                    // wait for user's click
-                    //_gameState.value = GameState.WAITING_CHOICE
                 }
 
             }
             catch (e : Exception) {
                 if(_nextRoundQuestionPokemonId.value == 0 || _nextRoundAnswers.value!!.isEmpty()) {
-                    _responseState.value = PokemonResponseState.DB_ERROR
+                    repository.changeResponseState(PokemonResponseState.DB_ERROR)
                 }
             }
         }
@@ -290,6 +303,11 @@ class PlayViewModel(
     fun onLoadImageFailed() {
         timer.stop()
         _progressbarVisible.value = View.INVISIBLE
+        Toast.makeText(
+            app,
+            app.getString(R.string.could_not_load_images),
+            Toast.LENGTH_LONG
+        ).show()
         //_radiogroupEnabled.value = false
     }
 
@@ -371,7 +389,3 @@ class PlayViewModel(
 
 }
 
-fun dateIsFresh(minutes : Long) : Boolean {
-    val nowMillis = Calendar.getInstance().timeInMillis
-    return nowMillis/60/1000 - minutes <= FRESH_TIMEOUT_IN_MINUTES
-}

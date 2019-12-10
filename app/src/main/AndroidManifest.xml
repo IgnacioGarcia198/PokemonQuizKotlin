@@ -17,6 +17,7 @@
 
         <activity
             android:name="com.ignacio.pokemonquizkotlin2.MainActivity"
+            android:windowSoftInputMode="stateUnchanged|adjustResize"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"

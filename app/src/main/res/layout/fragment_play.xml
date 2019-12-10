@@ -11,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:responseState="@{viewModel.responseState}">
 
 
         <TextView
@@ -23,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:animationLevel="@{viewModel.animationLevel}"
-            app:maxListener="@{viewModel.onAnimationMaxed}" />
+            app:maxListener="@{viewModel::onAnimationMaxed}" />
 
         <ImageView
             android:id="@+id/questionImage"
@@ -38,7 +39,8 @@
             tools:visibility="invisible"
             android:visibility="@{viewModel.imageVisible}"
             app:pokemonId="@{viewModel.nextRoundQuestionPokemonId}"
-            app:viewModel="@{viewModel}"
+            app:onSuccess="@{viewModel::onLoadImageSuccess}"
+            app:onFail="@{viewModel::onLoadImageFailed}"
             />
 
         <com.ignacio.pokemonquizkotlin2.ui.CustomProgressBar

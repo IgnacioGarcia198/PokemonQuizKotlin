@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="pokemon"
+            type="com.ignacio.pokemonquizkotlin2.data.model.Pokemon" />
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardBackgroundColor="@color/colorPrimaryLight"
+        app:cardElevation="@dimen/cardview_default_elevation">
+        <!-- TODO will check warning if theres time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimaryLight">
+
+            <ImageView
+                android:id="@+id/coverImage"
+                android:contentDescription="@string/item_image_content_desc"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@{pokemon.name}"/>
+
+                <TextView
+                    android:id="@+id/pokid"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@{String.valueOf(pokemon.id)}"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

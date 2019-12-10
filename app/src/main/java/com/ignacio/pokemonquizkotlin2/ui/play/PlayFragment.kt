@@ -1,36 +1,26 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
-import com.ignacio.pokemonquizkotlin2.ui.choosequizdialog.ChooseQuizFragment
-import kotlinx.android.synthetic.main.custom_progress_bar.*
+import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_play.*
-import kotlinx.android.synthetic.main.right_toast3.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
 
 class PlayFragment : Fragment() {
+
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
@@ -80,6 +70,10 @@ class PlayFragment : Fragment() {
                 playViewModel.showRecordsDone()
             }
         })
+
+        /*playViewModel.getResponseState().observe(this, Observer {
+            addOrRemoveErrorMsg(binding.root as ViewGroup,it)
+        })*/
 
 
         return binding.root

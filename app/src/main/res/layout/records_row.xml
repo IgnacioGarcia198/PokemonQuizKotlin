@@ -3,76 +3,61 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="record"
-            type="com.ignacio.pokemonquizkotlin2.data.db.GameRecord" />
+
     </data>
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <TableRow
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:focusable="true"
         android:focusableInTouchMode="false"
         android:clickable="true"
-        android:background="@android:drawable/list_selector_background"
-        android:padding="10dp">
+        android:background="@android:drawable/list_selector_background">
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="1"
             tools:text="Record"
             android:text="@string/record_default_title"/>
 
         <TextView
             android:id="@+id/speed"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="2"
-            android:text="@{String.valueOf(record.questionsPerSecond)}" />
+            android:text="@string/empty_record" />
 
         <TextView
             android:id="@+id/hitRate"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="3"
-            android:text="@{String.valueOf(record.hitRate)}"/>
+            android:text="@string/empty_record"/>
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="4"
-            android:text="@{record.recordTime.toString()}" />
+            android:text="@string/empty_record" />
 
         <TextView
             android:id="@+id/gameMode"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="5"
-            android:text="@{record.gameMode ? @string/game_mode_questions : @string/game_mode_time}" />
+            android:text="@string/empty_record" />
 
         <TextView
             android:id="@+id/gameLength"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:layout_column="6"
-            android:text="@{String.valueOf(record.gameLength)}" />
-    </TableRow>
+            android:text="@string/empty_record" />
+    </LinearLayout>
     </HorizontalScrollView>
 </layout>

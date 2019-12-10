@@ -1,6 +1,7 @@
 package com.ignacio.pokemonquizkotlin2.data.db
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,7 +17,7 @@ interface PokemonDao {
 
     // Get the question pokemon
     @Query("SELECT * FROM pokemonTable WHERE usedAsQuestion = 0 ORDER BY RANDOM() LIMIT 1")
-    fun getNextRoundQuestionPokemon(): DatabasePokemon
+    fun getNextRoundQuestionPokemon(): DatabasePokemon?
 
     // Get the answer option names
     @Query("SELECT name FROM pokemonTable WHERE id <> :id ORDER BY RANDOM() LIMIT :limit")
@@ -29,4 +30,13 @@ interface PokemonDao {
     // reset all usedAsQuestion
     @Query("UPDATE pokemonTable SET usedAsQuestion = 0")
     fun resetUsedAsQuestion()
+
+    //==============================================================
+
+    // for paging
+    @Query("SELECT * FROM pokemonTable")
+    abstract fun getAllPokemonsFromRoom(): DataSource.Factory<Int, DatabasePokemon>
+
+    @Query("SELECT * FROM pokemonTable WHERE name LIKE :name")
+    abstract fun findPokemonsByNameInRoom(name: String): DataSource.Factory<Int, DatabasePokemon>
 }

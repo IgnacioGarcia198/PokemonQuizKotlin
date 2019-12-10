@@ -32,29 +32,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.ClassCastException
+import java.text.SimpleDateFormat
+import java.util.*
 
-class GameRecordsAdapter(private val database: MyDatabase, private val lastRecord: GameRecord) : ListAdapter<RecordItem, GameRecordsAdapter.RecordViewHolder>(RecordDiffCallback()) {
+class GameRecordsAdapter(private val database: MyDatabase, private val lastRecord: GameRecord) : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
     private val HEADER_ITEM = 1
     private val RECORD_ITEM = 2
 
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    override fun onBindViewHolder(holder: RecordViewHolder, position: Int) {
-        /*when(holder) {
-            is RecordViewHolder -> holder.bind(getItem(position) as RecordItem.GameRecordItem)
-        }*/
-        holder.bind(position, getItem(position))
-
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder) {
+            is RecordViewHolder -> holder.bind(position, getItem(position) as RecordItem.GameRecordItem)
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType : Int): RecordViewHolder {
-        /*return when(viewType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType : Int): RecyclerView.ViewHolder {
+        return when(viewType) {
             HEADER_ITEM -> HeaderViewHolder.from(parent)
             RECORD_ITEM  -> RecordViewHolder.from(parent)
             else -> throw ClassCastException("Unknown viewType $viewType")
-        }*/
-        return RecordViewHolder.from(parent)
+        }
     }
 
 
@@ -62,10 +61,6 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
         val outputList : MutableList<RecordItem> = mutableListOf(RecordItem.Header)
         adapterScope.launch {
             if(list.isNotEmpty()) {
-                // include averages row
-                /*withContext(Dispatchers.IO) {
-
-                }*/
                 val averagesRow = GameRecord(questionsPerSecond = database.gameRecordDao.averageSpeed,
                     hitRate = database.gameRecordDao.averageHitRate)
                 outputList.add(RecordItem.GameRecordItem(lastRecord))
@@ -96,37 +91,26 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
     }
 
     class RecordViewHolder private constructor(val binding: RecordsRowBinding) : RecyclerView.ViewHolder(binding.root){
-        private val HEADER_POSITION = 0
         private val LAST_RECORD_POSITION = 1
         private val AVG_POSITION = 2
 
-        fun bind(position: Int, recordItem: RecordItem) {
+        fun bind(position: Int, recordItem: RecordItem.GameRecordItem) {
+            val record = recordItem.record
+            val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm", Locale.getDefault())
             when(position) {
-                HEADER_POSITION -> { // bind header
-                    binding.title.text = "Title"
-                    binding.date.text = "Date"
-                    binding.gameMode.text = "Game Mode"
-                    binding.gameLength.text = "Game Length"
-                    binding.hitRate.text = "Hit Rate"
-                    binding.speed.text = "Speed"
-                }
-
-                LAST_RECORD_POSITION -> {
-                    binding.record = (recordItem as RecordItem.GameRecordItem).record
-                }
-
                 AVG_POSITION -> {
-                    val record = (recordItem as RecordItem.GameRecordItem).record
-                    binding.title.text = "Averages"
-                    binding.date.text = "---"
-                    binding.gameMode.text = "---"
-                    binding.gameLength.text = "---"
+                    binding.title.setText(R.string.averages_title)
                     binding.hitRate.text = record.hitRate.toString()
                     binding.speed.text = record.questionsPerSecond.toString()
                 }
 
                 else -> {
-                    binding.record = (recordItem as RecordItem.GameRecordItem).record
+                    if(position == LAST_RECORD_POSITION) binding.title.setText(R.string.last_result)
+                    binding.date.text = sdf.format(record.recordTime)
+                    binding.gameMode.text = if(record.gameMode) "Questions" else "Time"
+                    binding.gameLength.text = record.gameLength.toString()
+                    binding.hitRate.text = record.hitRate.toString()
+                    binding.speed.text = record.questionsPerSecond.toString()
                 }
             }
 

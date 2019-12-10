@@ -2,10 +2,14 @@ package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.app.Application
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.*
+import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -13,8 +17,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
-
-const val PREFERENCE_FILE_NAME = "customPrefs.pref"
 
 class HomeViewModel(app : Application) : BaseViewModel(app) {
 
@@ -45,12 +47,10 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
      */
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private val repository = PokemonRepository(getDatabase(app))
-
     /**
      * The list of versions where current pokemon's flavor text is available
      */
-    private val _versionList = MutableLiveData<List<String>>()
+    private val _versionList = MutableLiveData<List<String>>(mutableListOf())
     val versionList : LiveData<List<String>>
     get() = _versionList
 
@@ -71,11 +71,9 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
     val name = Transformations.map(repository.flavorTextAndName) {pair -> pair.second}
 
     /**
-     * Error on loading data from network
+     * Response state
      */
-    private val _eventNetworkError = MutableLiveData<Boolean>(false)
-    val eventNetworkError : LiveData<Boolean>
-    get() = _eventNetworkError
+    //val responseState = Transformations.switchMap(repository.responseState) {repository.responseState}
 
     /**
      * Flag in order to stop emitting eventNetworkError
@@ -123,26 +121,25 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
         viewModelScope.launch {
             try {
                 //versionList = repository.getVersionListFromNetwork()
+                repository.changeResponseState(PokemonResponseState.LOADING)
                 repository.getVersionList{
                         //versions ->  onVersionsReady(versions)
                     // for example : put this versionList in sharedPreferences
+                    //_responseState.postValue(PokemonResponseState.DONE)
                     Timber.i("from versions, calling getFlavorText")
+                    repository.changeResponseState(PokemonResponseState.DONE)
                     getFlavorTextsAndName(todayPokId,"en"){
                             onVersionsReady(it)
                         Timber.i("versions are ready")
                     }
                 }
-                _eventNetworkError.value = false
-                _networkErrorShown.value = false
-
-                //Timber.i("versionlist in viewmodel is ${versionList.value}")
-                //_version.value = versionList.value?.first()
 
             }
             catch (e: IOException) {
                 // Show a Toast error message and hide the progress bar.
                 if(versionList.value!!.isEmpty())
-                    _eventNetworkError.postValue(true)
+                    repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
+                    //_responseState.value = PokemonResponseState.NETWORK_ERROR
             }
         }
     }
@@ -165,14 +162,15 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
         Timber.i("getFlavorTexts")
         viewModelScope.launch {
             try {
+                repository.changeResponseState(PokemonResponseState.LOADING)
                 repository.getSpecieFlavorText(pokid,language, version,callback)
-                _eventNetworkError.value = false
-                _networkErrorShown.value = false
+                repository.changeResponseState(PokemonResponseState.DONE)
             }
             catch (e: IOException) {
                 // Show a Toast error message and hide the progress bar.
-                if(flavorText.value!!.isEmpty() || name.value!!.isEmpty())
-                    _eventNetworkError.value = true
+                if(flavorText.value == null || name.value == null ||
+                    flavorText.value!!.isEmpty() || name.value!!.isEmpty())
+                    repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
             }
         }
     }
@@ -199,14 +197,12 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
         c.set(Calendar.MILLISECOND,0)
         val today = c.timeInMillis
 
-        val sharedPreferences = app.getSharedPreferences(
-            PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
 
         // get last pokemon day as
         var basePokDay = sharedPreferences.getLong(BASE_POK_DAY,0L)
         // TODO use basePokDay to make a preference for new year pokemon, in a next version.
         // TODO ADD PREFERENCE TO SELECT POKEMON TEST TIMING FOR QUESTIONS
-        if(basePokDay == 0L) {
+        if(basePokDay == 0L) { // FIRST TIME
             c.set(Calendar.YEAR, 2019)
             c.set(Calendar.MONTH, 0)
             c.set(Calendar.DAY_OF_MONTH, 1)
@@ -221,6 +217,18 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
 
         //_todayPokIdLiveData.value = (daysDiff% DOWNLOAD_SIZE).toInt()
         //return (daysDiff% DOWNLOAD_SIZE).toInt()
+    }
+
+    fun onLoadImageSuccess() {
+
+    }
+
+    fun onLoadImageFailed() {
+        Toast.makeText(
+            app,
+            app.getString(R.string.could_not_load_images),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
 

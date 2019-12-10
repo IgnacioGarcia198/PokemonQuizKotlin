@@ -1,13 +1,23 @@
 package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
+import timber.log.Timber
 
-class PokemonListViewModel : ViewModel() {
+class PokemonListViewModel(app:Application) : BaseViewModel(app) {
+    //lateinit var pokemonList : LiveData<PagedList<DatabasePokemon>>
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is slideshow Fragment"
+    private val _searchText = MutableLiveData<String>("")
+    //val searchText : LiveData<String> = _searchText
+
+    fun changeText(newText : String) {
+        _searchText.value = newText
+        Timber.i("Text is $newText")
     }
-    val text: LiveData<String> = _text
+
+    val pokemonList = Transformations.switchMap(_searchText) {repository.searchPokemons(it)}
+
 }

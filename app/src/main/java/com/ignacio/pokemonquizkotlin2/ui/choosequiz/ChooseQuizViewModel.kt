@@ -1,7 +1,6 @@
-package com.ignacio.pokemonquizkotlin2.ui.choosequizdialog
+package com.ignacio.pokemonquizkotlin2.ui.choosequiz
 
 import android.app.Application
-import android.media.RemoteControlClient
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.R
 

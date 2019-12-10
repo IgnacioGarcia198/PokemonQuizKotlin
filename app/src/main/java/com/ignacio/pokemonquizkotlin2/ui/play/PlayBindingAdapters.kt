@@ -35,12 +35,10 @@ fun bindPokemonImage(imgView: ImageView, id : Int) {
     }
 }*/
 
-@BindingAdapter("pokemonId", "viewModel")
-fun bindPokemonImage(imgView: ImageView, id: Int, viewModel: PlayViewModel) {
-    loadThePokemonImage(id, imgView, viewModel)
-}
-
-private fun loadThePokemonImage(id: Int, imgView: ImageView, viewModel: PlayViewModel) {
+@BindingAdapter("pokemonId", "onSuccess", "onFail")
+fun loadThePokemonImage(imgView: ImageView, id: Int,
+                                successCallback : () -> Unit,
+failCallback : () -> Unit) {
         if(id > 0) {
 
         val imgUri = imgView.context.getString(R.string.pokemon_image_url,id)
@@ -54,39 +52,16 @@ private fun loadThePokemonImage(id: Int, imgView: ImageView, viewModel: PlayView
                     target: Target<Drawable>,
                     isFirstResource: Boolean
                 ): Boolean {
-                    //customRadioGroup.setEnabled(false);
-                    viewModel.onLoadImageFailed()
-                    //viewModel.hideProgressBar()
-                    //progressBar.setVisibility(View.INVISIBLE)
-                    //playViewModel.showImage()
-                    /*/if (Globals.getInstance().netWorkIsOk()) {
+                    failCallback()
 
-                        if (!isRetry) {
-                            Toast.makeText(
-                                this@GameActivity,
-                                getString(R.string.retrying),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            setQuestionImage(uri, true)
-                        } else {
-                            Toast.makeText(
-                                this@GameActivity,
-                                getString(R.string.problem_loading_pokemon_bad_network),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            finish()
-                        }
-                    } else {*/
-                    with(imgView.context) {
+                    /*with(imgView.context) {
                         Toast.makeText(
                             this,
                             getString(R.string.no_internet_notice),
                             Toast.LENGTH_SHORT
                         ).show()
-                    }
+                    }*/
 
-                    //finish()
-                    //}
 
                     return false
                 }
@@ -100,19 +75,13 @@ private fun loadThePokemonImage(id: Int, imgView: ImageView, viewModel: PlayView
                     isFirstResource: Boolean
                 ): Boolean {
 
-                    viewModel.onLoadImageSuccess()
-                    //customRadioGroup.setEnabled(true)
-                    //playViewModel.hideProgressBar()
-                    //playViewModel.showImage()
+                    successCallback()
 
-                    //viewModel.getCountUpTimer().start();
-                    //playViewModel.resetQuestionTimer()
-
-                    //Log.d(LOG_TAG, "image should be loaded ang game continues");
                     return false
                 }
             })
             .apply(RequestOptions()
+                .placeholder(R.drawable.transparent_pokeball_padding)
                 .error(R.drawable.pokeball_supertransparent_padding)
             )
             .into(imgView)
@@ -158,6 +127,7 @@ fun bindAnswerChange(radioGroup: RadioGroup, viewModel: PlayViewModel) {
                 radioGroup.setChildrenEnabled(false)
                 radioGroup.check(-1)
                 viewModel.onAnswerChosen(i)
+
             }
             radioGroup.addView(radioButton)
         }
