@@ -37,23 +37,6 @@ class PlayViewModel(
     private val limitValue : Int = 0
 ) : BaseViewModel(app) {
 
-    /**
-     * This is the job for all coroutines started by this ViewModel.
-     *
-     * Cancelling this job will cancel all coroutines started by this ViewModel.
-     */
-    private val viewModelJob = SupervisorJob()
-
-    /**
-     * This is the main scope for all coroutines launched by MainViewModel.
-     *
-     * Since we pass viewModelJob, you can cancel all coroutines launched by uiScope by calling
-     * viewModelJob.cancel()
-     */
-    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
-    //private val repository = PokemonRepository(getDatabase(app))
-
     // we will show the fragment just as we start.
     private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
     val showChooseQuizFragment : LiveData<Boolean>
@@ -381,11 +364,5 @@ class PlayViewModel(
     fun showRecordsDone() {
         _showRecords.value = null
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
-    }
-
 }
 

@@ -13,7 +13,7 @@ import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.databinding.PokemonRowBinding
 import com.ignacio.pokemonquizkotlin2.ui.play.loadThePokemonImage
 
-internal class PokemonAdapter : PagedListAdapter<DatabasePokemon,
+internal class PokemonAdapter(val listener: PokemonClickListener) : PagedListAdapter<DatabasePokemon,
         PokemonAdapter.PokemonViewHolder>(PokemonDiffCallback) {
 
     override fun onCreateViewHolder(
@@ -24,14 +24,15 @@ internal class PokemonAdapter : PagedListAdapter<DatabasePokemon,
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), listener)
     }
 
     internal class PokemonViewHolder(val binding : PokemonRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(pokemon : DatabasePokemon?) {
+        fun bind(pokemon : DatabasePokemon?, listener: PokemonClickListener) {
             pokemon?.let {
                 binding.pokemon = pokemon.asDomainModel()
+                binding.listener = listener
                 binding.executePendingBindings()
                 loadThePokemonImage(binding.coverImage,pokemon.id, successCallback = {
                     // success:
@@ -67,4 +68,8 @@ object PokemonDiffCallback : DiffUtil.ItemCallback<DatabasePokemon>() {
     override fun areContentsTheSame(oldItem: DatabasePokemon, newItem: DatabasePokemon): Boolean {
         return  oldItem == newItem
     }
+}
+
+class PokemonClickListener(val clickListener: (id : Int) -> Unit) {
+    fun onClick(pokemon: Pokemon) {clickListener(pokemon.id)}
 }

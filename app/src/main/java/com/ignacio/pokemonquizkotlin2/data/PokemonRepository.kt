@@ -1,13 +1,11 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import androidx.work.*
 import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.data.db.MyDatabase
@@ -32,33 +30,38 @@ class PokemonRepository (private val database: MyDatabase) {
         const val DATABASE_PAGE_SIZE = 20
     }
 
-    var startup = true
+    var homeStartup = true
 
-
-    suspend fun getSpecieFlavorText(pokid : Int, language: String = "en", version : String = "red",
-                                    callback: (versions: List<String>) -> Unit = {}) {
+    /**
+     * Gets both flavor text for current language and version and also the pokemon's name, we do it together
+     * in order to save in calls to the api.
+     */
+    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String = "en", version : String = "red",
+                          newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit) {
         withContext(Dispatchers.IO) {
             Timber.i("doing getSpecieFlavor")
             val specieDetail = PokemonNetwork.pokemonApiService.getSpecieDetail(pokid).await()
             val newVersionList = specieDetail.extractAvailableVersions(language)
-            if(startup) {
-                Timber.i("versions: startup is true, sending versions to viewmodel")
-                Timber.i("after startup versions are ${newVersionList}")
-                // get the real version list
-                withContext(Dispatchers.Main) {
-                    callback(specieDetail.extractAvailableVersions(language))
-                }
-                _flavorTextAndName.postValue(specieDetail.extractFlavorText(language,newVersionList.first()))
-                //_versionList.value = newVesionList
-                startup = false
+            val flavorAndName = specieDetail.extractFlavorTextAndName(language,newVersionList.first())
+            Timber.i("versions: homeStartup is true, sending versions to viewmodel")
+            Timber.i("after homeStartup versions are ${newVersionList}")
+            // get the real version list
+            withContext(Dispatchers.Main) {
+               newPokemonCallback(newVersionList, flavorAndName)
             }
-            else {
-                _flavorTextAndName.postValue(specieDetail.extractFlavorText(language, version))
-            }
+            //return@withContext Pair(newVersionList,flavorAndName)
         }
     }
 
-    suspend fun getVersionList(callback: (versions : List<String>) -> Unit) {
+    suspend fun getFlavorTextNormally(pokid : Int, language: String = "en", version : String = "red",
+                                      normalCallback : (flavorAndName : String) -> Unit) {
+        val specieDetail = PokemonNetwork.pokemonApiService.getSpecieDetail(pokid).await()
+        withContext(Dispatchers.Main) {
+            normalCallback(specieDetail.extractFlavorText(language, version))
+        }
+    }
+
+    /*suspend fun getVersionList(callback: (versions : List<String>) -> Unit) {
         withContext(Dispatchers.IO) {
             val versionsContainer = PokemonNetwork.pokemonApiService.getVersionList(0,-1).await()
             Timber.i("Versions are ${versionsContainer.extractVersionList()}")
@@ -67,7 +70,7 @@ class PokemonRepository (private val database: MyDatabase) {
                 callback(versionsContainer.extractVersionList())
             }
         }
-    }
+    }*/
 
     /*private val _versionList = MutableLiveData<List<String>>()
     val versionList : LiveData<List<String>>

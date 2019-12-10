@@ -36,10 +36,10 @@ fun NetworkSpeciesDetail.extractAvailableVersions(language: String) : List<Strin
     return flavorTextEntries.map { it.version.name }.distinct()
 }
 
-fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) : Pair<String,String> {
+fun NetworkSpeciesDetail.extractFlavorTextAndName(language : String, version : String) : Pair<String,String> {
     return Pair(
         flavorTextEntries.filter {
-            Timber.i("extractFlavorText: ${it.toString()}")
+            Timber.i("extractFlavorTextAndName: ${it.toString()}")
             if(it.language.name == language && it.version.name == version) {
                 Timber.i("flavor entry selected: ${it.flavorText}")}
             it.language.name == language && it.version.name == version
@@ -48,6 +48,15 @@ fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) 
             if(it.language.name == language) {Timber.i("language selected: ${it.language.name}")}
             it.language.name == language }.map {Timber.i("name selected: ${it.name}")
             it.name }.joinToString())
+}
+
+fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) : String {
+    return flavorTextEntries.filter {
+            Timber.i("extractFlavorTextAndName: ${it.toString()}")
+            if(it.language.name == language && it.version.name == version) {
+                Timber.i("flavor entry selected: ${it.flavorText}")}
+            it.language.name == language && it.version.name == version
+        }.map { it.flavorText.replace("\n", " ") }.joinToString(separator = "\n")
 }
 
 fun NetworkPokemonContainer.extractVersionList() : List<String> {

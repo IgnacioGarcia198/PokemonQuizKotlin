@@ -9,6 +9,7 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
+import com.ignacio.pokemonquizkotlin2.ui.pokemondetail.PokemonDetailViewModel
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.*
 
-class HomeViewModel(app : Application) : BaseViewModel(app) {
+class HomeViewModel(app : Application) : PokemonDetailViewModel(app) {
 
     companion object {
         private const val BASE_POK_DAY = "basePokDay"
@@ -30,57 +31,6 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
         const val DOWNLOAD_SIZE = 720//897
     }
 
-    var spinnerPosition : Int = 0
-
-    /**
-     * This is the job for all coroutines started by this ViewModel.
-     *
-     * Cancelling this job will cancel all coroutines started by this ViewModel.
-     */
-    private val viewModelJob = SupervisorJob()
-
-    /**
-     * This is the main scope for all coroutines launched by MainViewModel.
-     *
-     * Since we pass viewModelJob, you can cancel all coroutines launched by uiScope by calling
-     * viewModelJob.cancel()
-     */
-    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
-    /**
-     * The list of versions where current pokemon's flavor text is available
-     */
-    private val _versionList = MutableLiveData<List<String>>(mutableListOf())
-    val versionList : LiveData<List<String>>
-    get() = _versionList
-
-    /**
-     * Version of the flavor text
-     */
-    private val _version = MutableLiveData<String>()
-    val version : LiveData<String>
-        get() = _version
-    //val version = Transformations.map(repository.versionList) {list -> list.first()}
-    /**
-     * Current pokemon's flavor text
-     */
-    val flavorText = Transformations.map(repository.flavorTextAndName) {pair -> pair.first}
-    /**
-     * Currrent pokemon's name
-     */
-    val name = Transformations.map(repository.flavorTextAndName) {pair -> pair.second}
-
-    /**
-     * Response state
-     */
-    //val responseState = Transformations.switchMap(repository.responseState) {repository.responseState}
-
-    /**
-     * Flag in order to stop emitting eventNetworkError
-     */
-    private val _networkErrorShown = MutableLiveData<Boolean>(false)
-    val networkErrorShown : LiveData<Boolean>
-    get() = _networkErrorShown
 
     /**
      * Daily pokemon id for today
@@ -90,80 +40,27 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
     val todayPokIdLiveData : LiveData<Int>
         get() = _todayPokIdLiveData
 
-    init {
-        calculateTodayPokId()
+    override var inited = false
+
+    fun initPushHome() {
+        if(inited) return
+
         Timber.i("Init viewmodel")
-        //Log.i("init","viewmodel init")
-        //repository = PokemonRepository(getDatabase(app))
+
         calculateTodayPokId()
-        //todayPokId.value = todayPokId
-        getVersionListFromNetwork()
-        //getFlavorTexts(todayPokId,"en", "alpha-sapphire")
-        //_flavorText.value =
-    }
-
-    //private val flavorsAndName = Transformations.map(version) {version -> getFlavorTexts(_todayPokIdLiveData.value!!,"en", version)}
-    //val flavorText = Transformations.map(flavorsAndName) {flavors -> flavors.first}
-    //val name = Transformations.map(flavorsAndName) {flavors -> flavors.second}
-
-    /*
-        TODO IMPROVEMENT IN NEXT VERSION: TRY TO GET ALL VERSIONS FROM SHAREDPREF, IF NO POSSIBLE
-        THEN GET FROM NETWORK. TET ALL FLAVOR TEXTS FOR CURRENT POKEMON AND UPDATE THE REAL VERSIONS LIST
-        ON MEMORY. STORE FLAVOR TEXTS LIST IN LOCAL LIST.
-        SO WE WILL NEED AT MOST TWO CALLS TO RETROFIT.
-     */
-
-    /**
-     * Gets initially the pokemon game version list
-     */
-    fun getVersionListFromNetwork() {
-        Timber.i("getVersionlist")
+        /**
+         * Gets both flavor text for current language and version and also the pokemon's name, we do it together
+         * in order to save in calls to the api.
+         */
         viewModelScope.launch {
             try {
-                //versionList = repository.getVersionListFromNetwork()
                 repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getVersionList{
-                        //versions ->  onVersionsReady(versions)
-                    // for example : put this versionList in sharedPreferences
-                    //_responseState.postValue(PokemonResponseState.DONE)
-                    Timber.i("from versions, calling getFlavorText")
-                    repository.changeResponseState(PokemonResponseState.DONE)
-                    getFlavorTextsAndName(todayPokId,"en"){
-                            onVersionsReady(it)
-                        Timber.i("versions are ready")
-                    }
+                repository.getFlavorTextAndNameFirstTime(todayPokId) {
+                        versions, flavorAndName ->
+                    onVersionsReady(versions)
+                    setVersionsAndName(flavorAndName)
+                    inited = true
                 }
-
-            }
-            catch (e: IOException) {
-                // Show a Toast error message and hide the progress bar.
-                if(versionList.value!!.isEmpty())
-                    repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
-                    //_responseState.value = PokemonResponseState.NETWORK_ERROR
-            }
-        }
-    }
-
-    /**
-     * To call when the list of available versions for current pokemon is ready.
-     */
-    fun onVersionsReady(versions : List<String>) {
-        Timber.i("calling versions ready")
-        _versionList.value = versions
-        _version.value = versions.first()
-    }
-
-    /**
-     * Gets both flavor text for current language and version and also the pokemon's name, we do it together
-     * in order to save in calls to the api.
-     */
-    fun getFlavorTextsAndName(pokid : Int, language : String = "en", version : String = "red",
-                              callback :  (versions: List<String>) -> Unit = {}) {
-        Timber.i("getFlavorTexts")
-        viewModelScope.launch {
-            try {
-                repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getSpecieFlavorText(pokid,language, version,callback)
                 repository.changeResponseState(PokemonResponseState.DONE)
             }
             catch (e: IOException) {
@@ -175,13 +72,29 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
         }
     }
 
+
+
     /**
      * Event, version is chosen in spinner
      */
-    fun onVersionChangedOnSpinner(newVersion : String) {
+    override fun onVersionChangedOnSpinner(newVersion : String) {
         //_version.value = newVersion
         if(newVersion != _version.value) {
-            getFlavorTextsAndName(todayPokId,"en", newVersion)
+            viewModelScope.launch {
+                try {
+                    repository.changeResponseState(PokemonResponseState.LOADING)
+                    repository.getFlavorTextNormally(todayPokId,version = newVersion) {
+                        _version.value = newVersion
+                        _flavorText.value = it
+                    }
+                    repository.changeResponseState(PokemonResponseState.DONE)
+                }
+                catch (e: IOException) {
+                    // Show a Toast error message and hide the progress bar.
+                    if(flavorText.value == null || flavorText.value!!.isEmpty())
+                        repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
+                }
+            }
         }
     }
 
@@ -217,27 +130,6 @@ class HomeViewModel(app : Application) : BaseViewModel(app) {
 
         //_todayPokIdLiveData.value = (daysDiff% DOWNLOAD_SIZE).toInt()
         //return (daysDiff% DOWNLOAD_SIZE).toInt()
-    }
-
-    fun onLoadImageSuccess() {
-
-    }
-
-    fun onLoadImageFailed() {
-        Toast.makeText(
-            app,
-            app.getString(R.string.could_not_load_images),
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-
-    /**
-     * Clean the job if viewmodel is finish
-     */
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
     }
 
 }

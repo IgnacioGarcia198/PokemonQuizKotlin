@@ -29,19 +29,7 @@ class HomeFragment : Fragment() {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = homeViewModel
-
-
-        /*homeViewModel.getResponseState().observe(this, Observer {
-            Timber.i("current state is $it")
-            addOrRemoveErrorMsg(binding.root as ViewGroup,it)
-        })*/
-        /*homeViewModel.responseState.observe(this, Observer {
-
-        })*/
-        /*if(spinnerPosition != 0) {
-            binding.spinner.setSelection(spinnerPosition)
-        }*/
-        //hasOptionsMenu()
+        homeViewModel.initPushHome()
 
         return binding.root
     }

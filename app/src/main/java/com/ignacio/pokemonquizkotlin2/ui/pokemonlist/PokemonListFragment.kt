@@ -9,6 +9,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
@@ -31,7 +32,10 @@ class PokemonListFragment : Fragment() {
         binding.lifecycleOwner = this
 
 
-        val adapter = PokemonAdapter()
+        val adapter = PokemonAdapter(PokemonClickListener {
+            findNavController().navigate(PokemonListFragmentDirections
+                .actionNavPokemonListToPokemonDetailFragment(it))
+        })
         //val recyclerView = root.findViewById<RecyclerView>(R.id.poklistRecyclerView)
         binding.poklistRecyclerView.adapter = adapter
         pokemonListViewModel.pokemonList.observe(this, Observer {

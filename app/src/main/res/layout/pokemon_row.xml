@@ -6,13 +6,17 @@
         <variable
             name="pokemon"
             type="com.ignacio.pokemonquizkotlin2.data.model.Pokemon" />
+        <variable
+            name="listener"
+            type="com.ignacio.pokemonquizkotlin2.ui.pokemonlist.PokemonClickListener" />
     </data>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         app:cardBackgroundColor="@color/colorPrimaryLight"
-        app:cardElevation="@dimen/cardview_default_elevation">
+        app:cardElevation="@dimen/cardview_default_elevation"
+        android:onClick="@{() -> listener.onClick(pokemon)}">
         <!-- TODO will check warning if theres time -->
         <LinearLayout
             android:layout_width="match_parent"
