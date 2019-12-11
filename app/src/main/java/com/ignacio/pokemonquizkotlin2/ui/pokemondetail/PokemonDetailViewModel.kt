@@ -128,17 +128,19 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
             }
         }
     }
-
+    protected open var errorShown = false
     open fun onLoadImageSuccess() {
 
     }
 
     open fun onLoadImageFailed() {
-        Toast.makeText(
-            app,
-            app.getString(R.string.could_not_load_images),
-            Toast.LENGTH_LONG
-        ).show()
+        if(errorShown) {
+            Toast.makeText(
+                app,
+                app.getString(R.string.could_not_load_images),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
 }

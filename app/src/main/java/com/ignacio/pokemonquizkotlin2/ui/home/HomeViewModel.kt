@@ -132,4 +132,6 @@ class HomeViewModel(app : Application) : PokemonDetailViewModel(app) {
         //return (daysDiff% DOWNLOAD_SIZE).toInt()
     }
 
+    override var errorShown = false
+
 }

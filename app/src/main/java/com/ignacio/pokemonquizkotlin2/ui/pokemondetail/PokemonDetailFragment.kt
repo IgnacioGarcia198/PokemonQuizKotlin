@@ -19,11 +19,13 @@ class PokemonDetailFragment : Fragment() {
 
     private lateinit var viewModel: PokemonDetailViewModel
     private lateinit var mDetector: GestureDetectorCompat
+    private var currentId: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val binding : PokemonDetailFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.pokemon_detail_fragment,
             container,false)
         val args = PokemonDetailFragmentArgs.fromBundle(arguments!!)
@@ -34,7 +36,7 @@ class PokemonDetailFragment : Fragment() {
         var x1: Float = 0f
         var x2: Float = 0f
         val MIN_DISTANCE = 150
-        var currentId = args.id
+        currentId = args.id
         val initialX = binding.mainImageView.x
 
 
@@ -65,12 +67,17 @@ class PokemonDetailFragment : Fragment() {
             result
         }
 
-
+        savedInstanceState?.let {
+            currentId = it.getInt("currentId",args.id)
+        }
         binding.viewModel = viewModel
-        viewModel.initPush(args.id)
+        viewModel.initPush(currentId)
 
         return binding.root
     }
 
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("currentId", currentId)
+    }
 }

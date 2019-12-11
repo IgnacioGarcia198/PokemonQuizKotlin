@@ -48,4 +48,6 @@ class PokemonListFragment : Fragment() {
 
         return binding.root
     }
+
+
 }
