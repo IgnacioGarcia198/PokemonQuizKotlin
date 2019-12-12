@@ -7,8 +7,8 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
+import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
+import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.databinding.PokemonRowBinding
 import com.ignacio.pokemonquizkotlin2.ui.play.loadThePokemonImage

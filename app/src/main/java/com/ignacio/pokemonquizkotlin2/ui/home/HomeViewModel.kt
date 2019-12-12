@@ -1,19 +1,10 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.app.Application
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.*
-import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.pokemondetail.PokemonDetailViewModel
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
@@ -55,7 +46,7 @@ class HomeViewModel(app : Application) : PokemonDetailViewModel(app) {
         viewModelScope.launch {
             try {
                 repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getFlavorTextAndNameFirstTime(todayPokId) {
+                repository.getFlavorTextAndNameFirstTime(pokid= todayPokId) {
                         versions, flavorAndName ->
                     onVersionsReady(versions)
                     setVersionsAndName(flavorAndName)
@@ -83,7 +74,7 @@ class HomeViewModel(app : Application) : PokemonDetailViewModel(app) {
             viewModelScope.launch {
                 try {
                     repository.changeResponseState(PokemonResponseState.LOADING)
-                    repository.getFlavorTextNormally(todayPokId,version = newVersion) {
+                    repository.getFlavorTextNormally(pokid = todayPokId,version = newVersion) {
                         _version.value = newVersion
                         _flavorText.value = it
                     }

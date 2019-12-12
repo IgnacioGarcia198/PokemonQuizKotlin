@@ -166,13 +166,12 @@ fun setAnimationLevel(textView: TextView, level : Float, maxListener : () -> Uni
     Timber.i("new height in textview is ${textView.height}")
     if(newHeight != 0 && newHeight >= totalHeight) {
         //reset after 100ms or so
-        val scope = CoroutineScope(Dispatchers.Default)
-        scope.launch {
-            delay(100)
-            withContext(Dispatchers.Main) {
+        //val scope = CoroutineScope(dispatchers.default())
+
+            //withContext(dispatchers.main()) {
                 maxListener()
-            }
-        }
+            //}
+        //}
     }
 }
 

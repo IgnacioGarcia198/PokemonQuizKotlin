@@ -9,12 +9,9 @@ import com.ignacio.pokemonquizgamekotlin.utils.CountBaseTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpDownTimer
 import com.ignacio.pokemonquizgamekotlin.utils.CountUpTimer
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
-import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
+import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
@@ -34,8 +31,9 @@ enum class GameState {
 class PlayViewModel(
     app : Application,
     private val questionsOrTime : Boolean = true,
-    private val limitValue : Int = 0
-) : BaseViewModel(app) {
+    private val limitValue : Int = 0,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+) : BaseViewModel(app,dispatchers) {
 
     // we will show the fragment just as we start.
     private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
@@ -255,7 +253,7 @@ class PlayViewModel(
                     NUMBER_OF_ANSWERS - 1
                 )
                 repository.changeResponseState(PokemonResponseState.DONE)
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.main()) {
                     // add right answer in random place
                     rightAnswerIndex = Random().nextInt(NUMBER_OF_ANSWERS)
                     answerList.add(rightAnswerIndex, nextQuestionPokemon.name)
@@ -274,8 +272,16 @@ class PlayViewModel(
 
     fun onAnimationMaxed() {
         // start next round!
-        resetAnimation()
-        onAnswerChosen(-1)
+        //withContext(dispatchers.main()) {
+        viewModelScope.launch {
+            withContext(dispatchers.default()) {
+                delay(100)
+                withContext(dispatchers.main()) {
+                    resetAnimation()
+                    onAnswerChosen(-1)
+                }
+            }
+        }
     }
     private fun resetAnimation() {
         _animationLevel.value = 0f

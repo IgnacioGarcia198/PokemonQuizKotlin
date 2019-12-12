@@ -1,7 +1,8 @@
 package com.ignacio.pokemonquizkotlin2.data.api
 
+import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.FlavorTextEntry
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
-import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
+import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -33,7 +34,8 @@ fun NetworkPokemonContainer.asDatabaseModel(offset : Int = 0, limit : Int = -1) 
 }
 
 fun NetworkSpeciesDetail.extractAvailableVersions(language: String) : List<String> {
-    return flavorTextEntries.map { it.version.name }.distinct()
+    Timber.i("Available versions are ${flavorTextEntries.filter{it.language.name == language}.map { it.version.name }}")
+    return flavorTextEntries.filter{it.language.name == language}.map { it.version.name }
 }
 
 fun NetworkSpeciesDetail.extractFlavorTextAndName(language : String, version : String) : Pair<String,String> {
@@ -43,11 +45,27 @@ fun NetworkSpeciesDetail.extractFlavorTextAndName(language : String, version : S
             if(it.language.name == language && it.version.name == version) {
                 Timber.i("flavor entry selected: ${it.flavorText}")}
             it.language.name == language && it.version.name == version
-        }.map { it.flavorText.replace("\n", " ") }.joinToString(separator = "\n"),
+        }.map { cleanSpaces(it.flavorText) }.joinToString(separator = "\n"),
         names.filter {
             if(it.language.name == language) {Timber.i("language selected: ${it.language.name}")}
             it.language.name == language }.map {Timber.i("name selected: ${it.name}")
             it.name }.joinToString())
+}
+
+fun NetworkSpeciesDetail.printAllVersionFlavors(language: String) : Map<String,String> {
+    //Timber.i(
+        return flavorTextEntries.filter { it.language.name == language }
+            .map { FlavorTextEntry("\""+cleanSpaces(it.flavorText)+"\"",
+                NameUrlPair(language,it.language.url),NameUrlPair("\""+it.version.name+"\"", it.version.url)) }
+            .map { it.version.name to it.flavorText}.toMap()
+    //)
+}
+
+private fun cleanSpaces(s: String): String {
+    return s.replace(
+        "[\\n\\t\\u0012\\u0015\\x0c]".toRegex(),
+        " "
+    )//.replaceAll("[\\u0000-\\u0036 ]"," ");
 }
 
 fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) : String {
@@ -56,7 +74,7 @@ fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) 
             if(it.language.name == language && it.version.name == version) {
                 Timber.i("flavor entry selected: ${it.flavorText}")}
             it.language.name == language && it.version.name == version
-        }.map { it.flavorText.replace("\n", " ") }.joinToString(separator = "\n")
+        }.map { cleanSpaces(it.flavorText) }.joinToString(separator = "\n")
 }
 
 fun NetworkPokemonContainer.extractVersionList() : List<String> {

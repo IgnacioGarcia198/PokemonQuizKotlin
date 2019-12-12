@@ -1,11 +1,9 @@
-package com.ignacio.pokemonquizkotlin2.data.db
+package com.ignacio.pokemonquizkotlin2.db
 
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.NonNull
-import androidx.paging.PagedList
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import java.util.*

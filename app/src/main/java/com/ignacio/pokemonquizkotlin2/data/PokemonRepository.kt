@@ -7,16 +7,21 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.ignacio.pokemonquizkotlin2.data.api.*
-import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.data.db.MyDatabase
-import com.ignacio.pokemonquizkotlin2.data.db.asDomainModel
+import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
+import com.ignacio.pokemonquizkotlin2.db.MyDatabase
+import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
+import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 
-class PokemonRepository (private val database: MyDatabase) {
+class PokemonRepository (private val database: MyDatabase,
+                         private val service: PokemonService = PokemonNetwork.pokemonApiService,
+                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {
     //=======================================================
     // PART FOR HOMEVIEWMODEL
     //==========================================================
@@ -37,16 +42,21 @@ class PokemonRepository (private val database: MyDatabase) {
      * in order to save in calls to the api.
      */
     suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String = "en", version : String = "red",
-                          newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit) {
-        withContext(Dispatchers.IO) {
+                                              newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit) {
+        withContext(dispatchers.io()) {
             Timber.i("doing getSpecieFlavor")
-            val specieDetail = PokemonNetwork.pokemonApiService.getSpecieDetail(pokid).await()
+            print("doing getSpecieFlavor")
+
+            val specieDetail = service.getSpecieDetail(pokid).await()
             val newVersionList = specieDetail.extractAvailableVersions(language)
             val flavorAndName = specieDetail.extractFlavorTextAndName(language,newVersionList.first())
             Timber.i("versions: homeStartup is true, sending versions to viewmodel")
+            print("after homeStartup versions are ${newVersionList}")
             Timber.i("after homeStartup versions are ${newVersionList}")
+            Timber.i("and flavor and name are $flavorAndName")
+            Timber.i("AllversionsFlavors = ${specieDetail.printAllVersionFlavors(language)}")
             // get the real version list
-            withContext(Dispatchers.Main) {
+            withContext(dispatchers.main()) {
                newPokemonCallback(newVersionList, flavorAndName)
             }
             //return@withContext Pair(newVersionList,flavorAndName)
@@ -55,18 +65,20 @@ class PokemonRepository (private val database: MyDatabase) {
 
     suspend fun getFlavorTextNormally(pokid : Int, language: String = "en", version : String = "red",
                                       normalCallback : (flavorAndName : String) -> Unit) {
-        val specieDetail = PokemonNetwork.pokemonApiService.getSpecieDetail(pokid).await()
-        withContext(Dispatchers.Main) {
+        val specieDetail = service.getSpecieDetail(pokid).await()
+        Timber.i("flavortexts are ${specieDetail.extractFlavorText(language, version)}")
+        withContext(dispatchers.main()) {
+
             normalCallback(specieDetail.extractFlavorText(language, version))
         }
     }
 
     /*suspend fun getVersionList(callback: (versions : List<String>) -> Unit) {
-        withContext(Dispatchers.IO) {
-            val versionsContainer = PokemonNetwork.pokemonApiService.getVersionList(0,-1).await()
+        withContext(dispatchers.io()) {
+            val versionsContainer = service.getVersionList(0,-1).await()
             Timber.i("Versions are ${versionsContainer.extractVersionList()}")
 
-            withContext(Dispatchers.Main) {
+            withContext(dispatchers.main()) {
                 callback(versionsContainer.extractVersionList())
             }
         }
@@ -89,10 +101,10 @@ class PokemonRepository (private val database: MyDatabase) {
 
     suspend fun refreshPokemonPlay(offset : Int = 0, limit: Int = -1, callback: ()->Unit = {}) {
         Timber.i("refreshpokemon is called")
-        withContext(Dispatchers.IO) {
-            val pokemonContainer = PokemonNetwork.pokemonApiService.getPokemonList(offset,limit).await()
+        withContext(dispatchers.io()) {
+            val pokemonContainer = service.getPokemonList(offset,limit).await()
             database.pokemonDao.insertAll(pokemonContainer.asDatabaseModel(offset,limit))
-            withContext(Dispatchers.Main) {
+            withContext(dispatchers.main()) {
                 callback()
             }
         }
@@ -102,26 +114,26 @@ class PokemonRepository (private val database: MyDatabase) {
         Transformations.map(database.pokemonDao.getAllPokemon()) {it.asDomainModel()}
 
     suspend fun getNextRoundQuestionPokemon() : DatabasePokemon? {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.io()) {
             database.pokemonDao.getNextRoundQuestionPokemon()
         }
 
     }
 
     suspend fun getNextRoundAnswers(id : Int, limit : Int) : MutableList<String> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.io()) {
             database.pokemonDao.getNextRoundAnswerPokemonNames(id, limit)
         }
     }
 
     suspend fun updateUsedAsQuestion(id : Int, value : Boolean) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io()) {
             database.pokemonDao.updateUsedAsQuestion(id,value)
         }
     }
 
     suspend fun resetUsedAsQuestionPlain() {
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io()) {
             database.pokemonDao.resetUsedAsQuestion()
         }
     }

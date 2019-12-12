@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizkotlin2.data.db
+package com.ignacio.pokemonquizkotlin2.db
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource

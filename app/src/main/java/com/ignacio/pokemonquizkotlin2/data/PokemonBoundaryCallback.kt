@@ -1,17 +1,14 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 
-import com.ignacio.pokemonquizkotlin2.data.db.DatabasePokemon
+import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 import java.util.Calendar
@@ -22,11 +19,12 @@ import java.util.Calendar
 class PokemonBoundaryCallback
 //private int dbupdated;
 
-internal constructor(private val name: String, private val repository: PokemonRepository) :
+internal constructor(private val name: String, private val repository: PokemonRepository,
+                     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
     PagedList.BoundaryCallback<DatabasePokemon>() {
     // Avoid triggering multiple requests in the same time
     private var isRequestInProgress = false
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(dispatchers.default())
     // LiveData of network errors.
 
 
@@ -65,7 +63,7 @@ internal constructor(private val name: String, private val repository: PokemonRe
 
         //Calling the client API to retrieve the Repos for the given search query
         coroutineScope.launch {
-            //withContext(Dispatchers.IO) {
+            //withContext(dispatchers.io()) {
                 try {
                     repository.changeResponseState(PokemonResponseState.LOADING)
                     Timber.i("requestandsave try calling refresh")

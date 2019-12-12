@@ -3,7 +3,7 @@ package com.ignacio.pokemonquizkotlin2.ui.gamerecords
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
 
 class GameRecordsViewModelFactory(
     private val app : Application,

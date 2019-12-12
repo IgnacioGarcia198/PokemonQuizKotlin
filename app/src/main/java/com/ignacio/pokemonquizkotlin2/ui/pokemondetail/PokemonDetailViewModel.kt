@@ -74,7 +74,7 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
         viewModelScope.launch {
             try {
                 repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getFlavorTextAndNameFirstTime(id) {
+                repository.getFlavorTextAndNameFirstTime(pokid = id) {
                         versions, flavorAndName ->
                     onVersionsReady(versions)
                     setVersionsAndName(flavorAndName)
@@ -114,7 +114,7 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
             viewModelScope.launch {
                 try {
                     repository.changeResponseState(PokemonResponseState.LOADING)
-                    repository.getFlavorTextNormally(id,version = newVersion) {
+                    repository.getFlavorTextNormally(pokid = id,version = newVersion) {
                         _version.value = newVersion
                         _flavorText.value = it
                     }

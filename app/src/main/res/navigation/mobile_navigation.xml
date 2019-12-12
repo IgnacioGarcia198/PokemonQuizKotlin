@@ -45,7 +45,7 @@
         tools:layout="@layout/fragment_game_records" >
         <argument
             android:name="lastRecord"
-            app:argType="com.ignacio.pokemonquizkotlin2.data.db.GameRecord" />
+            app:argType="com.ignacio.pokemonquizkotlin2.db.GameRecord" />
     </fragment>
 
     <fragment

@@ -103,14 +103,16 @@ dependencies {
 
     // Dependencies for local unit tests
     def archTestingVersion = '2.0.0'
-    def espressoVersion = '3.2.0-beta01'
+    def espressoVersion = '3.3.0-alpha03'
     def hamcrestVersion = '1.3'
     def junitVersion = '4.12'
     def mockitoVersion = '2.8.9'
     def robolectricVersion = '4.3-beta-1'
     def truthVersion = '0.44'
+    def mockitoKotlin = '2.0.0'
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlin"
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
@@ -126,6 +128,7 @@ dependencies {
     def androidXTestCoreVersion = '1.2.0'
     def androidXTestExtKotlinRunnerVersion = '1.1.1'
     def androidXTestRulesVersion = '1.2.0-beta01'
+
     testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
     testImplementation "androidx.test:rules:$androidXTestRulesVersion"
@@ -133,4 +136,34 @@ dependencies {
     /*implementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.test:core:$androidXTestCoreVersion"
     implementation "androidx.fragment:fragment:$fragmentVersion"*/
+
+
+    // AndroidX Test - Instrumented testing
+
+    //def androidXAnnotations = '1.0.1'
+    def okHttp = "3.10.0"
+    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+    androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+
+    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlin"
+
+
+
+
+
+    //androidTestUtil "androidx.test:orchestrator:$testRunner"
+
+
+
 }

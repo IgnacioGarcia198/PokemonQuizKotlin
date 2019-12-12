@@ -24,9 +24,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.data.db.MyDatabase
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
+import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.databinding.RecordsRowBinding
+import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,12 +37,14 @@ import java.lang.ClassCastException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GameRecordsAdapter(private val database: MyDatabase, private val lastRecord: GameRecord) : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
+class GameRecordsAdapter(private val database: MyDatabase, private val lastRecord: GameRecord,
+                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+) : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
     private val HEADER_ITEM = 1
     private val RECORD_ITEM = 2
 
 
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
+    private val adapterScope = CoroutineScope(dispatchers.default())
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
@@ -67,7 +71,7 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
                 outputList.add(RecordItem.GameRecordItem(averagesRow))
                 outputList.addAll(list.map { RecordItem.GameRecordItem(it) })
             }
-            withContext(Dispatchers.Main) {
+            withContext(dispatchers.main()) {
                 submitList(outputList)
             }
         }

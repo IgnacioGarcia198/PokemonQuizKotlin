@@ -2,13 +2,17 @@ package com.ignacio.pokemonquizkotlin2.ui.gamerecords
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.ignacio.pokemonquizkotlin2.data.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
+import com.ignacio.pokemonquizkotlin2.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import kotlinx.coroutines.*
 
-class GameRecordsViewModel(val app : Application, lastRecord: GameRecord) : AndroidViewModel(app) {
+class GameRecordsViewModel(val app : Application,
+                           lastRecord: GameRecord,
+                           private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : AndroidViewModel(app) {
     private val viewModelJob = SupervisorJob()
-    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private val viewModelScope = CoroutineScope(viewModelJob + dispatchers.main())
 
     private val database = getDatabase(app)
 
@@ -16,7 +20,7 @@ class GameRecordsViewModel(val app : Application, lastRecord: GameRecord) : Andr
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(dispatchers.io()) {
                 database.gameRecordDao.save(lastRecord)
             }
         }

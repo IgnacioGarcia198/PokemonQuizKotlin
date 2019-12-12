@@ -2,8 +2,6 @@ package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import timber.log.Timber
 
