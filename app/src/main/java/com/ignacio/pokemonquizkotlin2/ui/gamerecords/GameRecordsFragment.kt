@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentGameRecordsBinding
+import com.ignacio.pokemonquizkotlin2.db.getDatabase
 
 class GameRecordsFragment : Fragment() {
 

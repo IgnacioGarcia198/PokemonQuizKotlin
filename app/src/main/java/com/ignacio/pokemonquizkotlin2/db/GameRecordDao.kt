@@ -31,7 +31,7 @@ interface GameRecordDao {
     fun save(record: GameRecord)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveVarious(vararg gameRecords: GameRecord)
+    fun saveVarious(gameRecords: List<GameRecord>)
 
     @Query("SELECT * FROM gameRecordTable ORDER BY hitRate DESC, questionsPerSecond DESC LIMIT :limit")
     fun getNGameRecordsLiveData(limit: Int): LiveData<List<GameRecord>>

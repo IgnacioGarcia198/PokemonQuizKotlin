@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizgamekotlin.utils
+package com.ignacio.pokemonquizkotlin2.utils
 
 import android.os.Handler
 import android.os.Looper

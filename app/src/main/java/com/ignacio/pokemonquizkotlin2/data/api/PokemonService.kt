@@ -37,5 +37,9 @@ object PokemonNetwork {
         .build()
 
     val pokemonApiService = retrofit.create(PokemonService::class.java)
+    /*fun createService() : PokemonService {
+        return retrofit.create(PokemonService::class.java)
+    }*/
+
 
 }

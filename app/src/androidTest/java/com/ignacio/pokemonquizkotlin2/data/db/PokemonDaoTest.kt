@@ -9,8 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.db.PokemonDao
-import com.ignacio.pokemonquizkotlin2.observeOnce
-import com.ignacio.pokemonquizkotlin2.test
+import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
+import com.ignacio.pokemonquizkotlin2.testutils.test
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
-class DatabaseTest {
+class PokemonDaoTest {
     @get:Rule
     val testRule = InstantTaskExecutorRule()
 
@@ -65,7 +65,7 @@ class DatabaseTest {
         val result = pokemonDao.getAllPokemon()
         result.test()
             .assertHasValue()
-            .assertValue { it == pokemonList }
+            .assertValue { it : List<DatabasePokemon> -> it == pokemonList }
 
         result.observeOnce {
             assertThat(it==pokemonList, `is`(true))

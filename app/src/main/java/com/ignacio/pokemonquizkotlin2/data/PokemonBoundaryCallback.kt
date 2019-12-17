@@ -6,8 +6,8 @@ import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
+import com.ignacio.pokemonquizkotlin2.OpenClass
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -16,6 +16,7 @@ import java.util.Calendar
 /**
  * PagedList.BoundaryCallback class to know when to trigger the Network request for more data
  */
+@OpenClass
 class PokemonBoundaryCallback
 //private int dbupdated;
 

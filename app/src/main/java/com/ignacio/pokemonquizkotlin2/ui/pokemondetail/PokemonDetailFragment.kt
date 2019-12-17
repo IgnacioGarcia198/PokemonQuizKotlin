@@ -68,7 +68,7 @@ class PokemonDetailFragment : Fragment() {
         }
 
         savedInstanceState?.let {
-            currentId = it.getInt("currentId",args.id)
+            currentId = it.getInt("currentIdLiveData",args.id)
         }
         binding.viewModel = viewModel
         viewModel.initPush(currentId)
@@ -78,6 +78,6 @@ class PokemonDetailFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("currentId", currentId)
+        outState.putInt("currentIdLiveData", currentId)
     }
 }

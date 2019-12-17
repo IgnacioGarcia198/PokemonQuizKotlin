@@ -44,12 +44,12 @@ class PlayFragment : Fragment() {
         binding.lifecycleOwner = this
 
 
-        playViewModel.showChooseQuizFragment.observe(this, Observer {
+        /*playViewModel.showChooseQuizFragment.observe(this, Observer {
             if(it) {
                 //showChooseQuizDialog()
                 playViewModel.chooseQuizShown()
             }
-        })
+        })*/
 
         playViewModel.radiogroupEnabled.observe(this, Observer {
             Timber.i("radiogroup is enabled : ${customRadioGroup.isEnabled}")
@@ -62,6 +62,14 @@ class PlayFragment : Fragment() {
             it?.let {
                 showResult(it)
             }
+        })
+
+        playViewModel.showError.observe(this, Observer {
+            Toast.makeText(
+                context, context!!.getString(R.string.could_not_load_images),
+                Toast.LENGTH_LONG
+            ).show()
+            playViewModel.showErrorDone()
         })
 
         playViewModel.showRecords.observe(this, Observer {

@@ -1,5 +1,7 @@
 package com.ignacio.pokemonquizkotlin2.data
 
+import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -7,19 +9,16 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.ignacio.pokemonquizkotlin2.data.api.*
-import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.db.MyDatabase
-import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
+import com.ignacio.pokemonquizkotlin2.db.*
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
-import kotlinx.coroutines.Dispatchers
+import com.ignacio.pokemonquizkotlin2.OpenClass
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import kotlin.coroutines.CoroutineContext
 
-
-class PokemonRepository (private val database: MyDatabase,
+@OpenClass
+class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
                          private val service: PokemonService = PokemonNetwork.pokemonApiService,
                          private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {
     //=======================================================
@@ -33,6 +32,14 @@ class PokemonRepository (private val database: MyDatabase,
     }
     companion object {
         const val DATABASE_PAGE_SIZE = 20
+        @Volatile
+        private var defaultRepository : PokemonRepository? = null
+        fun getDefaultRepository(context : Context) : PokemonRepository {
+            if(defaultRepository == null) {
+                defaultRepository = PokemonRepository(getDatabase(context))
+            }
+            return defaultRepository!!
+        }
     }
 
     var homeStartup = true
@@ -41,8 +48,8 @@ class PokemonRepository (private val database: MyDatabase,
      * Gets both flavor text for current language and version and also the pokemon's name, we do it together
      * in order to save in calls to the api.
      */
-    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String = "en", version : String = "red",
-                                              newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit) {
+    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String ="en", version : String="red",
+                                              newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit={versions,flavorAndName ->}) {
         withContext(dispatchers.io()) {
             Timber.i("doing getSpecieFlavor")
             print("doing getSpecieFlavor")
@@ -63,8 +70,8 @@ class PokemonRepository (private val database: MyDatabase,
         }
     }
 
-    suspend fun getFlavorTextNormally(pokid : Int, language: String = "en", version : String = "red",
-                                      normalCallback : (flavorAndName : String) -> Unit) {
+    suspend fun getFlavorTextNormally(pokid : Int, language: String="en", version : String="red",
+                                      normalCallback : (flavorAndName : String) -> Unit= {}) {
         val specieDetail = service.getSpecieDetail(pokid).await()
         Timber.i("flavortexts are ${specieDetail.extractFlavorText(language, version)}")
         withContext(dispatchers.main()) {
@@ -99,7 +106,7 @@ class PokemonRepository (private val database: MyDatabase,
     // PART FOR PLAYVIEWMODEL
     //==========================================================
 
-    suspend fun refreshPokemonPlay(offset : Int = 0, limit: Int = -1, callback: ()->Unit = {}) {
+    suspend fun refreshPokemonPlay(offset : Int, limit: Int, callback: ()->Unit) {
         Timber.i("refreshpokemon is called")
         withContext(dispatchers.io()) {
             val pokemonContainer = service.getPokemonList(offset,limit).await()
@@ -163,14 +170,17 @@ class PokemonRepository (private val database: MyDatabase,
     /**
      * Search photos.
      */
-    fun searchPokemons(name: String): LiveData<PagedList<DatabasePokemon>> {
+    fun searchPokemons(
+        name: String,
+        boundaryCallback: PokemonBoundaryCallback = PokemonBoundaryCallback(name, this))
+            : LiveData<PagedList<DatabasePokemon>> {
         Timber.i("search: New query: name: $name")
 
         // Get data source factory from the local cache
         val pokemonsResult : DataSource.Factory<Int, DatabasePokemon> = fetchPokemonsFromDb(name)
 
         // Construct the boundary callback
-        val boundaryCallback = PokemonBoundaryCallback(name, this)
+        //val boundaryCallback = PokemonBoundaryCallback(name, this)
         //networkErrors = boundaryCallback.getResponseState()
 
         // Set the Page size for the Paged list
@@ -188,4 +198,18 @@ class PokemonRepository (private val database: MyDatabase,
         // Get the Search result with the network errors exposed by the boundary callback
         return data
     }
+
+    //============================================
+    // PART FOR GAMERECORDVIEWMODEL
+    //============================================
+    suspend fun saveRecord(gameRecord: GameRecord) {
+        withContext(dispatchers.io()) {
+            database.gameRecordDao.save(gameRecord)
+        }
+    }
+
+    fun getAllRecords() : LiveData<List<GameRecord>> {
+        return database.gameRecordDao.allGameRecordsLiveData
+    }
+
 }

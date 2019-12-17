@@ -2,20 +2,30 @@ package com.ignacio.pokemonquizkotlin2.ui.pokemondetail
 
 import android.app.Application
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
+import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
+import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
 
-open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
+open class PokemonDetailViewModel(
+    app : Application,
+    repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+) : BaseViewModel(app, repository, dispatchers) {
     private var id : Int = 0
     open var spinnerPosition : Int = 0
 
@@ -74,11 +84,9 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
         viewModelScope.launch {
             try {
                 repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getFlavorTextAndNameFirstTime(pokid = id) {
+                repository.getFlavorTextAndNameFirstTime( id,"en","red") {
                         versions, flavorAndName ->
-                    onVersionsReady(versions)
-                    setVersionsAndName(flavorAndName)
-                    inited = true
+                    onFlavorTextAndNameResult(versions, flavorAndName)
                 }
                 repository.changeResponseState(PokemonResponseState.DONE)
             }
@@ -90,16 +98,25 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
             }
         }
     }
+
+    @VisibleForTesting
+    open fun onFlavorTextAndNameResult(versions : List<String>, flavorAndName: Pair<String, String>) {
+        onVersionsReady(versions)
+        setVersionsAndName(flavorAndName)
+        inited = true
+    }
     /**
      * To call when the list of available versions for current pokemon is ready.
      */
-    protected open fun onVersionsReady(versions : List<String>) {
+    @VisibleForTesting
+    open fun onVersionsReady(versions : List<String>) {
         Timber.i("calling versions ready")
         _versionList.value = versions
         _version.value = versions.first()
     }
 
-    protected open fun setVersionsAndName(flavorAndName: Pair<String, String>) {
+    @VisibleForTesting
+    open fun setVersionsAndName(flavorAndName: Pair<String, String>) {
         _name.value = flavorAndName.second
         _flavorText.value = flavorAndName.first
     }
@@ -114,7 +131,7 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
             viewModelScope.launch {
                 try {
                     repository.changeResponseState(PokemonResponseState.LOADING)
-                    repository.getFlavorTextNormally(pokid = id,version = newVersion) {
+                    repository.getFlavorTextNormally(pokid = id,language="en",version = newVersion) {
                         _version.value = newVersion
                         _flavorText.value = it
                     }
@@ -140,6 +157,7 @@ open class PokemonDetailViewModel(app : Application) : BaseViewModel(app) {
                 app.getString(R.string.could_not_load_images),
                 Toast.LENGTH_LONG
             ).show()
+            errorShown = true
         }
     }
 

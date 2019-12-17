@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizkotlin2
+package com.ignacio.pokemonquizkotlin2.testutils
 
 import androidx.lifecycle.*
 
@@ -18,6 +18,7 @@ class OneTimeObserver<T>(private val handler: (T) -> Unit) : Observer<T>, Lifecy
 }
 
 fun <T> LiveData<T>.observeOnce(onChangeHandler: (T) -> Unit) {
-    val observer = OneTimeObserver(handler = onChangeHandler)
+    val observer =
+        OneTimeObserver(handler = onChangeHandler)
     observe(observer, observer)
 }

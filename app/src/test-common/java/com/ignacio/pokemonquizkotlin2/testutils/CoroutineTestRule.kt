@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizkotlin2
+package com.ignacio.pokemonquizkotlin2.testutils
 
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher

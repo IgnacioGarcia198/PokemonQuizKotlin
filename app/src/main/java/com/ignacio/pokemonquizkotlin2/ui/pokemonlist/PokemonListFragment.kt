@@ -33,8 +33,7 @@ class PokemonListFragment : Fragment() {
 
 
         val adapter = PokemonAdapter(PokemonClickListener {
-            findNavController().navigate(PokemonListFragmentDirections
-                .actionNavPokemonListToPokemonDetailFragment(it))
+            findNavController().navigate(PokemonListFragmentDirections.actionNavPokemonListToNavDailyPokemon(it))
         })
         //val recyclerView = root.findViewById<RecyclerView>(R.id.poklistRecyclerView)
         binding.poklistRecyclerView.adapter = adapter

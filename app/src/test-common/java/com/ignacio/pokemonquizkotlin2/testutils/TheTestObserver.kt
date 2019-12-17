@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizkotlin2
+package com.ignacio.pokemonquizkotlin2.testutils
 
 import androidx.lifecycle.LiveData
 

@@ -11,7 +11,6 @@ abstract class MyDatabase : RoomDatabase() {
 }
 
 private lateinit var INSTANCE : MyDatabase
-
 fun getDatabase(context: Context) : MyDatabase {
     synchronized(MyDatabase::class.java) {
         if(!::INSTANCE.isInitialized) {

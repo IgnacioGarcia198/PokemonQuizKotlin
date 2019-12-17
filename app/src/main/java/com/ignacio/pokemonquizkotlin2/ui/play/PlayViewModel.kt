@@ -1,21 +1,22 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
 import android.app.Application
+import android.content.SharedPreferences
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.ignacio.pokemonquizgamekotlin.utils.CountBaseTimer
-import com.ignacio.pokemonquizgamekotlin.utils.CountUpDownTimer
-import com.ignacio.pokemonquizgamekotlin.utils.CountUpTimer
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.asDomainModel
+import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
@@ -32,21 +33,23 @@ class PlayViewModel(
     app : Application,
     private val questionsOrTime : Boolean = true,
     private val limitValue : Int = 0,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
-) : BaseViewModel(app,dispatchers) {
+    repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    val sharedPref: SharedPreferences = sharedPreferences,
+    val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
+) : BaseViewModel(app,repository) {
 
     // we will show the fragment just as we start.
     private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
-    val showChooseQuizFragment : LiveData<Boolean>
-    get() = _showChooseQuizFragment
+    /*val showChooseQuizFragment : LiveData<Boolean>
+    get() = _showChooseQuizFragment*/
 
-    fun chooseQuizShown() {
+    /*fun chooseQuizShown() {
         _showChooseQuizFragment.value = false
-    }
+    }*/
 
     //private val questionsOrTime = false
-    private var roundNumber = 0
-    private var currentTime = 0L
+    @VisibleForTesting var roundNumber = 0
+    //private var currentTime = 0L
     private var animationTotalTime = 4000L
 
     private val _gameState = MutableLiveData<GameState>()
@@ -61,7 +64,7 @@ class PlayViewModel(
     val nextRoundAnswers : LiveData<List<String>>
         get() = _nextRoundAnswers
 
-    private val _rightAnswersCount = MutableLiveData<Int>(0)
+    @VisibleForTesting val _rightAnswersCount = MutableLiveData<Int>(0)
     val rightAnswersCount : LiveData<Int>
         get() = _rightAnswersCount
 
@@ -93,18 +96,25 @@ class PlayViewModel(
     val timeString : LiveData<String>
         get() = _timeString
 
+    /**
+     * All content of init() is moved to initForUnitTest() in order to make testing easier.
+     */
     init {
+
+    }
+
+    fun initForUnitTest() {
         _showChooseQuizFragment.value = true // show fragment just started
 
-        var lastRefreshMinutes = sharedPreferences.getLong(LAST_DB_REFRESH,0)
+        var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
         if(!dateIsFresh(lastRefreshMinutes)) {
             // if we have to update pokemon, show such message in the progressbar's textview
-            _gameState.value = GameState.REFRESHING_POKEMON
+            //_gameState.value = GameState.REFRESHING_POKEMON
             Timber.i("calling refresh pokemon")
             refreshPokemon()
         }
         else {
-            val lastId = sharedPreferences.getInt(LAST_PAGING_POKEMON_ID_KEY,0)
+            val lastId = sharedPref.getInt(LAST_PAGING_POKEMON_ID_KEY,0)
             if(lastId < HomeViewModel.DOWNLOAD_SIZE) {
                 refreshPokemon(lastId + 1, HomeViewModel.DOWNLOAD_SIZE - lastId)
             }
@@ -114,7 +124,8 @@ class PlayViewModel(
         }
     }
 
-    private fun refreshPokemon(offset : Int = 0, limit : Int = -1) {
+    @VisibleForTesting
+    fun refreshPokemon(offset : Int = 0, limit : Int = -1) {
         viewModelScope.launch {
             try {
                 _imageVisible.postValue(View.INVISIBLE)
@@ -125,7 +136,7 @@ class PlayViewModel(
                 repository.changeResponseState(PokemonResponseState.LOADING)
                 repository.refreshPokemonPlay(offset,limit){
                     repository.changeResponseState(PokemonResponseState.DONE)
-                    sharedPreferences.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).
+                    sharedPref.edit().putLong(LAST_DB_REFRESH, Date().time/60/1000).
                         putInt(LAST_PAGING_POKEMON_ID_KEY, HomeViewModel.DOWNLOAD_SIZE).apply()
                     initGame()
                 }
@@ -153,51 +164,48 @@ class PlayViewModel(
     fun initGame() {
         //this.questionsOrTime = questionsOrTime
         //this.limitValue = limitValue
-        val sdf = SimpleDateFormat("mm:ss",Locale.getDefault())
+
         if(questionsOrTime) { // questions game
-            Timber.i("questions game")
-
-
-            timer = object : CountUpTimer(100) {
-                override fun onTick(elapsedTime: Long) {
-                    _timeString.value = sdf.format(Date(elapsedTime))
-                }
-            }
-
-            // init sth if needed
-            if(roundNumber == 0) {
-                // start of the game(count from 0)
-                Timber.i("calling nextround")
-                nextRound()
-            }
-            else {
-                // resuming game
-                Timber.i("calling nextround")
-                nextRound()
-            }
+            startQuestionsGame()
         }
         else { // time game
-            Timber.i("time game")
-            // case of time
-            timer = object : CountUpDownTimer(100, (limitValue*1000).toLong()) {
-                override fun onFinish() {
-                    finishGame()
-                }
-
-                override fun onTick(elapsedTime: Long) {
-                    currentAnimationTime += interval
-                    _animationLevel.value = currentAnimationTime.toFloat()/animationTotalTime
-                }
-
-                override fun onDownTick(remainingTime: Long) {
-                    _timeString.value = sdf.format(Date(remainingTime))
-                }
-            }
-
-            nextRound()
+           startTimeGame()
         }
 
+    }
 
+    fun startQuestionsGame() {
+        Timber.i("questions game")
+
+        timer = object : CountUpTimer(100) {
+            override fun onTick(elapsedTime: Long) {
+                _timeString.value = sdf.format(Date(elapsedTime))
+            }
+        }
+
+        nextRound()
+
+    }
+
+    fun startTimeGame() {
+        Timber.i("time game")
+        // case of time
+        timer = object : CountUpDownTimer(100, (limitValue*1000).toLong()) {
+            override fun onFinish() {
+                finishGame()
+            }
+
+            override fun onTick(elapsedTime: Long) {
+                currentAnimationTime += interval
+                _animationLevel.value = currentAnimationTime.toFloat()/animationTotalTime
+            }
+
+            override fun onDownTick(remainingTime: Long) {
+                _timeString.value = sdf.format(Date(remainingTime))
+            }
+        }
+
+        nextRound()
     }
 
     // game course:
@@ -208,14 +216,16 @@ class PlayViewModel(
     var rightAnswerIndex : Int = 0
     // id of the pokemon used as question
     var questionPokemonId = 0
-    private fun nextRound() {
+
+
+    @VisibleForTesting fun nextRound() {
         //_radiogroupEnabled.value = false
         Timber.i("Launching nextRound coroutine")
 
         _radiogroupEnabled.postValue(false)
         _imageVisible.postValue(View.INVISIBLE)
         _progressbarVisible.postValue(View.VISIBLE)
-        Timber.i("progressbar changing text to ${app.getString(R.string.loading)}")
+        //Timber.i("progressbar changing text to ${app.getString(R.string.loading)}")
         _progressbarText.postValue(app.getString(R.string.loading))
 
 
@@ -283,7 +293,8 @@ class PlayViewModel(
             }
         }
     }
-    private fun resetAnimation() {
+
+    @VisibleForTesting fun resetAnimation() {
         _animationLevel.value = 0f
         currentAnimationTime = 0L
     }
@@ -292,12 +303,11 @@ class PlayViewModel(
     fun onLoadImageFailed() {
         timer.stop()
         _progressbarVisible.value = View.INVISIBLE
-        Toast.makeText(
-            app,
-            app.getString(R.string.could_not_load_images),
-            Toast.LENGTH_LONG
-        ).show()
-        //_radiogroupEnabled.value = false
+        _showError.value = true
+    }
+
+    fun showErrorDone() {
+        _showError.value = false
     }
 
     // loading image on glide succeeded
