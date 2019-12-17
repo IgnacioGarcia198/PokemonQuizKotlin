@@ -30,8 +30,8 @@ import timber.log.Timber
         versionList?.let {
             //Timber.i("Version in bindingAdapter : $it")
             val adapter = ArrayAdapter<String>(
-                spinner.context!!, android.R.layout.simple_spinner_item,
-                it
+                spinner.context!!, android.R.layout.simple_spinner_item
+
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             adapter.addAll(it)

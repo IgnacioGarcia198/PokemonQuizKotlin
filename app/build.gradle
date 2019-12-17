@@ -192,7 +192,7 @@ dependencies {
     //androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1"
-    androidTestImplementation "org.robolectric:robolectric:$robolectricVersion"
+    //androidTestImplementation "org.robolectric:robolectric:$robolectricVersion"
     androidTestImplementation "com.google.truth:truth:$truthVersion"
 
 
