@@ -64,37 +64,14 @@ class HomeBindingAdaptersTest {
     fun setListIntoAdapterTest() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val spinner = Spinner(context)
-        /*val adapter = ArrayAdapter<String>(
-            spinner.context!!, android.R.layout.simple_spinner_item, context.resources.getStringArray(R.array.time_options)
 
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter*/
         setVersions(spinner,listOf("house","dog","spider","dolphin"))
-        //assert(spinner.selectedItemPosition == 2)
         assert(
             spinner.adapter.count == 4 &&
                     spinner.adapter.getItem(0) as String == "house"
         )
     }
 
-    /*@BindingAdapter("versions")
-    fun setVersions(spinner: Spinner, versionList: List<String>?) {
-        Timber.i("Version in bindingAdapter : $versionList")
-        versionList?.let {
-            //Timber.i("Version in bindingAdapter : $it")
-            val adapter = ArrayAdapter<String>(
-                spinner.context!!, android.R.layout.simple_spinner_item,
-                it
-            )
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            adapter.addAll(it)
-            spinner.adapter = adapter
-            adapter.notifyDataSetChanged()
-            //spinner.setSelection(0)
-            Timber.i("Setting the adapter now")
-        }
-    }*/
 
     @Test
     fun setImageUrlTest() {
