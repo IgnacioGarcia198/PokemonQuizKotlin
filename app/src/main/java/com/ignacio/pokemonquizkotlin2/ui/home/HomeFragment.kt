@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -22,9 +23,18 @@ import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
 import timber.log.Timber
 
 @OpenForTesting
-class HomeFragment : Fragment() {
+class HomeFragment() : Fragment() {
+    lateinit var viewModelFactory : ViewModelProvider.Factory
+    @VisibleForTesting lateinit var homeViewModel: HomeViewModel
 
-    private lateinit var homeViewModel: HomeViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Timber.d("viewmodelfactory created")
+        viewModelFactory = HomeViewModelFactory(activity!!.application,
+            PokemonRepository.getDefaultRepository(context!!))
+        homeViewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,9 +46,7 @@ class HomeFragment : Fragment() {
 
         val binding : FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home,
             container,false)
-        homeViewModel = ViewModelProvider(this,HomeViewModelFactory(activity!!.application,
-            PokemonRepository(getDatabase(activity!!.applicationContext))
-        )).get(HomeViewModel::class.java)
+        //homeViewModel =
         binding.lifecycleOwner = this
         binding.viewModel = homeViewModel
         if(arguments != null) {
@@ -46,19 +54,33 @@ class HomeFragment : Fragment() {
             homeViewModel.initPush(args.newId)
         }
         else {
+            Timber.d("doing on  push for daily pokemon with 0")
             homeViewModel.initPush(0)
         }
 
+
         homeViewModel.showError.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(
-                context,
-                context!!.getString(R.string.could_not_load_images),
-                Toast.LENGTH_LONG
-            ).show()
-            homeViewModel.showErrorDone()
+            if(it) {
+                Toast.makeText(
+                    context,
+                    context!!.getString(R.string.could_not_load_images),
+                    Toast.LENGTH_LONG
+                ).show()
+                homeViewModel.showErrorDone()
+            }
         })
 
         return binding.root
     }
+
+    companion object {
+        fun newInstance(id : Int) =
+            HomeFragment().apply {
+                arguments = HomeFragmentArgs.Builder(id).build().toBundle()
+
+        }
+    }
+
+
 
 }

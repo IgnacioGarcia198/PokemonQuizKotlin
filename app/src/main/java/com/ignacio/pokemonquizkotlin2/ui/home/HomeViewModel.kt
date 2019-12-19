@@ -40,7 +40,7 @@ class HomeViewModel(
     /**
      * The list of versions where current pokemon's flavor text is available
      */
-    private val _versionList = MutableLiveData<List<String>>(mutableListOf())
+    @VisibleForTesting val _versionList = MutableLiveData<List<String>>(mutableListOf())
     val versionList : LiveData<List<String>>
         get() = _versionList
 
@@ -48,7 +48,8 @@ class HomeViewModel(
     /**
      * Version of the flavor text
      */
-    private val _version = MutableLiveData<String>()
+    // Open for testing
+    val _version = MutableLiveData<String>()
     val version : LiveData<String>
         get() = _version
     //val version = Transformations.map(repository.versionList) {list -> list.first()}
@@ -168,7 +169,7 @@ class HomeViewModel(
     /**
      * Calculate which is today's pokemon id
      */
-    fun calculateTodayPokId() : Int {
+    @VisibleForTesting fun calculateTodayPokId() : Int {
         // calculate today as gettimeinmillis converted to days
         val c = Calendar.getInstance(TimeZone.getDefault())
         c.set(Calendar.HOUR_OF_DAY,0)

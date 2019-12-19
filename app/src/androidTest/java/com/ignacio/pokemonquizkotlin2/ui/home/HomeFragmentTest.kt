@@ -58,14 +58,14 @@ class HomeFragmentTest {
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
     }
 
-    private val homeFragment = TestHomeFragment().apply {
-        arguments = HomeFragmentArgs.Builder(0).build().toBundle()
-    }
+    //private val homeFragment = TestHomeFragment().apply {
+     //   arguments = HomeFragmentArgs.Builder(0).build().toBundle()
+    //}
 
 
-    class TestHomeFragment : HomeFragment() {
+    //class TestHomeFragment : HomeFragment() {
         /*val navController : NavController = mock()
         override fun findNavController() = navController*/
-    }
+    //}
 
 }

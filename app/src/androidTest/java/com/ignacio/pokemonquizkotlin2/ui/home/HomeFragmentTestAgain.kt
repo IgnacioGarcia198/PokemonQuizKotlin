@@ -1,233 +1,135 @@
-package com.ignacio.pokemonquizkotlin2.data.repository
+package com.ignacio.pokemonquizkotlin2.ui.home
 
+import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.api.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource
+import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResourceRule
+import com.ignacio.pokemonquizkotlin2.androidtestutil.EspressoTestUtil
+import com.ignacio.pokemonquizkotlin2.androidtestutil.ViewModelUtil
+import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
-import com.ignacio.pokemonquizkotlin2.db.GameRecordDao
-import com.ignacio.pokemonquizkotlin2.db.MyDatabase
-import com.ignacio.pokemonquizkotlin2.db.PokemonDao
-import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
+import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
-import junit.framework.Assert.assertEquals
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.`is`
+import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.coroutines.launch
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
 import retrofit2.converter.moshi.MoshiConverterFactory
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
+import java.io.IOException
 
+@RunWith(AndroidJUnit4::class)
+class HomeFragmentTestAgain {
+    @Rule
+    @JvmField
+    val activityRule = ActivityTestRule(SingleFragmentActivity::class.java, true, true)
+    private val idlingResource = DataBindingIdlingResource(activityRule)
+    /*@Rule
+    @JvmField
+    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule(activityRule)*/
 
-@ExperimentalCoroutinesApi
-class PokemonBoundaryCallbackTest {
-    @get:Rule
-    var rule: TestRule = InstantTaskExecutorRule()
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
-    val database : MyDatabase = mock()
-    val pokemonDao : PokemonDao = mock()
-    val recordDao : GameRecordDao = mock()
-    val pokemonApiService : PokemonService = mock()
-
-
-    private lateinit var repository: PokemonRepository
+    /*@Rule
+    @JvmField
+    val taskExecutorRule = InstantTaskExecutorRule()*/
+    private var currentId : Int = 1
+    lateinit var viewModel : HomeViewModel
+    private val versionListLD = MutableLiveData<List<String>>()
+    private val versionLD = MutableLiveData<String>()
+    private val flavorTextLD = MutableLiveData<String>()
+    private val nameLD = MutableLiveData<String>()
+    private val dailyOrDetailLD = MutableLiveData<Boolean>(false)
+    private val showErrorLD = MutableLiveData<Boolean>(false)
+    private val responseStateLD = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
+    private val currentIdLD = MutableLiveData<Int>(currentId)
+    private val initialPosition = 0
 
     @Before
-    fun createRepository() {
-        whenever(database.pokemonDao).doReturn(pokemonDao)
-        repository = PokemonRepository(database,pokemonApiService,coroutinesTestRule.testDispatcherProvider)
-    }
-
-
-    @Test
-    fun getFlavorTextAndNameFirstTimeTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-
-        whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
-            print("speciesDetail : $speciesDetail")
-            speciesDetail!!
-        })
-
-        repository.getFlavorTextAndNameFirstTime(1) {
-            versions, flavorAndName ->
-            println("=================================================")
-            println("versions are $versions and flavor and name $flavorAndName")
-            assertThat(
-            versions == theversions && flavorAndName == theflavorAndName, `is`(true))
-        }
-    }
-
-    /**
-     * Checks that the callback passed as parameter is called with the correct parameters.
-     */
-    @Test
-    fun getFlavorTextAndNameFirstTimeTestCallback1() = coroutinesTestRule.testDispatcher.runBlockingTest {
-
-        whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
-            print("speciesDetail : $speciesDetail")
-            speciesDetail!!
-        })
-
-        val callbackMock: (List<String>, Pair<String, String>) -> Unit = mock()
-        //val captor1 = argumentCaptor<List<String>>()
-        repository.getFlavorTextAndNameFirstTime(1, newPokemonCallback = callbackMock)
-        verify(callbackMock).invoke(check {
-            assert(it == theversions)
-        },check{
-            assertEquals(it,theflavorAndName)
-        })
-        //verify(repository).getFlavorTextAndNameFirstTime(1,newPokemonCallback = captor1.capture())
-
-    }
-
-    /**
-     * Checks the same but using argument captors.
-     */
-    @Test
-    fun getFlavorTextAndNameFirstTimeTestCallback2() = coroutinesTestRule.testDispatcher.runBlockingTest {
-
-        whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
-            print("speciesDetail : $speciesDetail")
-            speciesDetail!!
-        })
-
-        val callbackMock: (List<String>, Pair<String, String>) -> Unit = mock()
-        repository.getFlavorTextAndNameFirstTime(1,newPokemonCallback = callbackMock)
-        val captor1 = argumentCaptor<List<String>>()
-        val captor2 = argumentCaptor<Pair<String,String>>()
-        verify(callbackMock, times(1)).invoke(captor1.capture(),captor2.capture())
-        assert(captor1.firstValue == theversions)
-        assert(captor2.firstValue == theflavorAndName)
-    }
-
-    @Test
-    fun getFlavorTextNormallyTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
-            //print("speciesDetail : $speciesDetail")
-            speciesDetail!!
-        })
-        flavorsMap.keys.forEach {
-            repository.getFlavorTextNormally(1,version = it) {
-
-                    flavorTexts ->
-                println("flavortexts are $flavorTexts")
-                println("flavorsmap is ${flavorsMap[it]}")
-                assertThat(flavorTexts, `is`(flavorsMap[it]))
+    fun setUp() {
+        IdlingRegistry.getInstance().register(idlingResource)
+        viewModel = mock()
+        // mock the whenevers of the viewModel:
+        whenever(viewModel.calculateTodayPokId()).thenReturn(currentId)
+        whenever(viewModel.versionList).thenReturn(versionListLD)
+        whenever(viewModel.version).thenReturn(versionLD)
+        whenever(viewModel.flavorText).thenReturn(flavorTextLD)
+        whenever(viewModel.name).thenReturn(nameLD)
+        whenever(viewModel.dailyOrDetail).thenReturn(dailyOrDetailLD)
+        whenever(viewModel.showError).thenReturn(showErrorLD)
+        whenever(viewModel.getResponseState()).thenReturn(responseStateLD)
+        whenever(viewModel.currentIdLiveData).thenReturn(currentIdLD)
+        doNothing().whenever(viewModel).onLoadImageSuccess()
+        whenever(viewModel.onLoadImageFailed()).doAnswer (
+            Answer {
+                showErrorLD.value = true
             }
+        )
+        whenever(viewModel.spinnerPosition).thenReturn(initialPosition)
+
+        whenever(viewModel.showErrorDone()).doAnswer(
+            Answer {
+                showErrorLD.value = false
+            }
+        )
+
+
+        whenever(viewModel.initPush(eq(0))).doAnswer(
+            Answer<Unit> {
+                versionListLD.value = theversions
+                versionLD.value = theversions.first()
+                flavorTextLD.value= theflavorAndName.first
+                nameLD.value = theflavorAndName.second
+                viewModel.inited = true
+            })
+
+        val homeFragment = TestHomeFragment(viewModel).apply {
+            arguments = HomeFragmentArgs.Builder(0).build().toBundle()
         }
 
-    }
-
-    @Test
-    fun findPokemonsByNameInRoomTest() {
-       repository.fetchPokemonsFromDb("bulbasaur")
-        verify(database.pokemonDao).findPokemonsByNameInRoom("%bulbasaur%")
-    }
-
-    @Test
-    fun getAllPokemonsFromRoomTest() {
-        repository.fetchPokemonsFromDb("")
-        verify(database.pokemonDao).getAllPokemonsFromRoom()
-    }
-
-    @Test
-    fun getNextRoundQuestionPokemonTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        repository.getNextRoundQuestionPokemon()
-        verify(database.pokemonDao).getNextRoundQuestionPokemon()
-    }
-
-    @Test
-    fun getNextRoundAnswerNamesTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        repository.getNextRoundAnswers(1,4)
-        verify(database.pokemonDao).getNextRoundAnswerPokemonNames(1,4)
-    }
-
-    @Test
-    fun updateUsedAsQuestionTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        repository.updateUsedAsQuestion(1,true)
-        verify(database.pokemonDao).updateUsedAsQuestion(1,true)
-    }
-
-    @Test
-    fun resetUsedAsQuestionTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        repository.resetUsedAsQuestionPlain()
-        verify(database.pokemonDao).resetUsedAsQuestion()
-    }
-
-    @Test
-    fun refreshPokemonPlayTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(pokemonApiService.getPokemonList(0,-1)).doReturn(async {
-            print("speciesDetail : $allPokemonsResponse")
-            allPokemonsResponse!!
-        })
-
-        repository.refreshPokemonPlay(0,-1) {
-            verify(database.pokemonDao).insertAll(allPokemonsResponse!!.asDatabaseModel())
-        }
-    }
-
-    /**
-     * Checks that the callback passed as parameter is called with the correct parameters.
-     */
-    @Test
-    fun refreshPokemonCallback() = coroutinesTestRule.testDispatcher.runBlockingTest {
-
-        whenever(pokemonApiService.getPokemonList(0,-1)).doReturn(async {
-            print("speciesDetail : $allPokemonsResponse")
-            allPokemonsResponse!!
-        })
-
-        val callbackMock: () -> Unit = mock()
-        //val captor1 = argumentCaptor<List<String>>()
-        repository.refreshPokemonPlay (0, 1, callback = callbackMock)
-        verify(callbackMock).invoke()
-        //verify(repository).getFlavorTextAndNameFirstTime(1,newPokemonCallback = captor1.capture())
+        activityRule.activity.setFragment(homeFragment)
+        //EspressoTestUtil.disableProgressBarAnimations(activityRule)
 
     }
-
-    @Test
-    fun refreshPokemonPlayPartialTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(pokemonApiService.getPokemonList(41,40)).doReturn(async {
-            print("speciesDetail : $allPokemonsResponse")
-            partialPokemonsResponse!!
-        })
-
-        repository.refreshPokemonPlay(41,40) {
-            verify(database.pokemonDao).insertAll(partialPokemonsResponse!!.asDatabaseModel(41,40))
-        }
-    }
-
-    /**
-     * Checks that the callback passed as parameter is called with the correct parameters.
-     */
-    @Test
-    fun refreshPokemonPartialCallback() = coroutinesTestRule.testDispatcher.runBlockingTest {
-
-        whenever(pokemonApiService.getPokemonList(41,40)).doReturn(async {
-            print("speciesDetail : $partialPokemonsResponse")
-            partialPokemonsResponse!!
-        })
-
-        val callbackMock: () -> Unit = mock()
-        //val captor1 = argumentCaptor<List<String>>()
-        repository.refreshPokemonPlay (41, 40, callback = callbackMock)
-        verify(callbackMock).invoke()
-        //verify(repository).getFlavorTextAndNameFirstTime(1,newPokemonCallback = captor1.capture())
-
-    }
-
-
 
     @After
-    fun tearDown() {
-        Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
+    fun unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(idlingResource)
+    }
+
+    @Test
+    fun firstTest() {
+        onView(withId(R.id.textView7)).check(matches(isDisplayed()))
+    }
+
+
+
+
+
+
+    class TestHomeFragment(val testViewModel: HomeViewModel) : HomeFragment() {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            viewModelFactory = ViewModelUtil.createFor(testViewModel)
+            homeViewModel = testViewModel
+        }
     }
 
     companion object {
@@ -248,5 +150,5 @@ class PokemonBoundaryCallbackTest {
             "{\"count\":964,\"next\":\"https://pokeapi.co/api/v2/pokemon?offset=81&limit=40\",\"previous\":\"https://pokeapi.co/api/v2/pokemon?offset=1&limit=40\",\"results\":[{\"name\":\"golbat\",\"url\":\"https://pokeapi.co/api/v2/pokemon/42/\"},{\"name\":\"oddish\",\"url\":\"https://pokeapi.co/api/v2/pokemon/43/\"},{\"name\":\"gloom\",\"url\":\"https://pokeapi.co/api/v2/pokemon/44/\"},{\"name\":\"vileplume\",\"url\":\"https://pokeapi.co/api/v2/pokemon/45/\"},{\"name\":\"paras\",\"url\":\"https://pokeapi.co/api/v2/pokemon/46/\"},{\"name\":\"parasect\",\"url\":\"https://pokeapi.co/api/v2/pokemon/47/\"},{\"name\":\"venonat\",\"url\":\"https://pokeapi.co/api/v2/pokemon/48/\"},{\"name\":\"venomoth\",\"url\":\"https://pokeapi.co/api/v2/pokemon/49/\"},{\"name\":\"diglett\",\"url\":\"https://pokeapi.co/api/v2/pokemon/50/\"},{\"name\":\"dugtrio\",\"url\":\"https://pokeapi.co/api/v2/pokemon/51/\"},{\"name\":\"meowth\",\"url\":\"https://pokeapi.co/api/v2/pokemon/52/\"},{\"name\":\"persian\",\"url\":\"https://pokeapi.co/api/v2/pokemon/53/\"},{\"name\":\"psyduck\",\"url\":\"https://pokeapi.co/api/v2/pokemon/54/\"},{\"name\":\"golduck\",\"url\":\"https://pokeapi.co/api/v2/pokemon/55/\"},{\"name\":\"mankey\",\"url\":\"https://pokeapi.co/api/v2/pokemon/56/\"},{\"name\":\"primeape\",\"url\":\"https://pokeapi.co/api/v2/pokemon/57/\"},{\"name\":\"growlithe\",\"url\":\"https://pokeapi.co/api/v2/pokemon/58/\"},{\"name\":\"arcanine\",\"url\":\"https://pokeapi.co/api/v2/pokemon/59/\"},{\"name\":\"poliwag\",\"url\":\"https://pokeapi.co/api/v2/pokemon/60/\"},{\"name\":\"poliwhirl\",\"url\":\"https://pokeapi.co/api/v2/pokemon/61/\"},{\"name\":\"poliwrath\",\"url\":\"https://pokeapi.co/api/v2/pokemon/62/\"},{\"name\":\"abra\",\"url\":\"https://pokeapi.co/api/v2/pokemon/63/\"},{\"name\":\"kadabra\",\"url\":\"https://pokeapi.co/api/v2/pokemon/64/\"},{\"name\":\"alakazam\",\"url\":\"https://pokeapi.co/api/v2/pokemon/65/\"},{\"name\":\"machop\",\"url\":\"https://pokeapi.co/api/v2/pokemon/66/\"},{\"name\":\"machoke\",\"url\":\"https://pokeapi.co/api/v2/pokemon/67/\"},{\"name\":\"machamp\",\"url\":\"https://pokeapi.co/api/v2/pokemon/68/\"},{\"name\":\"bellsprout\",\"url\":\"https://pokeapi.co/api/v2/pokemon/69/\"},{\"name\":\"weepinbell\",\"url\":\"https://pokeapi.co/api/v2/pokemon/70/\"},{\"name\":\"victreebel\",\"url\":\"https://pokeapi.co/api/v2/pokemon/71/\"},{\"name\":\"tentacool\",\"url\":\"https://pokeapi.co/api/v2/pokemon/72/\"},{\"name\":\"tentacruel\",\"url\":\"https://pokeapi.co/api/v2/pokemon/73/\"},{\"name\":\"geodude\",\"url\":\"https://pokeapi.co/api/v2/pokemon/74/\"},{\"name\":\"graveler\",\"url\":\"https://pokeapi.co/api/v2/pokemon/75/\"},{\"name\":\"golem\",\"url\":\"https://pokeapi.co/api/v2/pokemon/76/\"},{\"name\":\"ponyta\",\"url\":\"https://pokeapi.co/api/v2/pokemon/77/\"},{\"name\":\"rapidash\",\"url\":\"https://pokeapi.co/api/v2/pokemon/78/\"},{\"name\":\"slowpoke\",\"url\":\"https://pokeapi.co/api/v2/pokemon/79/\"},{\"name\":\"slowbro\",\"url\":\"https://pokeapi.co/api/v2/pokemon/80/\"},{\"name\":\"magnemite\",\"url\":\"https://pokeapi.co/api/v2/pokemon/81/\"}]}"
         )
     }
-}
 
+}

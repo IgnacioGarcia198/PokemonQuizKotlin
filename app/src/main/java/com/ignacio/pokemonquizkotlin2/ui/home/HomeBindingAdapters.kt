@@ -20,6 +20,7 @@ import timber.log.Timber
     @BindingAdapter("imageUrl")
     fun setImageUrl(imageView: ImageView, url: String?) {
         url?.let {
+            Timber.d("setting the image with url $url")
             Glide.with(imageView.context).load(url).into(imageView)
         }
     }
@@ -43,8 +44,9 @@ import timber.log.Timber
     }
 
     @BindingAdapter("onItemSelected")
-    fun setOnItemSelected(spinner: Spinner, viewModel: HomeViewModel?) {
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+    fun Spinner.setOnItemSelected(viewModel: HomeViewModel?) {
+        Timber.d("setting onitemselected now")
+        this.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
@@ -56,15 +58,17 @@ import timber.log.Timber
                 id: Long
             ) {
                 viewModel?.spinnerPosition = position
-                viewModel?.onVersionChangedOnSpinner(spinner.getItemAtPosition(position) as String)
+                viewModel?.onVersionChangedOnSpinner(this@setOnItemSelected.getItemAtPosition(position) as String)
+                //callback(spinner.getItemAtPosition(position) as String)
             }
 
         }
     }
 
-    @BindingAdapter("initialPosition")
+    @BindingAdapter("initialPosition",requireAll = false)
     fun setInitialPosition(spinner: Spinner, position: Int = 0) {
         spinner.doOnLayout { spinner.setSelection(position) }
+        //spinner.setSelection(position)
     }
 
     @BindingAdapter("responseState")
@@ -113,18 +117,26 @@ import timber.log.Timber
     fun removeErrorView(layout: ViewGroup) {
         var errorView: ConstraintLayout? = layout.findViewById<ConstraintLayout>(R.id.errorLayout)
         if (errorView != null) {
-            layout.removeView(layout)
+            layout.removeView(errorView)
         }
     }
 
     @BindingAdapter("dailyOrDetail")
-    fun dailyOrDetailChange(textView: TextView, dailyOrDetail: Boolean) {
-        textView.visibility =
+    fun TextView.dailyOrDetailChange(dailyOrDetail: Boolean) {
+        this.visibility =
             when (dailyOrDetail) {
-                true -> View.VISIBLE
-                false -> View.GONE
+                false -> {
+                    Timber.d("the top text is visible")
+                    View.VISIBLE
+                }
+                true -> {
+                    Timber.d("the top text is not visible")
+                    View.GONE
+                }
             }
+
     }
+
 
 /*@BindingAdapter("responseState")
 fun getResponseState(layout : ConstraintLayout, responseState: PokemonResponseState){

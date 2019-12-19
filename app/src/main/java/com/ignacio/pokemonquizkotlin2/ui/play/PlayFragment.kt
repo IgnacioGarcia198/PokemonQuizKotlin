@@ -7,26 +7,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.ignacio.pokemonquizkotlin2.OpenClass
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
+import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
 
+@OpenForTesting
 class PlayFragment : Fragment() {
 
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
-    private lateinit var playViewModel: PlayViewModel
+    @VisibleForTesting lateinit var playViewModel: PlayViewModel
     private lateinit var gameToast : Toast
     private lateinit var toastCountDown : CountDownTimer
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

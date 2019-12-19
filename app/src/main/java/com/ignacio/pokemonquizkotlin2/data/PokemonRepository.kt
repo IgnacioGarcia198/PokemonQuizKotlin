@@ -14,10 +14,11 @@ import com.ignacio.pokemonquizkotlin2.db.*
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.OpenClass
+import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@OpenClass
+@OpenForTesting
 class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
                          private val service: PokemonService = PokemonNetwork.pokemonApiService,
                          private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {

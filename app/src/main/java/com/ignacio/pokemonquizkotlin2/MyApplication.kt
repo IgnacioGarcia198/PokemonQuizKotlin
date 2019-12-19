@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
+import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-
+@OpenForTesting
 class MyApplication(private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : Application() {
 
     override fun onCreate() {

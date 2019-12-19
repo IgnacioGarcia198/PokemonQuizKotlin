@@ -1,7 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ignacio.pokemonquizkotlin2.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
@@ -9,11 +8,13 @@ import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetai
 import com.ignacio.pokemonquizkotlin2.db.GameRecordDao
 import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.db.PokemonDao
+import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Before
 import org.junit.Rule

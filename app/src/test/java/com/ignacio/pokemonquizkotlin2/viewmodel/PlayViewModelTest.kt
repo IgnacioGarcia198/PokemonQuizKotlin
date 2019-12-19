@@ -6,7 +6,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ignacio.pokemonquizkotlin2.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
@@ -14,7 +13,6 @@ import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.utils.testutils.observeOnce
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.*
@@ -30,9 +28,12 @@ import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.asDomainModel
+import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
+import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
 import com.ignacio.pokemonquizkotlin2.ui.play.NUMBER_OF_ANSWERS
 import com.ignacio.pokemonquizkotlin2.ui.play.PlayViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
+import kotlinx.coroutines.test.runBlockingTest
 
 
 @ExperimentalCoroutinesApi

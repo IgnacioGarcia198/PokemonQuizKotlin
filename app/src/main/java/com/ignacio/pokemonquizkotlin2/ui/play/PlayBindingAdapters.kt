@@ -19,27 +19,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Runnable
 import timber.log.Timber
 
-
-/*@BindingAdapter("pokemonId")
-fun bindPokemonImage(imgView: ImageView, id : Int) {
-    if(id > 0) {
-        val imgUri = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/$id.png"
-        Glide.with(imgView.context)
-            .load(imgUri)
-            .apply(
-                RequestOptions()
-                    .placeholder(R.drawable.transparent_pokeball_padding)
-                    .error(R.drawable.pokeball_supertransparent_padding))
-            .into(imgView)
-        imgView.visibility = View.VISIBLE
-    }
-}*/
-
-@BindingAdapter("pokemonId", "onSuccess", "onFail")
+@BindingAdapter("pokemonId", "onSuccess", "onFail", requireAll = false)
 fun loadThePokemonImage(imgView: ImageView, id: Int,
-                                successCallback : () -> Unit,
-failCallback : () -> Unit) {
-        if(id > 0) {
+                                successCallback : () -> Unit = {},
+failCallback : () -> Unit = {}) {
+    Timber.d("Setting the image con id $id")
+    if(id > 0) {
 
         val imgUri = imgView.context.getString(R.string.pokemon_image_url,id)
         Glide.with(imgView.context)
@@ -88,7 +73,7 @@ failCallback : () -> Unit) {
     }
 }
 
-@BindingAdapter("gameState")
+/*@BindingAdapter("gameState")
 fun bindProgressBarText(customProgressBar: CustomProgressBar, gameState: GameState?) {
     gameState?.let {
         when(gameState) {
@@ -102,7 +87,7 @@ fun bindProgressBarText(customProgressBar: CustomProgressBar, gameState: GameSta
             else -> customProgressBar.visibility == View.INVISIBLE
         }
     }
-}
+}*/
 
 @BindingAdapter("answerList")
 fun bindRadioGroup(radioGroup: RadioGroup, answerList: List<String>) {

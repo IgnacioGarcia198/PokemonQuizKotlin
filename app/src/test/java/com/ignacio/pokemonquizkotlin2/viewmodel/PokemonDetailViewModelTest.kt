@@ -1,21 +1,27 @@
 package com.ignacio.pokemonquizkotlin2.viewmodel
 
 import android.content.SharedPreferences
+import android.view.View
+import android.widget.TextView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ignacio.pokemonquizkotlin2.CoroutineTestRule
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
+import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
+import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
+import com.ignacio.pokemonquizkotlin2.testutils.test
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.utils.testutils.observeOnce
-import com.ignacio.pokemonquizkotlin2.utils.testutils.test
+import com.ignacio.pokemonquizkotlin2.ui.home.dailyOrDetailChange1
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -70,7 +76,7 @@ class PokemonDetailViewModelTest {
         viewModel = HomeViewModel(myApplication,repository,mockPreferences)
     }
 
-    /*@Test
+    @Test
     fun initPushGetsRightPokDetailId() {
         val thecallback = {
                 versions:List<String>,flavorAndName:Pair<String,String> ->
@@ -92,7 +98,7 @@ class PokemonDetailViewModelTest {
         assert(viewModel.versionList == theversions)
 
 
-    }*/
+    }
 
 
     @Test
@@ -349,11 +355,12 @@ class PokemonDetailViewModelTest {
      * in order to run this test you must first change the date in @link stubSharedPrefSavedValue()
      * to today's date, so that the obtained pokemon will be bulbasaur again.
      */
-    @Suppress("UNCHECKED_CAST")
+    /*@Suppress("UNCHECKED_CAST")
     @Test
     fun initPushTestDaily() {
         stubSharedPrefSavedValue()
         coroutinesTestRule.testDispatcher.runBlockingTest {
+
             whenever(
                 repository.getFlavorTextAndNameFirstTime(
                     eq(1),
@@ -380,7 +387,7 @@ class PokemonDetailViewModelTest {
             assert(it == theversions)
         }
         assert(viewModel.inited)
-    }
+    }*/
 
     @Test
     fun onFlavorTextAndNameResultCallsItsFunctions() {
@@ -407,6 +414,7 @@ class PokemonDetailViewModelTest {
 
     @Test
     fun setFlavorAndNameTest() {
+        //InstrumentationRegistry.getInstrumentation().context
         viewModel.setFlavorAndName(theflavorAndName)
 
         viewModel.name.observeOnce {

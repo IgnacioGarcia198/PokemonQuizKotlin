@@ -1,7 +1,8 @@
-package com.ignacio.pokemonquizkotlin2.ui.home
+package com.ignacio.pokemonquizkotlin2.ui.play
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import com.ignacio.pokemonquizkotlin2.R
 import android.view.LayoutInflater
 import android.view.View
@@ -10,53 +11,138 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnLayout
 import androidx.databinding.BindingAdapter
+import androidx.fragment.app.testing.launchFragment
+import androidx.navigation.NavController
+import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.RequestManager
-import com.ignacio.pokemonquizkotlin2.MyApplication
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
+import androidx.test.rule.ActivityTestRule
+
+import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
 import com.nhaarman.mockitokotlin2.*
 import junit.framework.Assert.*
 import org.hamcrest.CoreMatchers.`is`
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.mock
+import org.mockito.Mockito
+import org.mockito.Mockito.*
 import timber.log.Timber
 
 
 @RunWith(AndroidJUnit4::class)
-class HomeBindingAdaptersTest {
+class PlayBindingAdaptersTest {
 
-    /*@Test
-    fun isVisibleShouldBeEasilyControlledWithABoolean() {
-        val v = View(InstrumentationRegistry.getTargetContext())
-        setIsVisible(v, true) // visible
-        assertThat(v.visibility).isEqualTo(View.VISIBLE)
-        setIsVisible(v, false) // gone
-        assertThat(v.visibility).isEqualTo(View.GONE)
+    @get:Rule
+    val activityRule = ActivityTestRule(SingleFragmentActivity::class.java)
+
+    class TestPlayFragment : PlayFragment() {
+        /*companion object {
+            fun getInstance(questionsOrTime : Boolean, gameLength :Int) : TestPlayFragment {
+                return TestPlayFragment().apply {
+                    arguments = Bundle().apply {
+                        putBoolean("questionsOrTime",questionsOrTime)
+                        putInt("gameLength",gameLength)
+                    }
+                }
+            }
+        }*/
+    }
+
+    private val fragment = TestPlayFragment().apply {
+        arguments = PlayFragmentArgs.Builder(true, 10).build().toBundle()
+    }
+
+    /*@Test fun testEventFragment() {
+        // The "fragmentArgs" and "factory" arguments are optional.
+        //val fragment = TestPlayFragment.getInstance(false,10)
+        fragment.playViewModel = mock()
+        whenever(fragment.playViewModel.refreshPokemon(ArgumentMatchers.anyInt(),
+            ArgumentMatchers.anyInt()))
+        activityRule.activity.setFragment(fragment)
+        //val context = fragment.context
+        val radioGroup = fragment.view!!.findViewById<RadioGroup>(R.id.customRadioGroup)//RadioGroup(context)
+        bindAnswerChange(radioGroup,fragment.playViewModel)
+        assertEquals(radioGroup.childCount, NUMBER_OF_ANSWERS)
+
+        println("id is ${radioGroup.getChildAt(0).id}")
+        onView(withId(radioGroup.getChildAt(0).id)).perform(click())
+
+        //radioGroup.getChildAt(0).performClick()
+        com.nhaarman.mockitokotlin2.verify(fragment.playViewModel).onAnswerChosen(0)
+        activityRule.activity.finish()
+        onView(withId(R.id.nav_share)).check(matches(isDisplayed()))
     }*/
 
     @Test
-    fun dailyOrDetailChangeHidesTextView() {
+    fun bindAnswerChangeTest() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val radioGroup = RadioGroup(context)
+        val viewModel : PlayViewModel = mock()
+        bindAnswerChange(radioGroup,viewModel)
+        assertEquals(radioGroup.childCount, NUMBER_OF_ANSWERS)
+
+        println("id is ${radioGroup.getChildAt(0).id}")
+        onView(withId(radioGroup.getChildAt(0).id)).perform(click())
+
+        //radioGroup.getChildAt(0).performClick()
+        //verify(viewModel).onAnswerChosen(0)
+    }
+
+    @BindingAdapter("onOptionSelected")
+    fun bindAnswerChange(radioGroup: RadioGroup, viewModel: PlayViewModel) {
+        // we only need to know the position of the chosen radiobutton
+        Timber.i("Setting onclick with length = ${radioGroup.childCount}")
+        if(radioGroup.childCount == 0) {
+            for(i in 0 until NUMBER_OF_ANSWERS) {
+                val radioButton = RadioButton(radioGroup.context)
+                radioButton.setOnClickListener {
+                    radioGroup.setChildrenEnabled(false)
+                    radioGroup.check(-1)
+                    viewModel.onAnswerChosen(i)
+
+                }
+                radioGroup.addView(radioButton)
+            }
+        }
+    }
+
+    @Test
+    fun bindRadioGroupTest() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val radioGroup = RadioGroup(context)
+        bindRadioGroup(radioGroup,listOf("dog","cow","car","cat"))
+
         val textView = TextView(InstrumentationRegistry.getInstrumentation().context)
-        textView.dailyOrDetailChange(false)
+        //textView.dailyOrDetailChange(false)
         assertThat(textView.visibility, `is`(View.GONE))
-        textView.dailyOrDetailChange(true)
+        //textView.dailyOrDetailChange(true)
         //assert(textView.visibility == View.GONE)
         assertThat(textView.visibility,`is`(View.VISIBLE))
         //assertEquals
 
     }
 
-    @Test
+    @BindingAdapter("answerList")
+    fun bindRadioGroup(radioGroup: RadioGroup, answerList: List<String>) {
+        Timber.i("answer list length: ${answerList.size}")
+        if(answerList.isNotEmpty() && radioGroup.childCount != 0) {
+            for((i, answer : String) in answerList.withIndex()) {
+                //Timber.i("radiogroup has ${radioGroup.childCount} children")
+                (radioGroup.getChildAt(i) as RadioButton).text = answer
+            }
+            //radioGroup.check(-1)
+        }
+    }
+
+
+    /*@Test
     fun setInitialPositionInSpinnerTest() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val spinner = Spinner(context)
@@ -265,7 +351,7 @@ class HomeBindingAdaptersTest {
 
         assertNull(constraintLayout.findViewById(R.id.errorLayout))
         assertEquals(constraintLayout.indexOfChild(constraintLayout.findViewById(R.id.errorLayout)), -1)
-    }
+    }*/
 
 
 
