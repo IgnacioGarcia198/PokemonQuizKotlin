@@ -22,10 +22,13 @@ import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapte
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
+import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -37,6 +40,7 @@ import org.mockito.stubbing.Answer
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class HomeFragmentTestAgain {
     @Rule
@@ -50,6 +54,10 @@ class HomeFragmentTestAgain {
     /*@Rule
     @JvmField
     val taskExecutorRule = InstantTaskExecutorRule()*/
+    /*@Rule
+    @JvmField
+    val coroutineTestRule = CoroutineTestRule()*/
+
     private var currentId : Int = 1
     lateinit var viewModel : HomeViewModel
     private val versionListLD = MutableLiveData<List<String>>()
@@ -57,14 +65,14 @@ class HomeFragmentTestAgain {
     private val flavorTextLD = MutableLiveData<String>()
     private val nameLD = MutableLiveData<String>()
     private val dailyOrDetailLD = MutableLiveData<Boolean>(false)
-    private val showErrorLD = MutableLiveData<Boolean>(false)
+    private val showErrorLD = MutableLiveData<Boolean>(true)
     private val responseStateLD = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
     private val currentIdLD = MutableLiveData<Int>(currentId)
     private val initialPosition = 0
 
     @Before
     fun setUp() {
-        IdlingRegistry.getInstance().register(idlingResource)
+        //IdlingRegistry.getInstance().register(idlingResource)
         viewModel = mock()
         // mock the whenevers of the viewModel:
         whenever(viewModel.calculateTodayPokId()).thenReturn(currentId)
@@ -103,16 +111,17 @@ class HomeFragmentTestAgain {
         val homeFragment = TestHomeFragment(viewModel).apply {
             arguments = HomeFragmentArgs.Builder(0).build().toBundle()
         }
-
-        activityRule.activity.setFragment(homeFragment)
-        //EspressoTestUtil.disableProgressBarAnimations(activityRule)
+        //coroutineTestRule.testDispatcher.runBlockingTest {
+            activityRule.activity.setFragment(homeFragment)
+        //}
+        EspressoTestUtil.disableProgressBarAnimations(activityRule)
 
     }
 
-    @After
+    /*@After
     fun unregisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(idlingResource)
-    }
+    }*/
 
     @Test
     fun firstTest() {
