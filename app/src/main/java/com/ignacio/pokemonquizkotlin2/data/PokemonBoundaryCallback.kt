@@ -20,7 +20,7 @@ import java.util.Calendar
 class PokemonBoundaryCallback
 //private int dbupdated;
 
-internal constructor(private val name: String, private val repository: PokemonRepository,
+internal constructor(private val name: String, private val repository: PokemonRepositoryInterface,
                      private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
     PagedList.BoundaryCallback<DatabasePokemon>() {
     // Avoid triggering multiple requests in the same time

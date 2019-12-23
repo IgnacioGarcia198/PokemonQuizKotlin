@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
@@ -25,15 +26,12 @@ import java.util.*
 
 const val NUMBER_OF_ANSWERS = 4
 
-enum class GameState {
-    REFRESHING_POKEMON, GETTING_QUESTION, GETTING_ANSWERS, WAITING_CHOICE, RIGHT_ANSWER, WRONG_ANSWER
-}
 
 class PlayViewModel(
     app : Application,
     private val questionsOrTime : Boolean = true,
     private val limitValue : Int = 0,
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     val sharedPref: SharedPreferences = sharedPreferences,
     val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
 ) : BaseViewModel(app,repository) {
@@ -51,10 +49,6 @@ class PlayViewModel(
     @VisibleForTesting var roundNumber = 0
     //private var currentTime = 0L
     private var animationTotalTime = 4000L
-
-    private val _gameState = MutableLiveData<GameState>()
-    val gameState : LiveData<GameState>
-    get() = _gameState
 
     private val _nextRoundQuestionPokemonId = MutableLiveData<Int>(0)
     val nextRoundQuestionPokemonId : LiveData<Int>

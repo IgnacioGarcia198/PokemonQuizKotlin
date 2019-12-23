@@ -3,6 +3,7 @@ package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 import android.app.Application
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
@@ -10,7 +11,7 @@ import timber.log.Timber
 
 class PokemonListViewModel(
     app:Application,
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(app)
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app)
     ) : BaseViewModel(app,repository) {
     //lateinit var pokemonList : LiveData<PagedList<DatabasePokemon>>
 

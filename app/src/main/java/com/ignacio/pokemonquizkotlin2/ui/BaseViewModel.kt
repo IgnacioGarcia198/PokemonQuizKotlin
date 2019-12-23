@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.getDatabase
@@ -18,7 +19,7 @@ import kotlinx.coroutines.SupervisorJob
 @OpenForTesting
 abstract class BaseViewModel(
     val app : Application,
-    val repository : PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    val repository : PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(app) {
 

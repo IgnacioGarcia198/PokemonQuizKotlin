@@ -18,17 +18,68 @@ import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+interface PokemonRepositoryInterface {
+    val _responseState: MutableLiveData<PokemonResponseState>
+    val responseState : LiveData<PokemonResponseState>
+    var homeStartup: Boolean
+    val _flavorTextAndName: MutableLiveData<Pair<String, String>>
+    val flavorTextAndName : LiveData<Pair<String, String>>
+    val pokemons : LiveData<List<Pokemon>>
+    fun changeResponseState(responseState: PokemonResponseState)
+    /**
+     * Gets both flavor text for current language and version and also the pokemon's name, we do it together
+     * in order to save in calls to the api.
+     */
+    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String ="en", version : String ="red",
+                                              newPokemonCallback: (versions: List<String>, flavorAndName: Pair<String, String>) -> Unit ={ versions, flavorAndName ->})
+
+    suspend fun getFlavorTextNormally(pokid : Int, language: String ="en", version : String ="red",
+                                      normalCallback : (flavorAndName: String) -> Unit = {})
+
+    suspend fun refreshPokemonPlay(offset : Int, limit: Int, callback: () -> Unit)
+
+    suspend fun getNextRoundQuestionPokemon() : DatabasePokemon?
+
+    suspend fun getNextRoundAnswers(id : Int, limit : Int) : MutableList<String>
+
+    suspend fun updateUsedAsQuestion(id : Int, value : Boolean)
+
+    suspend fun resetUsedAsQuestionPlain()
+    /**
+     * Fetching pokemons from database
+     * @param name
+     * @return
+     */
+    fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon>
+
+    /**
+     * Search photos.
+     */
+    fun searchPokemons(
+        name: String,
+        boundaryCallback: PokemonBoundaryCallback = PokemonBoundaryCallback(name, this))
+            : LiveData<PagedList<DatabasePokemon>>
+
+    //============================================
+    // PART FOR GAMERECORDVIEWMODEL
+    //============================================
+    suspend fun saveRecord(gameRecord: GameRecord)
+
+    fun getAllRecords() : LiveData<List<GameRecord>>
+}
+
 @OpenForTesting
 class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
                          private val service: PokemonService = PokemonNetwork.pokemonApiService,
-                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {
+                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
+    PokemonRepositoryInterface {
     //=======================================================
     // PART FOR HOMEVIEWMODEL
     //==========================================================
 
-    private val _responseState = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
-    val responseState : LiveData<PokemonResponseState> = _responseState
-    fun changeResponseState(responseState: PokemonResponseState) {
+    override val _responseState = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
+    override val responseState : LiveData<PokemonResponseState> = _responseState
+    override fun changeResponseState(responseState: PokemonResponseState) {
         _responseState.postValue(responseState)
     }
     companion object {
@@ -43,14 +94,15 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
         }
     }
 
-    var homeStartup = true
+    override var homeStartup = true
 
     /**
      * Gets both flavor text for current language and version and also the pokemon's name, we do it together
      * in order to save in calls to the api.
      */
-    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String ="en", version : String="red",
-                                              newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit={versions,flavorAndName ->}) {
+    override suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String, version : String,
+                                                       newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit
+    ) {
         withContext(dispatchers.io()) {
             Timber.i("doing getSpecieFlavor")
             print("doing getSpecieFlavor")
@@ -71,8 +123,9 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
         }
     }
 
-    suspend fun getFlavorTextNormally(pokid : Int, language: String="en", version : String="red",
-                                      normalCallback : (flavorAndName : String) -> Unit= {}) {
+    override suspend fun getFlavorTextNormally(pokid : Int, language: String, version : String,
+                                               normalCallback : (flavorAndName : String) -> Unit
+    ) {
         val specieDetail = service.getSpecieDetail(pokid).await()
         Timber.i("flavortexts are ${specieDetail.extractFlavorText(language, version)}")
         withContext(dispatchers.main()) {
@@ -96,8 +149,8 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     val versionList : LiveData<List<String>>
     get() = _versionList*/
 
-    private val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
-    val flavorTextAndName : LiveData<Pair<String,String>>
+    override val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
+    override val flavorTextAndName : LiveData<Pair<String,String>>
     get() = _flavorTextAndName
 
 
@@ -107,7 +160,7 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     // PART FOR PLAYVIEWMODEL
     //==========================================================
 
-    suspend fun refreshPokemonPlay(offset : Int, limit: Int, callback: ()->Unit) {
+    override suspend fun refreshPokemonPlay(offset : Int, limit: Int, callback: ()->Unit) {
         Timber.i("refreshpokemon is called")
         withContext(dispatchers.io()) {
             val pokemonContainer = service.getPokemonList(offset,limit).await()
@@ -118,29 +171,29 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
         }
     }
 
-    val pokemons : LiveData<List<Pokemon>> =
+    override val pokemons : LiveData<List<Pokemon>> =
         Transformations.map(database.pokemonDao.getAllPokemon()) {it.asDomainModel()}
 
-    suspend fun getNextRoundQuestionPokemon() : DatabasePokemon? {
+    override suspend fun getNextRoundQuestionPokemon() : DatabasePokemon? {
         return withContext(dispatchers.io()) {
             database.pokemonDao.getNextRoundQuestionPokemon()
         }
 
     }
 
-    suspend fun getNextRoundAnswers(id : Int, limit : Int) : MutableList<String> {
+    override suspend fun getNextRoundAnswers(id : Int, limit : Int) : MutableList<String> {
         return withContext(dispatchers.io()) {
             database.pokemonDao.getNextRoundAnswerPokemonNames(id, limit)
         }
     }
 
-    suspend fun updateUsedAsQuestion(id : Int, value : Boolean) {
+    override suspend fun updateUsedAsQuestion(id : Int, value : Boolean) {
         withContext(dispatchers.io()) {
             database.pokemonDao.updateUsedAsQuestion(id,value)
         }
     }
 
-    suspend fun resetUsedAsQuestionPlain() {
+    override suspend fun resetUsedAsQuestionPlain() {
         withContext(dispatchers.io()) {
             database.pokemonDao.resetUsedAsQuestion()
         }
@@ -156,7 +209,7 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
      * @param name
      * @return
      */
-    fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon> {
+    override fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon> {
 
         return if (name == null || name == "") {
             // get by id
@@ -171,9 +224,10 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     /**
      * Search photos.
      */
-    fun searchPokemons(
+    override fun searchPokemons(
         name: String,
-        boundaryCallback: PokemonBoundaryCallback = PokemonBoundaryCallback(name, this))
+        boundaryCallback: PokemonBoundaryCallback
+    )
             : LiveData<PagedList<DatabasePokemon>> {
         Timber.i("search: New query: name: $name")
 
@@ -203,13 +257,13 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     //============================================
     // PART FOR GAMERECORDVIEWMODEL
     //============================================
-    suspend fun saveRecord(gameRecord: GameRecord) {
+    override suspend fun saveRecord(gameRecord: GameRecord) {
         withContext(dispatchers.io()) {
             database.gameRecordDao.save(gameRecord)
         }
     }
 
-    fun getAllRecords() : LiveData<List<GameRecord>> {
+    override fun getAllRecords() : LiveData<List<GameRecord>> {
         return database.gameRecordDao.allGameRecordsLiveData
     }
 

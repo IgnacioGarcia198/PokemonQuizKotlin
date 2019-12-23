@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
@@ -19,7 +20,7 @@ import java.util.*
 @OpenForTesting
 class HomeViewModel(
     app : Application,
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     val sharedPref: SharedPreferences = sharedPreferences
 ) : BaseViewModel(app,repository) {
 
