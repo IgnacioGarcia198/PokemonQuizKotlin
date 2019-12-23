@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.OpenClass
@@ -18,6 +20,7 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
+import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
@@ -42,10 +45,10 @@ class PlayFragment : Fragment() {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         val args = PlayFragmentArgs.fromBundle(arguments!!)
         //playViewModel.initGame(args.questionsOrTime,args.gameLength)
-        playViewModel =
-                ViewModelProviders.of(this, PlayViewModelFactory(
-                    activity!!.application,args.questionsOrTime,args.gameLength))
-                    .get(PlayViewModel::class.java)
+        playViewModel = ViewModelProvider(this,
+            getViewModelFactory(questionsOrTime = args.questionsOrTime, limitValue = args.gameLength))
+            .get(PlayViewModel::class.java)
+
             //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this

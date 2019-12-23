@@ -6,16 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentChooseQuizBinding
+import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 
 
 class ChooseQuizFragment : Fragment() {
 
-    private lateinit var viewModel: ChooseQuizViewModel
+    val viewModel: ChooseQuizViewModel by viewModels { getViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,12 +25,11 @@ class ChooseQuizFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val binding = FragmentChooseQuizBinding.inflate(inflater)
-        viewModel =
-            ViewModelProviders.of(this).get(ChooseQuizViewModel::class.java)
+
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        viewModel.navigateToPlayFragment.observe(this, Observer {
+        viewModel.navigateToPlayFragment.observe(viewLifecycleOwner, Observer {
             if(it) {
                 val questionsOrTime = viewModel.questionsOrTime.value?:true
 

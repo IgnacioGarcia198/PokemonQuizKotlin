@@ -14,11 +14,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
+import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_pokemonlist.*
 
 class PokemonListFragment : Fragment() {
 
-    private val pokemonListViewModel: PokemonListViewModel by viewModels()
+    private val pokemonListViewModel: PokemonListViewModel by viewModels {getViewModelFactory()}
 
     override fun onCreateView(
         inflater: LayoutInflater,

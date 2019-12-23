@@ -9,28 +9,35 @@ import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
+import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import timber.log.Timber
 
 @OpenForTesting
 class HomeFragment() : Fragment() {
-    lateinit var viewModelFactory : ViewModelProvider.Factory
+    // I did this for testing, so that I can use a mocked viewmodel naturally.
+    // to take into account now: Its possible that we want to test Fragment with viewmodel altogether
+    // since we test viewmodel alone in unittest, and the fragment is just interface!
+    // in that regard, this would not be necessary. I would also like to adapt this to a more modern approach
+    //by using the viewmodels<> thing. (Not so necessary but)
+    val viewModelFactory : HomeViewModel by viewModels { getViewModelFactory() }
     @VisibleForTesting lateinit var homeViewModel: HomeViewModel
     private var currentId: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("viewmodelfactory created")
         viewModelFactory = HomeViewModelFactory(activity!!.application,
             PokemonRepository.getDefaultRepository(context!!))
         homeViewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
 
-    }
+    }*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
