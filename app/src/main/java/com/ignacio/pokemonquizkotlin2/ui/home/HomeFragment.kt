@@ -19,9 +19,10 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import timber.log.Timber
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 @OpenForTesting
 class HomeFragment() : Fragment() {
@@ -30,7 +31,7 @@ class HomeFragment() : Fragment() {
     // since we test viewmodel alone in unittest, and the fragment is just interface!
     // in that regard, this would not be necessary. I would also like to adapt this to a more modern approach
     //by using the viewmodels<> thing. (Not so necessary but)
-    val viewModelFactory : HomeViewModel by viewModels { getViewModelFactory() }
+
     @VisibleForTesting lateinit var homeViewModel: HomeViewModel
     private var currentId: Int = 0
 
@@ -55,6 +56,7 @@ class HomeFragment() : Fragment() {
             container,false)
         //homeViewModel =
         binding.lifecycleOwner = this
+        homeViewModel = getViewModel() //
         binding.viewModel = homeViewModel
 
         args  = HomeFragmentArgs.fromBundle(arguments!!)
@@ -129,11 +131,18 @@ class HomeFragment() : Fragment() {
         outState.putInt("currentIdLiveData", currentId)
     }
 
-    fun getViewModelFactory(
-        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
-        sharedPref: SharedPreferences = sharedPreferences
-    ) : BaseViewModelFactory {
-        return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
+    // override this method in a subclass for testing.
+    fun getViewModel() : HomeViewModel {
+        return ViewModelProvider(this,BaseViewModelFactory(
+           requireActivity().application
+        )).get(HomeViewModel::class.java)
+    }
+
+    inner class MyViewModelProviderDelegate() {
+        operator fun getValue(thisRef: Any?, prop: KProperty<*>): HomeViewModel {
+            return ViewModelProvider(this@HomeFragment,BaseViewModelFactory(requireActivity().application
+            )).get(HomeViewModel::class.java)
+        }
     }
 
 }

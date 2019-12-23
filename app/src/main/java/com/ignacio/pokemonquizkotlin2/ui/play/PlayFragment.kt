@@ -24,7 +24,6 @@ import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
 import com.ignacio.pokemonquizkotlin2.ui.PlayViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*

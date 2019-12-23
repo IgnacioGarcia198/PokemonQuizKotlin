@@ -1,5 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
@@ -11,6 +12,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.androidtestutil.ViewModelUtil
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,19 +22,20 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class HomeFragmentScenarioTest {
 
-    fun getFragmentScenario(id:Int) : FragmentScenario<HomeFragment> {
+
+    val viewModel : HomeViewModel = mock()
+    inner class TestHomeFragment : HomeFragment() {
+        override fun getViewModel(): HomeViewModel {
+            return viewModel
+        }
+
+    }
+
+    fun getFragmentScenario(id:Int) : FragmentScenario<TestHomeFragment> {
 
         val fragmentArgs = HomeFragmentArgs.Builder().setNewId(id).build().toBundle()
-        val viewModel : HomeViewModel = mock()
-        return FragmentScenario.launchInContainer(HomeFragment::class.java, fragmentArgs,
-            object : FragmentFactory() {
-                override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-                    return HomeFragment().apply {
-                        homeViewModel = viewModel
-                    }
-                }
 
-            })
+        return FragmentScenario.launchInContainer(TestHomeFragment::class.java, fragmentArgs)
 
         //val fragmentArgs = HomeFragmentArgs.Builder(id).build().toBundle()
         //return launchFragmentInContainer<HomeFragment>(fragmentArgs)

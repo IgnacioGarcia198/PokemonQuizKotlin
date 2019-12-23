@@ -51,7 +51,6 @@ android {
     dataBinding {
         enabled = true
     }
-
 }
 
 dependencies {
@@ -134,7 +133,9 @@ dependencies {
     def robolectricVersion = '4.3.1'
     def truthVersion = '1.0'
     def mockitoKotlin = '2.1.0'
-    testImplementation "junit:junit:$junitVersion"
+    testImplementation ("junit:junit:$junitVersion") {
+        exclude group: 'org.hamcrest'
+    }
 
 
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -191,7 +192,7 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     //androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.16.0'
 
-    androidTestImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    //androidTestImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1"

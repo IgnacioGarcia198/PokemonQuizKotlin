@@ -1,16 +1,26 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
+import android.widget.Spinner
+import androidx.annotation.IdRes
+import androidx.annotation.StringRes
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource
@@ -34,12 +44,11 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.hamcrest.CoreMatchers
+import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
+import org.mockito.internal.util.MockUtil
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -63,6 +72,8 @@ class HomeFragmentTestAgain {
     @JvmField
     val coroutineTestRule = CoroutineTestRule()*/
 
+    // TODO I ALSO WANT TO KNOW WHY I DONT NEED THESE RULES!!! (OR AT THE VERY LEAST THE DATABINDINGIDLINGRESOURCERULE)
+    private val newId = 5
     private var currentId : Int = 1
     lateinit var viewModel : HomeViewModel
     private val versionListLD = MutableLiveData<List<String>>()
@@ -74,6 +85,7 @@ class HomeFragmentTestAgain {
     private val responseStateLD = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
     private val currentIdLD = MutableLiveData<Int>(currentId)
     private val initialPosition = 0
+    private lateinit var homeFragment : TestHomeFragment
 
     @Before
     fun setUp() {
@@ -89,62 +101,130 @@ class HomeFragmentTestAgain {
         whenever(viewModel.showError).thenReturn(showErrorLD)
         whenever(viewModel.getResponseState()).thenReturn(responseStateLD)
         whenever(viewModel.currentIdLiveData).thenReturn(currentIdLD)
-        doNothing().whenever(viewModel).onLoadImageSuccess()
+        //doNothing().whenever(viewModel).onLoadImageSuccess()
         whenever(viewModel.onLoadImageFailed()).doAnswer (
             Answer {
-                showErrorLD.value = true
+                showErrorLD.postValue(true)
             }
         )
         whenever(viewModel.spinnerPosition).thenReturn(initialPosition)
 
         whenever(viewModel.showErrorDone()).doAnswer(
             Answer {
-                showErrorLD.value = false
+                showErrorLD.postValue(false)
             }
         )
 
-
-        whenever(viewModel.initPush(eq(0))).doAnswer(
-            Answer<Unit> {
-                versionListLD.value = theversions
-                versionLD.value = theversions.first()
-                flavorTextLD.value= theflavorAndName.first
-                nameLD.value = theflavorAndName.second
-                viewModel.inited = true
+        whenever(viewModel.initPush(any<Int>())).doAnswer(
+            Answer {
+                versionListLD.postValue(theversions)
+                versionLD.postValue(theversions.first())
+                flavorTextLD.postValue(theflavorAndName.first)
+                nameLD.postValue(theflavorAndName.second)
+                //viewModel.inited = true
             })
-
-        val homeFragment = TestHomeFragment(viewModel).apply {
-            arguments = HomeFragmentArgs.Builder().setNewId(0).build().toBundle()
+        //val viewModel2 : HomeViewModel = mock()
+        homeFragment = TestHomeFragment(viewModel).apply {
+            arguments = HomeFragmentArgs.Builder().setNewId(newId).build().toBundle()
         }
-        //coroutineTestRule.testDispatcher.runBlockingTest {
-            activityRule.activity.setFragment(homeFragment)
-        //}
+        activityRule.activity.setFragment(homeFragment)
+
         EspressoTestUtil.disableProgressBarAnimations(activityRule)
 
     }
 
-    /*@After
-    fun unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(idlingResource)
-    }*/
+    @After
+    fun tearDown() {
+        // runOnUiThread {
+        activityRule.activity.supportFragmentManager.beginTransaction().remove(homeFragment).commit()
+        activityRule.finishActivity()
+        //}
+
+    }
 
     @Test
     fun firstTest() {
         onView(withId(R.id.textView7)).check(matches(isDisplayed()))
+        Assert.assertTrue(MockUtil.isMock(homeFragment.homeViewModel))
+        val captor = argumentCaptor<Int>()
+        verify(viewModel).initPush(captor.capture())
+        Assert.assertEquals(captor.firstValue, 5)
+    }
+
+    @Test
+    fun viewElementsShowTest() {
+        onView(withId(R.id.textView7)).check(matches(isDisplayed()))
+            .check(matches(ViewMatchers.withText(getString(R.string.today_s_pokemon_is))))
+        onView(withId(R.id.pokNameTV)).check(matches(isDisplayed()))//.check(matches(withText("Bulbasaur")))
+        onView(withId(R.id.mainImageView)).check(matches(isDisplayed()))
+        onView(withId(R.id.textSelectPrompt)).check(matches(isDisplayed()))
+            .check(matches(ViewMatchers.withText(getString(R.string.text_from_version_prompt))))
+        onView(withId(R.id.spinner)).check(matches(isDisplayed()))
+        onView(withId(R.id.flavorTextView)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun resultsShowTest() {
+        onView(withId(R.id.mainImageView)).check(matches(isDisplayed()))
+        val drawable = homeFragment.view!!.findViewById<ImageView>(R.id.mainImageView).drawable
+        /*val bulbasaurDrawable = InstrumentationRegistry.getInstrumentation()
+            .targetContext.getDrawable(R.drawable.bulbasaur)
+        assertEquals(drawable.constantState,bulbasaurDrawable!!.constantState)*/
+
+        onView(withId(R.id.spinner)).check(matches(isDisplayed()))
+        val spinnerText = findView<Spinner>(R.id.spinner).selectedItem as String
+        Assert.assertEquals(spinnerText, theversions.first())
+
+        onView(withId(R.id.flavorTextView)).check(matches(isDisplayed()))
+            .check(matches(ViewMatchers.withText(theflavorAndName.first)))
+    }
+
+    @Test
+    fun performOperationsTest() {
+        //val captor = argumentCaptor<String>()
+
+
+        onView(withId(R.id.spinner)).perform(ViewActions.click())
+        Espresso.onData(CoreMatchers.anything()).atPosition(2).perform(ViewActions.click())
+        onView(withId(R.id.spinner)).check(matches(ViewMatchers.withSpinnerText(theversions[2])))
+        verify(viewModel).onVersionChangedOnSpinner(check {
+            Assert.assertEquals(it, theversions[2])
+            versionLD.postValue(it)
+        })
+        /*verify(viewModel, times(2)).onVersionChangedOnSpinner(captor.capture())*/
+        //assertEquals(captor.lastValue, theversions[2])
+    }
+
+    @Test
+    fun initPushDetailTest() {
+        onView(withId(R.id.textView7)).check(matches(isDisplayed()))
+        Assert.assertTrue(MockUtil.isMock(homeFragment.homeViewModel)) // TODO I WANT TO KNOW WHY THIS GIVES AN ERROR WHEN USED WITHOUT ONVIEW.
+        val captor = argumentCaptor<Int>()
+        verify(viewModel).initPush(captor.capture())    // TODO THIS ONE GIVES AN ERROR TOO.
+        Assert.assertEquals(captor.firstValue, 5)
     }
 
 
 
 
+    private fun getString(@StringRes id : Int) : String {
+        return InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
+    }
+    private fun<T : View> findView(@IdRes id : Int) : T {
+        return homeFragment.view!!.findViewById<T>(id)
+    }
+
+    private fun getContext() : Context {
+        return InstrumentationRegistry.getInstrumentation().targetContext
+    }
+
 
 
     class TestHomeFragment(val testViewModel: HomeViewModel) : HomeFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            //viewModelFactory = ViewModelUtil.createFor(testViewModel)
-            homeViewModel = testViewModel
+
+        override fun getViewModel(): HomeViewModel {
+            return testViewModel
         }
-        override lateinit var homeViewModel: HomeViewModel
 
     }
 

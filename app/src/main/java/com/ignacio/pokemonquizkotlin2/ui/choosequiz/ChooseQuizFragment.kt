@@ -18,7 +18,6 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentChooseQuizBinding
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 
 
