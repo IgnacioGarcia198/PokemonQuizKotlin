@@ -1,5 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +14,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.android.synthetic.main.fragment_pokemonlist.*
 
 class PokemonListFragment : Fragment() {
@@ -50,5 +55,10 @@ class PokemonListFragment : Fragment() {
         return binding.root
     }
 
-
+    fun getViewModelFactory(
+        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
+        sharedPref: SharedPreferences = sharedPreferences
+    ) : BaseViewModelFactory {
+        return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
+    }
 }

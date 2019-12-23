@@ -1,5 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.Fragment
@@ -16,6 +17,8 @@ import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResourceRule
 import com.ignacio.pokemonquizkotlin2.androidtestutil.EspressoTestUtil
 import com.ignacio.pokemonquizkotlin2.androidtestutil.ViewModelUtil
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
@@ -23,6 +26,8 @@ import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetai
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
 import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.android.synthetic.main.fragment_home.view.*
@@ -109,7 +114,7 @@ class HomeFragmentTestAgain {
             })
 
         val homeFragment = TestHomeFragment(viewModel).apply {
-            arguments = HomeFragmentArgs.Builder(0).build().toBundle()
+            arguments = HomeFragmentArgs.Builder().setNewId(0).build().toBundle()
         }
         //coroutineTestRule.testDispatcher.runBlockingTest {
             activityRule.activity.setFragment(homeFragment)
@@ -136,9 +141,11 @@ class HomeFragmentTestAgain {
     class TestHomeFragment(val testViewModel: HomeViewModel) : HomeFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            viewModelFactory = ViewModelUtil.createFor(testViewModel)
+            //viewModelFactory = ViewModelUtil.createFor(testViewModel)
             homeViewModel = testViewModel
         }
+        override lateinit var homeViewModel: HomeViewModel
+
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -14,9 +15,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import timber.log.Timber
 
 @OpenForTesting
@@ -123,6 +127,13 @@ class HomeFragment() : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("currentIdLiveData", currentId)
+    }
+
+    fun getViewModelFactory(
+        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
+        sharedPref: SharedPreferences = sharedPreferences
+    ) : BaseViewModelFactory {
+        return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
     }
 
 }

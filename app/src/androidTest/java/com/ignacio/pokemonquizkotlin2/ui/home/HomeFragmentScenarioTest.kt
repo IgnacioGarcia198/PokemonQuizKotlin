@@ -20,7 +20,7 @@ class HomeFragmentScenarioTest {
 
     fun getFragmentScenario(id:Int) : FragmentScenario<HomeFragment> {
 
-        val fragmentArgs = HomeFragmentArgs.Builder(id).build().toBundle()
+        val fragmentArgs = HomeFragmentArgs.Builder().setNewId(id).build().toBundle()
         val viewModel : HomeViewModel = mock()
         return FragmentScenario.launchInContainer(HomeFragment::class.java, fragmentArgs,
             object : FragmentFactory() {

@@ -1,5 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
@@ -17,10 +18,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.OpenClass
 import com.ignacio.pokemonquizkotlin2.R
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
+import com.ignacio.pokemonquizkotlin2.ui.PlayViewModelFactory
 import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
+import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
@@ -61,20 +66,20 @@ class PlayFragment : Fragment() {
             }
         })*/
 
-        playViewModel.radiogroupEnabled.observe(this, Observer {
+        playViewModel.radiogroupEnabled.observe(viewLifecycleOwner, Observer {
             Timber.i("radiogroup is enabled : ${customRadioGroup.isEnabled}")
         })
 
         initToastTimer()
 
-        playViewModel.lastResult.observe(this, Observer {
+        playViewModel.lastResult.observe(viewLifecycleOwner, Observer {
             Timber.i("lastResult is ${playViewModel.lastResult.value}")
             it?.let {
                 showResult(it)
             }
         })
 
-        playViewModel.showError.observe(this, Observer {
+        playViewModel.showError.observe(viewLifecycleOwner, Observer {
             Toast.makeText(
                 context, context!!.getString(R.string.could_not_load_images),
                 Toast.LENGTH_LONG
@@ -82,7 +87,7 @@ class PlayFragment : Fragment() {
             playViewModel.showErrorDone()
         })
 
-        playViewModel.showRecords.observe(this, Observer {
+        playViewModel.showRecords.observe(viewLifecycleOwner, Observer {
             it?.let {
                 findNavController().navigate(PlayFragmentDirections.actionNavPlayToNavGameRecords(it))
                 playViewModel.showRecordsDone()
@@ -127,6 +132,15 @@ class PlayFragment : Fragment() {
                 override fun onTick(millisUntilFinished: Long) {}
 
             }
+    }
+
+    fun getViewModelFactory(
+        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
+        sharedPref: SharedPreferences = sharedPreferences,
+        questionsOrTime : Boolean,
+        limitValue : Int
+    ) : PlayViewModelFactory {
+        return PlayViewModelFactory(requireActivity().application,repository, sharedPref, questionsOrTime, limitValue)
     }
 
 }

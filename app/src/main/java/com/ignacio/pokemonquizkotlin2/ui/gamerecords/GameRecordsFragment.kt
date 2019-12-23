@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentGameRecordsBinding
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.getDatabase
-import com.ignacio.pokemonquizkotlin2.ui.getViewModelFactory
+import com.ignacio.pokemonquizkotlin2.ui.GameRecordsViewModelFactory
 
 class GameRecordsFragment : Fragment() {
 
@@ -38,5 +39,14 @@ class GameRecordsFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    fun getViewModelFactory(
+        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
+        lastRecord : GameRecord
+    ) : GameRecordsViewModelFactory {
+        return GameRecordsViewModelFactory(
+            requireActivity().application, repository, lastRecord
+        )
     }
 }

@@ -52,8 +52,6 @@ class BaseViewModelFactory constructor(
             when {
                 isAssignableFrom(HomeViewModel::class.java) ->
                     HomeViewModel(app,repository,sharedPref)
-                isAssignableFrom(ChooseQuizViewModel::class.java) ->
-                    ChooseQuizViewModel(app)
                 isAssignableFrom(PokemonListViewModel::class.java) ->
                     PokemonListViewModel(app, repository)
                 else ->
@@ -103,48 +101,5 @@ class PlayViewModelFactory constructor(
         } as T
 }
 
-
-
-fun HomeFragment.getViewModelFactory(
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
-    sharedPref: SharedPreferences = sharedPreferences
-) : BaseViewModelFactory {
-    return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
-}
-
-fun PokemonListFragment.getViewModelFactory(
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
-    sharedPref: SharedPreferences = sharedPreferences
-) : BaseViewModelFactory {
-    return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
-}
-
-fun ChooseQuizFragment.getViewModelFactory(
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
-    sharedPref: SharedPreferences = sharedPreferences
-) : BaseViewModelFactory {
-    return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
-}
-
-
-fun PlayFragment.getViewModelFactory(
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
-    sharedPref: SharedPreferences = sharedPreferences,
-    questionsOrTime : Boolean,
-    limitValue : Int
-) : PlayViewModelFactory {
-    return PlayViewModelFactory(requireActivity().application,repository, sharedPref, questionsOrTime, limitValue)
-}
-
-
-
-fun GameRecordsFragment.getViewModelFactory(
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
-    lastRecord : GameRecord
-) : GameRecordsViewModelFactory {
-    return GameRecordsViewModelFactory(
-        requireActivity().application, repository, lastRecord
-    )
-}
 
 
