@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.ui.choosequiz.ChooseQuizFragment
@@ -42,7 +43,7 @@ import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 @Suppress("UNCHECKED_CAST")
 class BaseViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     private val sharedPref: SharedPreferences = sharedPreferences
 ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
@@ -65,7 +66,7 @@ class BaseViewModelFactory constructor(
 @Suppress("UNCHECKED_CAST")
 class GameRecordsViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     private val lastRecord : GameRecord
     ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
@@ -84,7 +85,7 @@ class GameRecordsViewModelFactory constructor(
 @Suppress("UNCHECKED_CAST")
 class PlayViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepository = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
     private val sharedPref: SharedPreferences = sharedPreferences,
     private val questionsOrTime : Boolean,
     private val limitValue : Int
@@ -105,21 +106,21 @@ class PlayViewModelFactory constructor(
 
 
 fun HomeFragment.getViewModelFactory(
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
     sharedPref: SharedPreferences = sharedPreferences
 ) : BaseViewModelFactory {
     return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
 }
 
 fun PokemonListFragment.getViewModelFactory(
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
     sharedPref: SharedPreferences = sharedPreferences
 ) : BaseViewModelFactory {
     return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
 }
 
 fun ChooseQuizFragment.getViewModelFactory(
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
     sharedPref: SharedPreferences = sharedPreferences
 ) : BaseViewModelFactory {
     return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
@@ -127,7 +128,7 @@ fun ChooseQuizFragment.getViewModelFactory(
 
 
 fun PlayFragment.getViewModelFactory(
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(requireActivity().application),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
     sharedPref: SharedPreferences = sharedPreferences,
     questionsOrTime : Boolean,
     limitValue : Int
@@ -138,7 +139,7 @@ fun PlayFragment.getViewModelFactory(
 
 
 fun GameRecordsFragment.getViewModelFactory(
-    repository: PokemonRepository = PokemonRepository.getDefaultRepository(requireActivity().application),
+    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
     lastRecord : GameRecord
 ) : GameRecordsViewModelFactory {
     return GameRecordsViewModelFactory(
