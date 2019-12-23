@@ -16,7 +16,6 @@ import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
 import com.ignacio.pokemonquizkotlin2.testutils.test
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.ui.home.dailyOrDetailChange1
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.*

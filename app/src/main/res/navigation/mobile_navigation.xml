@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_home" >
         <argument
             android:name="newId"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment

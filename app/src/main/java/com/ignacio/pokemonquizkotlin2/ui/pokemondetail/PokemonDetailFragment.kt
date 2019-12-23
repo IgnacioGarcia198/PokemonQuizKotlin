@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.core.view.GestureDetectorCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.PokemonDetailFragmentBinding
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
@@ -17,7 +18,7 @@ import kotlin.math.abs
 
 class PokemonDetailFragment : Fragment() {
 
-    private lateinit var viewModel: PokemonDetailViewModel
+    private val viewModel: PokemonDetailViewModel by viewModels()
     private lateinit var mDetector: GestureDetectorCompat
     private var currentId: Int = 0
 
@@ -29,8 +30,6 @@ class PokemonDetailFragment : Fragment() {
         val binding : PokemonDetailFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.pokemon_detail_fragment,
             container,false)
         val args = PokemonDetailFragmentArgs.fromBundle(arguments!!)
-        viewModel = ViewModelProviders.of(
-            this).get(PokemonDetailViewModel::class.java)
         binding.lifecycleOwner = this
 
         var x1: Float = 0f

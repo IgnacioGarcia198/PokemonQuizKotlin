@@ -150,7 +150,7 @@ dependencies {
     testImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     testImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     testImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    testImplementation "com.google.truth:truth:$truthVersion"
+    //testImplementation "com.google.truth:truth:$truthVersion"
 
 
     // AndroidX Test - JVM testing
@@ -191,12 +191,13 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     //androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.16.0'
 
-    //androidTestImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    androidTestImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1"
     //androidTestImplementation "org.robolectric:robolectric:$robolectricVersion"
-    androidTestImplementation "com.google.truth:truth:$truthVersion"
+    //androidTestImplementation "com.google.truth:truth:$truthVersion"
+    implementation 'androidx.paging:paging-runtime-ktx:2.1.0'
 
 
     //androidTestUtil "androidx.test:orchestrator:$testRunner"

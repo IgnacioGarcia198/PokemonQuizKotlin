@@ -2,30 +2,26 @@ package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
-import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
 import timber.log.Timber
 
 @OpenForTesting
 class HomeFragment() : Fragment() {
     lateinit var viewModelFactory : ViewModelProvider.Factory
     @VisibleForTesting lateinit var homeViewModel: HomeViewModel
+    private var currentId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +45,49 @@ class HomeFragment() : Fragment() {
         //homeViewModel =
         binding.lifecycleOwner = this
         binding.viewModel = homeViewModel
-        if(arguments != null) {
-            args  = HomeFragmentArgs.fromBundle(arguments!!)
-            homeViewModel.initPush(args.newId)
-        }
-        else {
-            Timber.d("doing on  push for daily pokemon with 0")
-            homeViewModel.initPush(0)
+
+        args  = HomeFragmentArgs.fromBundle(arguments!!)
+
+        homeViewModel.initPush(args.newId)
+
+        if(args.newId > 0) {
+            var x1: Float = 0f
+            var x2: Float = 0f
+            val MIN_DISTANCE = 150
+            currentId = args.newId
+            val initialX = binding.mainImageView.x
+
+
+            binding.root.setOnTouchListener { v, event ->
+                val action: Int = event!!.action
+                var result = true
+                when (action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        Timber.i("Action was DOWN")
+                        x1 = event.x
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        Timber.i("Action was UP")
+                        x2 = event.x
+
+                        if(x1-x2 > MIN_DISTANCE && currentId < HomeViewModel.DOWNLOAD_SIZE) {
+                            homeViewModel.initPush(++currentId)
+
+                        }
+                        else if(x2-x1 > MIN_DISTANCE && currentId > 1) {
+                            homeViewModel.initPush(--currentId)
+
+                        }
+                    }
+                    else -> result = false
+                }
+                result
+            }
+
+            savedInstanceState?.let {
+                currentId = it.getInt("currentIdLiveData",args.newId)
+            }
         }
 
 
@@ -76,11 +108,14 @@ class HomeFragment() : Fragment() {
     companion object {
         fun newInstance(id : Int) =
             HomeFragment().apply {
-                arguments = HomeFragmentArgs.Builder(id).build().toBundle()
+                arguments = HomeFragmentArgs.Builder().setNewId(id).build().toBundle()
 
         }
     }
 
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("currentIdLiveData", currentId)
+    }
 
 }
