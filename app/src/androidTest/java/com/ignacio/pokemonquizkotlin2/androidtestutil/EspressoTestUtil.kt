@@ -52,7 +52,26 @@ object EspressoTestUtil {
             )
     }
 
-    private fun traverseViews(view: View?) {
+    fun disableProgressBarAnimations(activity : FragmentActivity) {
+        activity.supportFragmentManager
+            .registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentViewCreated(
+                        fm: FragmentManager,
+                        f: Fragment,
+                        v: View,
+                        savedInstanceState: Bundle?
+                    ) {
+                        // traverse all views, if any is a progress bar, replace its animation
+                        traverseViews(v)
+                    }
+                }, true
+            )
+    }
+
+
+
+    fun traverseViews(view: View?) {
         if (view is ViewGroup) {
             traverseViewGroup(view)
         } else if (view is ProgressBar) {

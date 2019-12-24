@@ -37,7 +37,7 @@ interface GameRecordDao {
     fun getNGameRecordsLiveData(limit: Int): LiveData<List<GameRecord>>
 
     @Query("DELETE FROM gameRecordTable")
-    fun deleteAll()
+    fun deleteAllGameRecords()
 
     // delete a given entry from database
     @Delete

@@ -2,10 +2,7 @@ package com.ignacio.pokemonquizkotlin2.db
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface PokemonDao {
@@ -31,6 +28,11 @@ interface PokemonDao {
     @Query("UPDATE pokemonTable SET usedAsQuestion = 0")
     fun resetUsedAsQuestion()
 
+    @Delete
+    fun delete(pokemon : DatabasePokemon)
+
+    @Query("DELETE FROM pokemonTable")
+    fun deleteAllPokemon()
     //==============================================================
 
     // for paging

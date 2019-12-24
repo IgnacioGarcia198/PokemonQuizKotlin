@@ -14,6 +14,7 @@ import com.ignacio.pokemonquizkotlin2.db.*
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.OpenClass
+import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -45,6 +46,12 @@ interface PokemonRepositoryInterface {
     suspend fun updateUsedAsQuestion(id : Int, value : Boolean)
 
     suspend fun resetUsedAsQuestionPlain()
+
+    suspend fun deletePokemon(pokemon : DatabasePokemon)
+
+    suspend fun deleteAllPokemon()
+
+
     /**
      * Fetching pokemons from database
      * @param name
@@ -66,7 +73,13 @@ interface PokemonRepositoryInterface {
     suspend fun saveRecord(gameRecord: GameRecord)
 
     fun getAllRecords() : LiveData<List<GameRecord>>
+
+    suspend fun deleteRecord(gameRecord: GameRecord)
+
+    suspend fun deleteAllRecords()
 }
+
+//==============================================================================================
 
 @OpenForTesting
 class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
@@ -123,15 +136,34 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
         }
     }
 
-    override suspend fun getFlavorTextNormally(pokid : Int, language: String, version : String,
-                                               normalCallback : (flavorAndName : String) -> Unit
-    ) {
-        val specieDetail = service.getSpecieDetail(pokid).await()
-        Timber.i("flavortexts are ${specieDetail.extractFlavorText(language, version)}")
-        withContext(dispatchers.main()) {
+    val currentSpecieDetail = MutableLiveData<NetworkSpeciesDetail?>()
 
-            normalCallback(specieDetail.extractFlavorText(language, version))
+    suspend fun getFlavorTextAndNameFirstTimeReturns(pokid : Int, language: String)
+    : Pair<List<String>, Pair<String,String>> {
+        withContext(dispatchers.io()) {
+            Timber.i("doing getSpecieFlavor")
+            print("doing getSpecieFlavor")
+
+            val specieDetail = service.getSpecieDetail(pokid).await()
+            currentSpecieDetail.value = specieDetail
+            val newVersionList = specieDetail.extractAvailableVersions(language)
+            val flavorAndName = specieDetail.extractFlavorTextAndName(language,newVersionList.first())
+            Timber.i("versions: homeStartup is true, sending versions to viewmodel")
+            print("after homeStartup versions are ${newVersionList}")
+            Timber.i("after homeStartup versions are ${newVersionList}")
+            Timber.i("and flavor and name are $flavorAndName")
+            Timber.i("AllversionsFlavors = ${specieDetail.printAllVersionFlavors(language)}")
+
+            // get the real version list
+            return@withContext Pair(newVersionList,flavorAndName)
+            //return@withContext Pair(newVersionList,flavorAndName)
         }
+    }
+
+    suspend fun getFlavorTextNormally(pokid : Int, language: String, version : String) : String {
+        return currentSpecieDetail.value?.let {
+            it.extractFlavorText(language, version)
+        } ?: ""
     }
 
     override val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
@@ -181,6 +213,18 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     override suspend fun resetUsedAsQuestionPlain() {
         withContext(dispatchers.io()) {
             database.pokemonDao.resetUsedAsQuestion()
+        }
+    }
+
+    override suspend fun deletePokemon(pokemon: DatabasePokemon) {
+        withContext(dispatchers.io()) {
+            database.pokemonDao.delete(pokemon)
+        }
+    }
+
+    override suspend fun deleteAllPokemon() {
+        withContext(dispatchers.io()) {
+            database.pokemonDao.deleteAllPokemon()
         }
     }
 
@@ -250,6 +294,18 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
 
     override fun getAllRecords() : LiveData<List<GameRecord>> {
         return database.gameRecordDao.allGameRecordsLiveData
+    }
+
+    override suspend fun deleteRecord(gameRecord: GameRecord) {
+        withContext(dispatchers.io()) {
+            database.gameRecordDao.delete(gameRecord)
+        }
+    }
+
+    override suspend fun deleteAllRecords() {
+        withContext(dispatchers.io()) {
+            database.gameRecordDao.deleteAllGameRecords()
+        }
     }
 
 }

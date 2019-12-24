@@ -24,6 +24,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource2
+import com.ignacio.pokemonquizkotlin2.androidtestutil.EspressoTestUtil
+import com.ignacio.pokemonquizkotlin2.androidtestutil.monitorFragment
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
@@ -38,6 +40,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Description
@@ -53,19 +56,20 @@ import org.mockito.Spy
 @MediumTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class PlayFragmentTest {
+class PlayFragmentScenarioTest {
 
     private lateinit var repository: PokemonRepositoryInterface
     private lateinit var dao : PokemonDao
     private lateinit var db : MyDatabase
     // An Idling Resource that waits for Data Binding to have no pending bindings
     private val dataBindingIdlingResource = DataBindingIdlingResource2()
+
     /**
      * Idling resources tell Espresso that the app is idle or busy. This is needed when operations
      * are not scheduled in the main Looper (for example when executed on a different thread).
      */
 
-    fun registerIdlingResource() {
+    private fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
     }
@@ -74,44 +78,48 @@ class PlayFragmentTest {
      * Unregister your Idling Resource so it can be garbage collected and does not leak any memory.
      */
 
-    fun unregisterIdlingResource() {
+    private fun unregisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
     }
+
     @Before
     fun initRepository() {
         //repository = FakeRepository()
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        /*val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context, MyDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         dao = db.pokemonDao
         ServiceLocator.repository = PokemonRepository(db, PokemonNetwork.pokemonApiService)
+        ServiceLocator.database = db*/
         registerIdlingResource()
+
     }
 
 
     @After
     fun tearDown() {
-        cleanupDb()
+        //cleanupDb()
         unregisterIdlingResource()
     }
 
-    fun cleanupDb() = runBlockingTest {
+    private fun cleanupDb() = runBlockingTest {
         ServiceLocator.resetRepository()
     }
 
-
+    // To test with empty db
     @Test
     fun viewsInInitialState() {
         // GIVEN
         val bundle = PlayFragmentArgs.Builder(false,10).build().toBundle()
         // WHEN
-        val pepe = launchFragmentInContainer<PlayFragment>(bundle, R.style.AppTheme)
+        val scenario = launchFragmentInContainer<PlayFragment>(bundle, R.style.AppTheme)
+        dataBindingIdlingResource.monitorFragment(scenario)
         // CHECK
-        //onView(withId(R.id.radioGroupProgressBar)).check(matches(isDisplayed())).check(matches(
-        //    withText("Refreshing pokemon…")))
+        onView(withId(R.id.radioGroupProgressBar)).check(matches(isDisplayed()))
+        onView(withId(R.id.pbTV)).check(matches(isDisplayed())).check(matches(withText("Refreshing pokemon…")))
         onView(withId(R.id.customRadioGroup)).check(matches(isDisplayed()))
         onView(withId(R.id.lastResultTV)).check(matches(withText("Last result:"))).check(matches(withCompoundDrawables(
             arrayOf(0,0,0,0))))
@@ -122,38 +130,43 @@ class PlayFragmentTest {
         for(i in 0 until NUMBER_OF_ANSWERS-1) {
             onView(nthChildOf(withId(R.id.customRadioGroup),i)).check(matches(not(isEnabled())))
         }
-
+        //cleanupDb()
     }
 
-    lateinit var  spy: PlayViewModel
-    class TestPlayFragment : PlayFragment() {
-        lateinit var spy : PlayViewModel
-        override fun provideViewModel(questionsOrTime: Boolean, gameLength: Int): PlayViewModel {
-            val viewModel = super.provideViewModel(questionsOrTime, gameLength)
-            spy = spy(viewModel)
-
-            return viewModel
-        }
-    }
-
+    // To test with empty db
     @Test
     fun pokemonsAreRefreshed() {
         // GIVEN
         val bundle = PlayFragmentArgs.Builder(false,10).build().toBundle()
         // WHEN
-        val pepe = launchFragmentInContainer<TestPlayFragment>(bundle, R.style.AppTheme)
-        var theSpy : PlayViewModel? = null
-        pepe.onFragment {
-            Thread.sleep(100)
-            theSpy = it.spy
-            verify(theSpy)!!.refreshPokemon(0,-1)
+        val scenario = launchFragmentInContainer<PlayFragment>(bundle, R.style.AppTheme)
+        scenario.onFragment {
+            EspressoTestUtil.traverseViews(it.view!!)
         }
-        //Thread.sleep(100)
-
-
+        //EspressoTestUtil.disableProgressBarAnimations(activityRule)
+        dataBindingIdlingResource.monitorFragment(scenario)
         // CHECK
+        onView(withId(R.id.radioGroupProgressBar)).check(matches(isDisplayed()))
+        onView(withId(R.id.pbTV)).check(matches(isDisplayed())).check(matches(withText("Refreshing pokemon…")))
+        for(i in 0 until NUMBER_OF_ANSWERS-1) {
+            onView(nthChildOf(withId(R.id.customRadioGroup),i)).check(matches(not(isEnabled())))
+        }
 
+        // WHEN
+        Thread.sleep(500)
+        // CHECK
+        onView(withId(R.id.radioGroupProgressBar)).check(matches(isDisplayed()))
+        onView(withId(R.id.pbTV)).check(matches(isDisplayed())).check(matches(withText("Loading…")))
 
+        // WHEN
+        Thread.sleep(2000)
+        // CHECK
+        onView(withId(R.id.radioGroupProgressBar)).check(matches(not(isDisplayed())))
+
+        for(i in 0 until NUMBER_OF_ANSWERS-1) {
+            onView(nthChildOf(withId(R.id.customRadioGroup),i)).check(matches(isEnabled()))
+        }
+        //cleanupDb()
     }
 
     @Test

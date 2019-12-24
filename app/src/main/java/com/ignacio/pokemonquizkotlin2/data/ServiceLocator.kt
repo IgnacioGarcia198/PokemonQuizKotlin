@@ -34,6 +34,8 @@ object ServiceLocator {
     val lock = Any()
     @VisibleForTesting
     fun resetRepository() {
+        Timber.i("=====================================================================")
+        Timber.i("cleaning db")
         synchronized(lock) {
 
             // Clear all data to avoid test pollution.

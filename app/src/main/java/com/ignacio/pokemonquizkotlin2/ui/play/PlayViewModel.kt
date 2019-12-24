@@ -228,49 +228,50 @@ class PlayViewModel(
         viewModelScope.launch {
             //var nextQuestionPokemon : Pokemon?
             // answerList : List<String>
+            wrapEspressoIdlingResource {
+                try {
+                    repository.changeResponseState(PokemonResponseState.LOADING)
+                    var nextQuestionPokemon =
+                        repository.getNextRoundQuestionPokemon()?.asDomainModel()
+                    //Timber.i("next pokemon is $nextQuestionPok")
+                    //var nextQuestionPokemon = nextQuestionPok.asDomainModel()
+                    Timber.i("next pokemon is $nextQuestionPokemon")
+                    if (nextQuestionPokemon == null && networkIsOk(app)) {
+                        Timber.i("all pokemon used, resetting...")
+                        repository.resetUsedAsQuestionPlain()
+                        nextQuestionPokemon =
+                            repository.getNextRoundQuestionPokemon()!!.asDomainModel()
+                    }
+                    repository.updateUsedAsQuestion(nextQuestionPokemon!!.id, true)
 
-            try {
-                repository.changeResponseState(PokemonResponseState.LOADING)
-                var nextQuestionPokemon = repository.getNextRoundQuestionPokemon()?.asDomainModel()
-                //Timber.i("next pokemon is $nextQuestionPok")
-                //var nextQuestionPokemon = nextQuestionPok.asDomainModel()
-                Timber.i("next pokemon is $nextQuestionPokemon")
-                if(nextQuestionPokemon == null && networkIsOk(app)) {
-                    Timber.i("all pokemon used, resetting...")
-                    repository.resetUsedAsQuestionPlain()
-                    nextQuestionPokemon =
-                        repository.getNextRoundQuestionPokemon()!!.asDomainModel()
-                }
-                repository.updateUsedAsQuestion(nextQuestionPokemon!!.id, true)
-
-                // make function in Repository and inside it update pokemon in db (used as true).
+                    // make function in Repository and inside it update pokemon in db (used as true).
 
 
-                questionPokemonId = nextQuestionPokemon.id
-                Timber.i("next id is $questionPokemonId")
+                    questionPokemonId = nextQuestionPokemon.id
+                    Timber.i("next id is $questionPokemonId")
 
-                // start gettin image from Glide...
-                _nextRoundQuestionPokemonId.postValue(questionPokemonId)
+                    // start gettin image from Glide...
+                    _nextRoundQuestionPokemonId.postValue(questionPokemonId)
 
-                // get answer pokemon names from db and show them
-                //_gameState.value = GameState.GETTING_ANSWERS
-                val answerList = repository.getNextRoundAnswers(
-                    questionPokemonId,
-                    NUMBER_OF_ANSWERS - 1
-                )
-                repository.changeResponseState(PokemonResponseState.DONE)
-                withContext(dispatchers.main()) {
-                    // add right answer in random place
-                    rightAnswerIndex = Random().nextInt(NUMBER_OF_ANSWERS)
-                    answerList.add(rightAnswerIndex, nextQuestionPokemon.name)
-                    _nextRoundAnswers.value = answerList
+                    // get answer pokemon names from db and show them
+                    //_gameState.value = GameState.GETTING_ANSWERS
+                    val answerList = repository.getNextRoundAnswers(
+                        questionPokemonId,
+                        NUMBER_OF_ANSWERS - 1
+                    )
+                    repository.changeResponseState(PokemonResponseState.DONE)
+                    withContext(dispatchers.main()) {
+                        // add right answer in random place
+                        rightAnswerIndex = Random().nextInt(NUMBER_OF_ANSWERS)
+                        answerList.add(rightAnswerIndex, nextQuestionPokemon.name)
+                        _nextRoundAnswers.value = answerList
 
-                }
+                    }
 
-            }
-            catch (e : Exception) {
-                if(_nextRoundQuestionPokemonId.value == 0 || _nextRoundAnswers.value!!.isEmpty()) {
-                    repository.changeResponseState(PokemonResponseState.DB_ERROR)
+                } catch (e: Exception) {
+                    if (_nextRoundQuestionPokemonId.value == 0 || _nextRoundAnswers.value!!.isEmpty()) {
+                        repository.changeResponseState(PokemonResponseState.DB_ERROR)
+                    }
                 }
             }
         }
@@ -280,11 +281,13 @@ class PlayViewModel(
         // start next round!
         //withContext(dispatchers.main()) {
         viewModelScope.launch {
-            withContext(dispatchers.default()) {
-                delay(100)
-                withContext(dispatchers.main()) {
-                    resetAnimation()
-                    onAnswerChosen(-1)
+            wrapEspressoIdlingResource {
+                withContext(dispatchers.default()) {
+                    delay(100)
+                    withContext(dispatchers.main()) {
+                        resetAnimation()
+                        onAnswerChosen(-1)
+                    }
                 }
             }
         }
