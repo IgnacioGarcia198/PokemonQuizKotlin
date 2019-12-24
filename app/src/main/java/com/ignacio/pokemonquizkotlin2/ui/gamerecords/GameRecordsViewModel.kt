@@ -2,6 +2,7 @@ package com.ignacio.pokemonquizkotlin2.ui.gamerecords
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
@@ -18,7 +19,7 @@ import java.io.IOException
 class GameRecordsViewModel(
     app : Application,
     lastRecord: GameRecord,
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : BaseViewModel(app,repository) {
 
 

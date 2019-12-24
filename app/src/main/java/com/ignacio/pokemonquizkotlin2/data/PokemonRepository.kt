@@ -84,14 +84,14 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
     }
     companion object {
         const val DATABASE_PAGE_SIZE = 20
-        @Volatile
+        /*@Volatile
         private var defaultRepository : PokemonRepository? = null
         fun getDefaultRepository(context : Context) : PokemonRepository {
             if(defaultRepository == null) {
                 defaultRepository = PokemonRepository(getDatabase(context))
             }
             return defaultRepository!!
-        }
+        }*/
     }
 
     override var homeStartup = true
@@ -133,21 +133,6 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
             normalCallback(specieDetail.extractFlavorText(language, version))
         }
     }
-
-    /*suspend fun getVersionList(callback: (versions : List<String>) -> Unit) {
-        withContext(dispatchers.io()) {
-            val versionsContainer = service.getVersionList(0,-1).await()
-            Timber.i("Versions are ${versionsContainer.extractVersionList()}")
-
-            withContext(dispatchers.main()) {
-                callback(versionsContainer.extractVersionList())
-            }
-        }
-    }*/
-
-    /*private val _versionList = MutableLiveData<List<String>>()
-    val versionList : LiveData<List<String>>
-    get() = _versionList*/
 
     override val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
     override val flavorTextAndName : LiveData<Pair<String,String>>

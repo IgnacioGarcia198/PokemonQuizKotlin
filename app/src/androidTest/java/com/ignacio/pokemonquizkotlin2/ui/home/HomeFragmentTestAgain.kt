@@ -222,7 +222,7 @@ class HomeFragmentTestAgain {
 
     class TestHomeFragment(val testViewModel: HomeViewModel) : HomeFragment() {
 
-        override fun getViewModel(): HomeViewModel {
+        override fun provideViewModel(): HomeViewModel {
             return testViewModel
         }
 

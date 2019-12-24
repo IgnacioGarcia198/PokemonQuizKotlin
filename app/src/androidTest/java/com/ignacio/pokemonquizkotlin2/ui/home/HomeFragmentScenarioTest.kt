@@ -23,27 +23,30 @@ import org.junit.runner.RunWith
 class HomeFragmentScenarioTest {
 
 
-    val viewModel : HomeViewModel = mock()
-    inner class TestHomeFragment : HomeFragment() {
-        override fun getViewModel(): HomeViewModel {
-            return viewModel
+    val testViewModel : HomeViewModel = mock()
+    class TestHomeFragment1(val testViewModel: HomeViewModel) : HomeFragment() {
+        override fun provideViewModel(): HomeViewModel {
+            return testViewModel
         }
 
     }
 
-    fun getFragmentScenario(id:Int) : FragmentScenario<TestHomeFragment> {
+    /*fun getFragmentScenario(id:Int) : FragmentScenario<TestHomeFragment> {
 
         val fragmentArgs = HomeFragmentArgs.Builder().setNewId(id).build().toBundle()
 
-        return FragmentScenario.launchInContainer(TestHomeFragment::class.java, fragmentArgs)
+        //return FragmentScenario.launchInContainer<TestHomeFragment>(fragmentArgs, R.style.AppTheme)
 
         //val fragmentArgs = HomeFragmentArgs.Builder(id).build().toBundle()
         //return launchFragmentInContainer<HomeFragment>(fragmentArgs)
-    }
+    }*/
 
     @Test
     fun testEventFragment() {
-        val scenario = getFragmentScenario(0)
+        //val scenario = getFragmentScenario(0)
+        val fragmentArgs = HomeFragmentArgs.Builder().setNewId(0).build().toBundle()
+        //launchFragmentInContainer<HomeFragment>(fragmentArgs,R.style.AppTheme)
+        launchFragmentInContainer<TestHomeFragment1>(fragmentArgs,R.style.AppTheme)
         onView(withId(R.id.textView7)).check(matches(withText("Today\'s pokemon is&#8230;")))
 
     }

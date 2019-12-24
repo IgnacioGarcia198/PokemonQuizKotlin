@@ -19,7 +19,7 @@ import kotlinx.coroutines.SupervisorJob
 @OpenForTesting
 abstract class BaseViewModel(
     val app : Application,
-    val repository : PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    val repository : PokemonRepositoryInterface,
     val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(app) {
 

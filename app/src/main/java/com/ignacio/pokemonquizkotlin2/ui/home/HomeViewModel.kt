@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
+import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
@@ -20,7 +21,7 @@ import java.util.*
 @OpenForTesting
 class HomeViewModel(
     app : Application,
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     val sharedPref: SharedPreferences = sharedPreferences
 ) : BaseViewModel(app,repository) {
 

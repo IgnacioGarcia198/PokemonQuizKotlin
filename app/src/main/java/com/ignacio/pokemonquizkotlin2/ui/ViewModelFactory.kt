@@ -43,7 +43,7 @@ import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 @Suppress("UNCHECKED_CAST")
 class BaseViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     private val sharedPref: SharedPreferences = sharedPreferences
 ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
@@ -64,7 +64,7 @@ class BaseViewModelFactory constructor(
 @Suppress("UNCHECKED_CAST")
 class GameRecordsViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     private val lastRecord : GameRecord
     ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
@@ -83,7 +83,7 @@ class GameRecordsViewModelFactory constructor(
 @Suppress("UNCHECKED_CAST")
 class PlayViewModelFactory constructor(
     private val app : Application,
-    private val repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    private val repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     private val sharedPref: SharedPreferences = sharedPreferences,
     private val questionsOrTime : Boolean,
     private val limitValue : Int

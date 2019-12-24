@@ -13,7 +13,9 @@ import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentGameRecordsBinding
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.getDatabase
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.ui.GameRecordsViewModelFactory
+import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 
 class GameRecordsFragment : Fragment() {
 
@@ -26,8 +28,7 @@ class GameRecordsFragment : Fragment() {
     ): View? {
         val args = GameRecordsFragmentArgs.fromBundle(arguments!!)
         val binding = FragmentGameRecordsBinding.inflate(inflater)
-        viewModel = ViewModelProvider(this, getViewModelFactory(lastRecord = args.lastRecord))
-            .get(GameRecordsViewModel::class.java)
+        viewModel = provideViewModel(args.lastRecord)
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
@@ -41,12 +42,11 @@ class GameRecordsFragment : Fragment() {
         return binding.root
     }
 
-    fun getViewModelFactory(
-        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
-        lastRecord : GameRecord
-    ) : GameRecordsViewModelFactory {
-        return GameRecordsViewModelFactory(
-            requireActivity().application, repository, lastRecord
+    // override this method in a subclass for testing.
+    fun provideViewModel(lastRecord : GameRecord) : GameRecordsViewModel {
+        return ViewModelProvider(this, GameRecordsViewModelFactory(
+            requireActivity().application, lastRecord = lastRecord
         )
+        ).get(GameRecordsViewModel::class.java)
     }
 }

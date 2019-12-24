@@ -56,7 +56,7 @@ class HomeFragment() : Fragment() {
             container,false)
         //homeViewModel =
         binding.lifecycleOwner = this
-        homeViewModel = getViewModel() //
+        homeViewModel = provideViewModel() //
         binding.viewModel = homeViewModel
 
         args  = HomeFragmentArgs.fromBundle(arguments!!)
@@ -132,7 +132,7 @@ class HomeFragment() : Fragment() {
     }
 
     // override this method in a subclass for testing.
-    fun getViewModel() : HomeViewModel {
+    fun provideViewModel() : HomeViewModel {
         return ViewModelProvider(this,BaseViewModelFactory(
            requireActivity().application
         )).get(HomeViewModel::class.java)

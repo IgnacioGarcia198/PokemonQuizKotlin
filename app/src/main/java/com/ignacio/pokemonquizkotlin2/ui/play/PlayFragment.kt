@@ -23,7 +23,9 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
+import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.ui.PlayViewModelFactory
+import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
@@ -35,7 +37,7 @@ class PlayFragment : Fragment() {
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
-    @VisibleForTesting lateinit var playViewModel: PlayViewModel
+    private lateinit var playViewModel: PlayViewModel
     private lateinit var gameToast : Toast
     private lateinit var toastCountDown : CountDownTimer
 
@@ -49,21 +51,11 @@ class PlayFragment : Fragment() {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         val args = PlayFragmentArgs.fromBundle(arguments!!)
         //playViewModel.initGame(args.questionsOrTime,args.gameLength)
-        playViewModel = ViewModelProvider(this,
-            getViewModelFactory(questionsOrTime = args.questionsOrTime, limitValue = args.gameLength))
-            .get(PlayViewModel::class.java)
-
+        playViewModel = provideViewModel(args.questionsOrTime,args.gameLength)
             //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
 
-
-        /*playViewModel.showChooseQuizFragment.observe(this, Observer {
-            if(it) {
-                //showChooseQuizDialog()
-                playViewModel.chooseQuizShown()
-            }
-        })*/
 
         playViewModel.radiogroupEnabled.observe(viewLifecycleOwner, Observer {
             Timber.i("radiogroup is enabled : ${customRadioGroup.isEnabled}")
@@ -79,11 +71,13 @@ class PlayFragment : Fragment() {
         })
 
         playViewModel.showError.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(
-                context, context!!.getString(R.string.could_not_load_images),
-                Toast.LENGTH_LONG
-            ).show()
-            playViewModel.showErrorDone()
+            if(it) {
+                Toast.makeText(
+                    context, context!!.getString(R.string.could_not_load_images),
+                    Toast.LENGTH_LONG
+                ).show()
+                playViewModel.showErrorDone()
+            }
         })
 
         playViewModel.showRecords.observe(viewLifecycleOwner, Observer {
@@ -133,13 +127,13 @@ class PlayFragment : Fragment() {
             }
     }
 
-    fun getViewModelFactory(
-        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().application),
-        sharedPref: SharedPreferences = sharedPreferences,
-        questionsOrTime : Boolean,
-        limitValue : Int
-    ) : PlayViewModelFactory {
-        return PlayViewModelFactory(requireActivity().application,repository, sharedPref, questionsOrTime, limitValue)
+
+    // override this method in a subclass for testing.
+    fun provideViewModel(questionsOrTime: Boolean, gameLength : Int) : PlayViewModel {
+        return ViewModelProvider(this, PlayViewModelFactory(
+            requireActivity().application,questionsOrTime = questionsOrTime, limitValue = gameLength
+        )
+        ).get(PlayViewModel::class.java)
     }
 
 }

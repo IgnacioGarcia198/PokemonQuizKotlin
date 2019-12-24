@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
@@ -31,7 +32,7 @@ class PlayViewModel(
     app : Application,
     private val questionsOrTime : Boolean = true,
     private val limitValue : Int = 0,
-    repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(app),
+    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
     val sharedPref: SharedPreferences = sharedPreferences,
     val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
 ) : BaseViewModel(app,repository) {
@@ -94,10 +95,11 @@ class PlayViewModel(
      * All content of init() is moved to initForUnitTest() in order to make testing easier.
      */
     init {
-
+        // we comment this line for unit-testing this viewmodel.
+        initForUnitTest()
     }
 
-    fun initForUnitTest() {
+    final fun initForUnitTest() {
         _showChooseQuizFragment.value = true // show fragment just started
 
         var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)

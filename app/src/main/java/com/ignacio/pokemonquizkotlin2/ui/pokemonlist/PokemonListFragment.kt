@@ -9,23 +9,25 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
+import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 
 class PokemonListFragment : Fragment() {
 
-    private val pokemonListViewModel: PokemonListViewModel by viewModels {getViewModelFactory()}
+    private lateinit var pokemonListViewModel: PokemonListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //pokemonListViewModel =
+        pokemonListViewModel = provideViewModel()
             //ViewModelProviders(this).get(PokemonListViewModel::class.java)
         val binding = FragmentPokemonlistBinding.inflate(inflater)
         //val root = inflater.inflate(R.layout.fragment_pokemonlist, container, false)
@@ -49,10 +51,10 @@ class PokemonListFragment : Fragment() {
         return binding.root
     }
 
-    fun getViewModelFactory(
-        repository: PokemonRepositoryInterface = PokemonRepository.getDefaultRepository(requireActivity().applicationContext),
-        sharedPref: SharedPreferences = sharedPreferences
-    ) : BaseViewModelFactory {
-        return BaseViewModelFactory(requireActivity().application,repository, sharedPref)
+    // override this method in a subclass for testing.
+    fun provideViewModel() : PokemonListViewModel {
+        return ViewModelProvider(this,BaseViewModelFactory(
+            requireActivity().application
+        )).get(PokemonListViewModel::class.java)
     }
 }

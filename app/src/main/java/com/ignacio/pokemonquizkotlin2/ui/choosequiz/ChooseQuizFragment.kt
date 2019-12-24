@@ -23,7 +23,7 @@ import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 
 class ChooseQuizFragment : Fragment() {
 
-    val viewModel: ChooseQuizViewModel by viewModels {getViewModelFactory()}
+    private lateinit var viewModel: ChooseQuizViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +31,7 @@ class ChooseQuizFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val binding = FragmentChooseQuizBinding.inflate(inflater)
-
+        viewModel = provideViewModel()
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -72,8 +72,8 @@ class ChooseQuizFragment : Fragment() {
         return binding.root
     }
 
-    fun getViewModelFactory() : ViewModelProvider.AndroidViewModelFactory {
-        return ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+    fun provideViewModel() : ChooseQuizViewModel {
+        return ViewModelProvider(this).get(ChooseQuizViewModel::class.java)
     }
 
 }
