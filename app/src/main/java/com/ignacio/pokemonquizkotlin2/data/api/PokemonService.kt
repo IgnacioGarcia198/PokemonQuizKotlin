@@ -1,7 +1,10 @@
 package com.ignacio.pokemonquizkotlin2.data.api
+import com.ignacio.pokemonquizkotlin2.BuildConfig
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -29,9 +32,19 @@ interface PokemonService {
  */
 object PokemonNetwork {
 
+    val level = if (BuildConfig.DEBUG) {
+        HttpLoggingInterceptor.Level.BODY
+    } else {
+        HttpLoggingInterceptor.Level.NONE
+    }
+    val loggingInterceptor = HttpLoggingInterceptor().setLevel(level)
     // Configure retrofit to parse JSON and use coroutines
+    val okHttp = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .build()
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://pokeapi.co/")
+        .client(okHttp)
         .addConverterFactory(MoshiConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()

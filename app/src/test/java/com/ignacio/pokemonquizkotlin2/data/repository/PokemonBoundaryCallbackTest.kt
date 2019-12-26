@@ -47,7 +47,7 @@ class PokemonBoundaryCallbackTest {
     }
 
 
-    @Test
+    /*@Test
     fun getFlavorTextAndNameFirstTimeTest() = coroutinesTestRule.testDispatcher.runBlockingTest {
 
         whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
@@ -62,12 +62,12 @@ class PokemonBoundaryCallbackTest {
             assertThat(
             versions == theversions && flavorAndName == theflavorAndName, `is`(true))
         }
-    }
+    }*/
 
     /**
      * Checks that the callback passed as parameter is called with the correct parameters.
      */
-    @Test
+    /*@Test
     fun getFlavorTextAndNameFirstTimeTestCallback1() = coroutinesTestRule.testDispatcher.runBlockingTest {
 
         whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
@@ -85,12 +85,12 @@ class PokemonBoundaryCallbackTest {
         })
         //verify(repository).getFlavorTextAndNameFirstTime(1,newPokemonCallback = captor1.capture())
 
-    }
+    }*/
 
     /**
      * Checks the same but using argument captors.
      */
-    @Test
+    /*@Test
     fun getFlavorTextAndNameFirstTimeTestCallback2() = coroutinesTestRule.testDispatcher.runBlockingTest {
 
         whenever(pokemonApiService.getSpecieDetail(1)).doReturn(async {
@@ -123,7 +123,7 @@ class PokemonBoundaryCallbackTest {
             }
         }
 
-    }
+    }*/
 
     @Test
     fun findPokemonsByNameInRoomTest() {

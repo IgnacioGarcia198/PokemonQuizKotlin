@@ -138,15 +138,18 @@ class HomeViewModel(
                 repository.changeResponseState(PokemonResponseState.LOADING)
                 writeLine()
                 Timber.i("before calculating")
-                val versionsMapAndName = repository.getFlavorTextAndNameFirstTimeReturns(currentId,"en")
+                /**
+                 * Destructuring declaration
+                 */
+                val (themap, thename) = repository.getFlavorTextAndNameFirstTimeReturns(currentId,"en")
                 writeLine()
-                Timber.i("after calculating versionsmap and name are $versionsMapAndName")
-                if(versionsMapAndName.first.isNullOrEmpty() || versionsMapAndName.second.isNullOrEmpty()) {
+                Timber.i("after calculating versionsmap and name are $themap, $thename")
+                if(themap.isNullOrEmpty() || thename.isNullOrEmpty()) {
                     repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
                 }
                 else {
-                    val themap = versionsMapAndName.first
-                    _name.postValue(versionsMapAndName.second)
+                    //val themap = versionsMapAndName.first
+                    _name.postValue(thename)
                     _versionsMap.postValue(themap)
                     _versionList.postValue(themap.keys.toList())
                     _flavorText.postValue(themap[themap.keys.first()])
@@ -160,7 +163,7 @@ class HomeViewModel(
                     repository.changeResponseState(PokemonResponseState.DONE)
                 }
                 writeLine()
-                Timber.i("getflavorandnameinitially was executed, result is $versionsMapAndName")
+                Timber.i("getflavorandnameinitially was executed, result is $themap, $thename")
             }
             catch (e: IOException) {
                 // Show a Toast error message and hide the progress bar.

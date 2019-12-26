@@ -44,8 +44,15 @@ android {
     }
 
     sourceSets {
-        androidTest.java.srcDirs += "src/test-common/java"
-        test.java.srcDirs += "src/test-common/java"
+
+        test {
+            java.srcDirs += "src/test-common/java"
+            //resources.srcDirs += "src/test-common/resources"
+        }
+        androidTest {
+            java.srcDirs += "src/test-common/java"
+            //resources.srcDirs += "src/test-common/resources"
+        }
     }
 
     dataBinding {
@@ -93,9 +100,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    implementation("com.squareup.okhttp3:logging-interceptor:4.2.1")
 
     // Room dependency
-    def room_version = "2.2.2"
+    def room_version = "2.2.3"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
@@ -119,7 +127,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.10.0'
 
     // Paging Library
-    implementation 'androidx.paging:paging-runtime:2.1.0'
+    implementation 'androidx.paging:paging-runtime:2.1.1'
     //implementation 'androidx.work:work-runtime:2.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
@@ -137,7 +145,8 @@ dependencies {
         exclude group: 'org.hamcrest'
     }
 
-
+    testImplementation 'com.google.guava:guava:26.0-jre'
+    testImplementation 'com.google.truth:truth:1.0'
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlin"
     testImplementation "org.mockito:mockito-android:$mockitoVersion"
@@ -164,9 +173,12 @@ dependencies {
     testImplementation "androidx.test:rules:$androidXTestRulesVersion"
     // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
     def fragmentVersion = '1.1.0'
-    debugImplementation "androidx.fragment:fragment-testing:1.2.0-rc03"
+    debugImplementation "androidx.fragment:fragment-testing:1.2.0-rc04"
     //implementation "androidx.test:core:$androidXTestCoreVersion"
-    implementation "androidx.fragment:fragment:1.2.0-rc03"
+    implementation "androidx.fragment:fragment:1.2.0-rc04"
+
+    // mockwebserver dependency
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")
 
 
     // AndroidX Test - Instrumented testing
