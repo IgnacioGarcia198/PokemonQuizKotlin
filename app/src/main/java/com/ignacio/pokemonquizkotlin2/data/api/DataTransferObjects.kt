@@ -46,10 +46,7 @@ fun NetworkSpeciesDetail.extractFlavorTextAndName(language : String, version : S
                 Timber.i("flavor entry selected: ${it.flavorText}")}
             it.language.name == language && it.version.name == version
         }.map { cleanSpaces(it.flavorText) }.joinToString(separator = "\n"),
-        names.filter {
-            if(it.language.name == language) {Timber.i("language selected: ${it.language.name}")}
-            it.language.name == language }.map {Timber.i("name selected: ${it.name}")
-            it.name }.joinToString())
+        names.find { it.language.name == language }!!.name)
 }
 
 fun NetworkSpeciesDetail.printAllVersionFlavors(language: String) : Map<String,String> {
@@ -58,6 +55,18 @@ fun NetworkSpeciesDetail.printAllVersionFlavors(language: String) : Map<String,S
             .map { FlavorTextEntry("\""+cleanSpaces(it.flavorText)+"\"",
                 NameUrlPair(language,it.language.url),NameUrlPair("\""+it.version.name+"\"", it.version.url)) }
             .map { it.version.name to it.flavorText}.toMap()
+    //)
+}
+
+fun NetworkSpeciesDetail.extractName(language: String) : String {
+    //Timber.i(
+    return names.find { it.language.name == language }!!.name
+}
+
+fun NetworkSpeciesDetail.extractAllVersionsAndFlavors(language: String) : Map<String,String> {
+    //Timber.i(
+    return flavorTextEntries.asSequence().filter { it.language.name == language }
+        .map { it.version.name to cleanSpaces(it.flavorText)}.toMap()
     //)
 }
 

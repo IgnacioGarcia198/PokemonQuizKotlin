@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
+import timber.log.Timber
 import java.util.*
 
 fun networkIsOk(context: Context) : Boolean {
@@ -21,4 +22,12 @@ const val LAST_PAGING_POKEMON_ID_KEY = "lastOfset"
 fun dateIsFresh(minutes : Long) : Boolean {
     val nowMillis = Calendar.getInstance().timeInMillis
     return nowMillis/60/1000 - minutes <= FRESH_TIMEOUT_IN_MINUTES
+}
+
+fun writeLine() {
+    Timber.i("=========================================================================================")
+}
+
+fun writeLineTest() {
+    println("=========================================================================================")
 }

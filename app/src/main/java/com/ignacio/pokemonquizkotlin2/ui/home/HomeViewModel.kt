@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
+import androidx.lifecycle.Transformations.map
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
@@ -13,10 +14,12 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
+import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
+import kotlin.collections.HashMap
 
 @OpenForTesting
 class HomeViewModel(
@@ -42,9 +45,8 @@ class HomeViewModel(
     /**
      * The list of versions where current pokemon's flavor text is available
      */
-    @VisibleForTesting val _versionList = MutableLiveData<List<String>>(mutableListOf())
-    val versionList : LiveData<List<String>>
-        get() = _versionList
+    private val _versionList = MutableLiveData<List<String>>(listOf(""))
+    val versionList : LiveData<List<String>> = _versionList//Transformations.map(versionsMap) {it.keys.toList()}
 
 
     /**
@@ -59,7 +61,7 @@ class HomeViewModel(
      * Current pokemon's flavor text
      */
     private val _flavorText = MutableLiveData<String>("") //= Transformations.map(repository.flavorTextAndName) {pair -> pair.first}
-    val flavorText : LiveData<String> = _flavorText
+    val flavorText : LiveData<String> = _flavorText//Transformations.map(_version) {_versionsMap.value!![it] ?: ""}
     /**
      * Currrent pokemon's name
      */
@@ -94,6 +96,8 @@ class HomeViewModel(
     fun initPush(newId: Int) {
         calculateNewId(newId)
         if(!inited) {
+            writeLine()
+            Timber.i("getting flavor and name initially")
             getFlavorAndNameInitially()
         }
     }
@@ -117,32 +121,54 @@ class HomeViewModel(
         }
     }
 
+    private val _versionsMap = MutableLiveData<Map<String,String>>()
+    val versionsMap : LiveData<Map<String,String>>
+    get() = _versionsMap
+
     /**
      * Gets both flavor text for current language and version and also the pokemon's name, we do it together
      * in order to save in calls to the api.
      */
     @VisibleForTesting
     fun getFlavorAndNameInitially() {
-
         viewModelScope.launch {
             try {
+                writeLine()
+                Timber.i("coroutine lauched")
                 repository.changeResponseState(PokemonResponseState.LOADING)
-                repository.getFlavorTextAndNameFirstTime(currentId,"en","red") {
-                        versions, flavorAndName ->
-                    onFlavorTextAndNameResult(versions, flavorAndName)
+                writeLine()
+                Timber.i("before calculating")
+                val versionsMapAndName = repository.getFlavorTextAndNameFirstTimeReturns(currentId,"en")
+                writeLine()
+                Timber.i("after calculating versionsmap and name are $versionsMapAndName")
+                if(versionsMapAndName.first.isNullOrEmpty() || versionsMapAndName.second.isNullOrEmpty()) {
+                    repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
                 }
-                repository.changeResponseState(PokemonResponseState.DONE)
+                else {
+                    val themap = versionsMapAndName.first
+                    _name.postValue(versionsMapAndName.second)
+                    _versionsMap.postValue(themap)
+                    _versionList.postValue(themap.keys.toList())
+                    _flavorText.postValue(themap[themap.keys.first()])
+                    _version.postValue(themap.keys.first())
+
+                    /*_name.value = versionsMapAndName.second
+                    _versionsMap.value = themap
+                    _versionList.value = themap.keys.toList()
+                    _flavorText.value = themap[themap.keys.first()]
+                    _version.value = themap.keys.first()*/
+                    repository.changeResponseState(PokemonResponseState.DONE)
+                }
+                writeLine()
+                Timber.i("getflavorandnameinitially was executed, result is $versionsMapAndName")
             }
             catch (e: IOException) {
                 // Show a Toast error message and hide the progress bar.
-                if(flavorText.value == null || name.value == null ||
-                    flavorText.value!!.isEmpty() || name.value!!.isEmpty())
+                if(versionList.value.isNullOrEmpty() || name.value.isNullOrEmpty())
                     repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
             }
         }
     }
-
-
 
     /**
      * Event, version is chosen in spinner
@@ -151,18 +177,9 @@ class HomeViewModel(
         //_version.value = newVersion
         if(newVersion != _version.value) {
             viewModelScope.launch {
-                try {
-                    repository.changeResponseState(PokemonResponseState.LOADING)
-                    repository.getFlavorTextNormally(pokid = currentId,language = "en",version = newVersion) {
-                        _version.value = newVersion
-                        _flavorText.value = it
-                    }
-                    repository.changeResponseState(PokemonResponseState.DONE)
-                }
-                catch (e: IOException) {
-                    // Show a Toast error message and hide the progress bar.
-                    if(flavorText.value == null || flavorText.value!!.isEmpty())
-                        repository.changeResponseState(PokemonResponseState.NETWORK_ERROR)
+                _version.value  = newVersion
+                _versionsMap.value?.let {
+                    _flavorText.value = _versionsMap.value!![newVersion]
                 }
             }
         }
@@ -200,29 +217,6 @@ class HomeViewModel(
     }
 
     //================================================
-
-
-    @VisibleForTesting
-    fun onFlavorTextAndNameResult(versions : List<String>, flavorAndName: Pair<String, String>) {
-        onVersionsReady(versions)
-        setFlavorAndName(flavorAndName)
-        inited = true
-    }
-    /**
-     * To call when the list of available versions for current pokemon is ready.
-     */
-    @VisibleForTesting
-    fun onVersionsReady(versions : List<String>) {
-        Timber.i("calling versions ready")
-        _versionList.value = versions
-        _version.value = versions.first()
-    }
-
-    @VisibleForTesting
-    fun setFlavorAndName(flavorAndName: Pair<String, String>) {
-        _name.value = flavorAndName.second
-        _flavorText.value = flavorAndName.first
-    }
 
     @VisibleForTesting var errorShown = false
     fun onLoadImageSuccess() {

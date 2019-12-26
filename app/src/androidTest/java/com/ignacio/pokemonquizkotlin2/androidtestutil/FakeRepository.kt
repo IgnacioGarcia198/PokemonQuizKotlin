@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PagedList
+import androidx.room.paging.LimitOffsetDataSource
 import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
@@ -14,8 +15,10 @@ import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.asDomainModel
+import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.wrapEspressoIdlingResource
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -23,125 +26,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
 
+@OpenForTesting
 class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : PokemonRepositoryInterface {
-    override val _responseState = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
-    override val responseState: LiveData<PokemonResponseState> = _responseState
-    override var homeStartup: Boolean = true
-    override val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
-    override val flavorTextAndName : LiveData<Pair<String,String>>
-        get() = _flavorTextAndName
 
-    val dbpoklist = MutableList<DatabasePokemon>()
-    var dbIsFull = false
-    override val pokemons: LiveData<List<Pokemon>>
-    get() = if(dbIsFull) MutableLiveData(allPokemonsResponse!!.asDatabaseModel().asDomainModel()) else MutableLiveData()
-
-
-    override fun changeResponseState(responseState: PokemonResponseState) {
-        _responseState.postValue(responseState)
-    }
-
-    override suspend fun getFlavorTextAndNameFirstTime(
-        pokid: Int,
-        language: String,
-        version: String,
-        newPokemonCallback: (versions: List<String>, flavorAndName: Pair<String, String>) -> Unit
-    ) {
-        withContext(dispatchers.io()) {
-            delay(500)
-            val versions = speciesDetail!!.extractAvailableVersions("en")
-            val flavorAndName = speciesDetail.extractFlavorTextAndName("en",versions.first())
-            withContext(dispatchers.main()) {
-                newPokemonCallback(versions, flavorAndName)
-            }
-
-        }
-    }
-
-    override suspend fun getFlavorTextNormally(
-        pokid: Int,
-        language: String,
-        version: String,
-        normalCallback: (flavorAndName: String) -> Unit
-    ) {
-        withContext(dispatchers.io()) {
-            delay(500)
-            val flavor = speciesDetail!!.extractFlavorText(language,version)
-            withContext(dispatchers.main()) {
-                normalCallback(theflavorAndName.first)
-            }
-
-        }
-    }
-
-    override suspend fun refreshPokemonPlay(offset: Int, limit: Int, callback: () -> Unit) {
-        withContext(dispatchers.io()) {
-            delay(500)
-            val pok = MutableLiveData<List<Pokemon>>(allPokemonsResponse!!.asDatabaseModel().asDomainModel())
-            dbIsFull = true
-            dbpoklist.addAll(allPokemonsResponse.asDatabaseModel())
-        }
-    }
-
-    override suspend fun getNextRoundQuestionPokemon(): DatabasePokemon? {
-        val notused = dbpoklist.filter { !it.usedAsQuestion }
-        return if(notused.isEmpty()) {
-            null
-        } else {
-            notused[Random().nextInt(notused.size)]
-        }
-    }
-
-    override suspend fun getNextRoundAnswers(id: Int, limit: Int): MutableList<String> {
-        var list = dbpoklist.filter { it.id != id }.toMutableList()
-        val mutableList = mutableListOf<String>()
-        for(i in 0 until limit-1) {
-            mutableList.add(list.removeAt(Random().nextInt(list.size)).name)
-        }
-    }
-
-    override suspend fun updateUsedAsQuestion(id: Int, value: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun resetUsedAsQuestionPlain() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun deletePokemon(pokemon: DatabasePokemon) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun deleteAllPokemon() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun searchPokemons(
-        name: String,
-        boundaryCallback: PokemonBoundaryCallback
-    ): LiveData<PagedList<DatabasePokemon>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun saveRecord(gameRecord: GameRecord) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllRecords(): LiveData<List<GameRecord>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun deleteRecord(gameRecord: GameRecord) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun deleteAllRecords() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
 
     companion object {
@@ -161,5 +48,125 @@ class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispat
         val partialPokemonsResponse : NetworkPokemonContainer? = NetworkPokemonContainerJsonAdapter(moshi).fromJson(
             "{\"count\":964,\"next\":\"https://pokeapi.co/api/v2/pokemon?offset=81&limit=40\",\"previous\":\"https://pokeapi.co/api/v2/pokemon?offset=1&limit=40\",\"results\":[{\"name\":\"golbat\",\"url\":\"https://pokeapi.co/api/v2/pokemon/42/\"},{\"name\":\"oddish\",\"url\":\"https://pokeapi.co/api/v2/pokemon/43/\"},{\"name\":\"gloom\",\"url\":\"https://pokeapi.co/api/v2/pokemon/44/\"},{\"name\":\"vileplume\",\"url\":\"https://pokeapi.co/api/v2/pokemon/45/\"},{\"name\":\"paras\",\"url\":\"https://pokeapi.co/api/v2/pokemon/46/\"},{\"name\":\"parasect\",\"url\":\"https://pokeapi.co/api/v2/pokemon/47/\"},{\"name\":\"venonat\",\"url\":\"https://pokeapi.co/api/v2/pokemon/48/\"},{\"name\":\"venomoth\",\"url\":\"https://pokeapi.co/api/v2/pokemon/49/\"},{\"name\":\"diglett\",\"url\":\"https://pokeapi.co/api/v2/pokemon/50/\"},{\"name\":\"dugtrio\",\"url\":\"https://pokeapi.co/api/v2/pokemon/51/\"},{\"name\":\"meowth\",\"url\":\"https://pokeapi.co/api/v2/pokemon/52/\"},{\"name\":\"persian\",\"url\":\"https://pokeapi.co/api/v2/pokemon/53/\"},{\"name\":\"psyduck\",\"url\":\"https://pokeapi.co/api/v2/pokemon/54/\"},{\"name\":\"golduck\",\"url\":\"https://pokeapi.co/api/v2/pokemon/55/\"},{\"name\":\"mankey\",\"url\":\"https://pokeapi.co/api/v2/pokemon/56/\"},{\"name\":\"primeape\",\"url\":\"https://pokeapi.co/api/v2/pokemon/57/\"},{\"name\":\"growlithe\",\"url\":\"https://pokeapi.co/api/v2/pokemon/58/\"},{\"name\":\"arcanine\",\"url\":\"https://pokeapi.co/api/v2/pokemon/59/\"},{\"name\":\"poliwag\",\"url\":\"https://pokeapi.co/api/v2/pokemon/60/\"},{\"name\":\"poliwhirl\",\"url\":\"https://pokeapi.co/api/v2/pokemon/61/\"},{\"name\":\"poliwrath\",\"url\":\"https://pokeapi.co/api/v2/pokemon/62/\"},{\"name\":\"abra\",\"url\":\"https://pokeapi.co/api/v2/pokemon/63/\"},{\"name\":\"kadabra\",\"url\":\"https://pokeapi.co/api/v2/pokemon/64/\"},{\"name\":\"alakazam\",\"url\":\"https://pokeapi.co/api/v2/pokemon/65/\"},{\"name\":\"machop\",\"url\":\"https://pokeapi.co/api/v2/pokemon/66/\"},{\"name\":\"machoke\",\"url\":\"https://pokeapi.co/api/v2/pokemon/67/\"},{\"name\":\"machamp\",\"url\":\"https://pokeapi.co/api/v2/pokemon/68/\"},{\"name\":\"bellsprout\",\"url\":\"https://pokeapi.co/api/v2/pokemon/69/\"},{\"name\":\"weepinbell\",\"url\":\"https://pokeapi.co/api/v2/pokemon/70/\"},{\"name\":\"victreebel\",\"url\":\"https://pokeapi.co/api/v2/pokemon/71/\"},{\"name\":\"tentacool\",\"url\":\"https://pokeapi.co/api/v2/pokemon/72/\"},{\"name\":\"tentacruel\",\"url\":\"https://pokeapi.co/api/v2/pokemon/73/\"},{\"name\":\"geodude\",\"url\":\"https://pokeapi.co/api/v2/pokemon/74/\"},{\"name\":\"graveler\",\"url\":\"https://pokeapi.co/api/v2/pokemon/75/\"},{\"name\":\"golem\",\"url\":\"https://pokeapi.co/api/v2/pokemon/76/\"},{\"name\":\"ponyta\",\"url\":\"https://pokeapi.co/api/v2/pokemon/77/\"},{\"name\":\"rapidash\",\"url\":\"https://pokeapi.co/api/v2/pokemon/78/\"},{\"name\":\"slowpoke\",\"url\":\"https://pokeapi.co/api/v2/pokemon/79/\"},{\"name\":\"slowbro\",\"url\":\"https://pokeapi.co/api/v2/pokemon/80/\"},{\"name\":\"magnemite\",\"url\":\"https://pokeapi.co/api/v2/pokemon/81/\"}]}"
         )
+    }
+
+    override val _responseState = MutableLiveData<PokemonResponseState>(PokemonResponseState.DONE)
+    override val responseState: LiveData<PokemonResponseState>
+        get() = _responseState
+    private val _pokemons = MutableLiveData<List<Pokemon>>()
+    override val pokemons: LiveData<List<Pokemon>>
+    get() = _pokemons
+
+    val dbpoklist : MutableList<DatabasePokemon> = mutableListOf()
+
+    override fun changeResponseState(responseState: PokemonResponseState) {
+        _responseState.postValue(responseState)
+    }
+
+    override suspend fun getFlavorTextAndNameFirstTimeReturns(
+        pokid: Int,
+        language: String
+    ): Pair<Map<String, String>, String> {
+        return withContext(dispatchers.io()) {
+            wrapEspressoIdlingResource {
+                delay(500)
+                Pair(speciesDetail!!.extractAllVersionsAndFlavors(language), speciesDetail!!.extractName(language))
+            }
+        }
+    }
+
+    override suspend fun refreshPokemonPlay(offset: Int, limit: Int, callback: () -> Unit) {
+        withContext(dispatchers.io()) {
+            wrapEspressoIdlingResource {
+                _pokemons.postValue(allPokemonsResponse!!.asDatabaseModel().asDomainModel())
+                dbpoklist.addAll(allPokemonsResponse!!.asDatabaseModel())
+            }
+        }
+    }
+
+    override suspend fun getNextRoundQuestionPokemon(): DatabasePokemon? {
+        val notused = dbpoklist.filter { !it.usedAsQuestion }
+        return if(notused.isEmpty()) {
+            null
+        } else {
+            notused[Random().nextInt(notused.size)]
+        }
+    }
+
+    override suspend fun getNextRoundAnswers(id: Int, limit: Int): MutableList<String> {
+        var list = dbpoklist.filter { it.id != id }.toMutableList()
+        val mutableList = mutableListOf<String>()
+        for(i in 0 until limit-1) {
+            mutableList.add(list.removeAt(Random().nextInt(list.size)).name)
+        }
+        return mutableList
+    }
+
+    override suspend fun updateUsedAsQuestion(id: Int, value: Boolean) {
+        withContext(dispatchers.io()) {
+            delay(100)
+            dbpoklist.replaceAll { element -> if(element.id == id) DatabasePokemon(element.id,element.name,element.flavorText,value) else element }
+        }
+    }
+
+    override suspend fun resetUsedAsQuestionPlain() {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbpoklist.replaceAll { element -> DatabasePokemon(element.id,element.name,element.flavorText,false)}
+        }
+    }
+
+    override suspend fun deletePokemon(pokemon: DatabasePokemon) {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbpoklist.remove(pokemon)
+        }
+    }
+
+    override suspend fun deleteAllPokemon() {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbpoklist.clear()
+        }
+    }
+
+    override fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon> {
+        return MutableLiveData<Nothing>().value!!
+    }
+
+    override fun searchPokemons(
+        name: String,
+        boundaryCallback: PokemonBoundaryCallback
+    ): LiveData<PagedList<DatabasePokemon>> {
+        return MutableLiveData<PagedList<DatabasePokemon>>()
+    }
+
+    val dbRecordList : MutableList<GameRecord> = mutableListOf()
+    override suspend fun saveRecord(gameRecord: GameRecord) {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbRecordList.add(gameRecord)
+        }
+    }
+
+    override fun getAllRecords(): LiveData<List<GameRecord>> {
+        return runBlocking {
+            delay(500)
+            MutableLiveData<List<GameRecord>>(dbRecordList)
+        }
+    }
+
+    override suspend fun deleteRecord(gameRecord: GameRecord) {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbRecordList.remove(gameRecord)
+        }
+    }
+
+    override suspend fun deleteAllRecords() {
+        withContext(dispatchers.io()) {
+            delay(500)
+            dbRecordList.clear()
+        }
     }
 }

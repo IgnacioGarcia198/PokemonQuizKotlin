@@ -20,6 +20,7 @@ import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
+import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import timber.log.Timber
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
@@ -57,12 +58,15 @@ class HomeFragment() : Fragment() {
         //homeViewModel =
         binding.lifecycleOwner = this
         homeViewModel = provideViewModel() //
+        writeLine()
+        Timber.i("viewmodel is $homeViewModel")
         binding.viewModel = homeViewModel
 
         args  = HomeFragmentArgs.fromBundle(arguments!!)
 
         homeViewModel.initPush(args.newId)
-
+        writeLine()
+        Timber.i("after initpush")
         if(args.newId > 0) {
             var x1: Float = 0f
             var x2: Float = 0f
@@ -82,16 +86,31 @@ class HomeFragment() : Fragment() {
 
                     MotionEvent.ACTION_UP -> {
                         Timber.i("Action was UP")
+
                         x2 = event.x
 
-                        if(x1-x2 > MIN_DISTANCE && currentId < HomeViewModel.DOWNLOAD_SIZE) {
-                            homeViewModel.initPush(++currentId)
+                        if(x1-x2 > MIN_DISTANCE) {
+                            currentId = if(currentId == HomeViewModel.DOWNLOAD_SIZE) {
+                                1
+                            }
+                            else {
+                                currentId + 1
+                            }
+                            homeViewModel.initPush(currentId)
 
                         }
-                        else if(x2-x1 > MIN_DISTANCE && currentId > 1) {
-                            homeViewModel.initPush(--currentId)
+                        else if(x2-x1 > MIN_DISTANCE) {
+
+                            currentId = if(currentId == 1) {
+                                HomeViewModel.DOWNLOAD_SIZE
+                            }
+                            else {
+                                currentId - 1
+                            }
+                            homeViewModel.initPush(currentId)
 
                         }
+                        Timber.i("currentid is $currentId")
                     }
                     else -> result = false
                 }
@@ -118,14 +137,6 @@ class HomeFragment() : Fragment() {
         return binding.root
     }
 
-    companion object {
-        fun newInstance(id : Int) =
-            HomeFragment().apply {
-                arguments = HomeFragmentArgs.Builder().setNewId(id).build().toBundle()
-
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("currentIdLiveData", currentId)
@@ -136,13 +147,6 @@ class HomeFragment() : Fragment() {
         return ViewModelProvider(this,BaseViewModelFactory(
            requireActivity().application
         )).get(HomeViewModel::class.java)
-    }
-
-    inner class MyViewModelProviderDelegate() {
-        operator fun getValue(thisRef: Any?, prop: KProperty<*>): HomeViewModel {
-            return ViewModelProvider(this@HomeFragment,BaseViewModelFactory(requireActivity().application
-            )).get(HomeViewModel::class.java)
-        }
     }
 
 }

@@ -1,6 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,75 +12,18 @@ import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.*
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
-import com.ignacio.pokemonquizkotlin2.OpenClass
-import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
+import com.ignacio.pokemonquizkotlin2.utils.wrapEspressoIdlingResource
+import com.ignacio.pokemonquizkotlin2.utils.writeLine
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-
-interface PokemonRepositoryInterface {
-    val _responseState: MutableLiveData<PokemonResponseState>
-    val responseState : LiveData<PokemonResponseState>
-    var homeStartup: Boolean
-    val _flavorTextAndName: MutableLiveData<Pair<String, String>>
-    val flavorTextAndName : LiveData<Pair<String, String>>
-    val pokemons : LiveData<List<Pokemon>>
-    fun changeResponseState(responseState: PokemonResponseState)
-    /**
-     * Gets both flavor text for current language and version and also the pokemon's name, we do it together
-     * in order to save in calls to the api.
-     */
-    suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String ="en", version : String ="red",
-                                              newPokemonCallback: (versions: List<String>, flavorAndName: Pair<String, String>) -> Unit ={ versions, flavorAndName ->})
-
-    suspend fun getFlavorTextNormally(pokid : Int, language: String ="en", version : String ="red",
-                                      normalCallback : (flavorAndName: String) -> Unit = {})
-
-    suspend fun refreshPokemonPlay(offset : Int, limit: Int, callback: () -> Unit)
-
-    suspend fun getNextRoundQuestionPokemon() : DatabasePokemon?
-
-    suspend fun getNextRoundAnswers(id : Int, limit : Int) : MutableList<String>
-
-    suspend fun updateUsedAsQuestion(id : Int, value : Boolean)
-
-    suspend fun resetUsedAsQuestionPlain()
-
-    suspend fun deletePokemon(pokemon : DatabasePokemon)
-
-    suspend fun deleteAllPokemon()
-
-
-    /**
-     * Fetching pokemons from database
-     * @param name
-     * @return
-     */
-    fun fetchPokemonsFromDb(name: String?): DataSource.Factory<Int, DatabasePokemon>
-
-    /**
-     * Search photos.
-     */
-    fun searchPokemons(
-        name: String,
-        boundaryCallback: PokemonBoundaryCallback = PokemonBoundaryCallback(name, this))
-            : LiveData<PagedList<DatabasePokemon>>
-
-    //============================================
-    // PART FOR GAMERECORDVIEWMODEL
-    //============================================
-    suspend fun saveRecord(gameRecord: GameRecord)
-
-    fun getAllRecords() : LiveData<List<GameRecord>>
-
-    suspend fun deleteRecord(gameRecord: GameRecord)
-
-    suspend fun deleteAllRecords()
-}
+import java.util.concurrent.Delayed
 
 //==============================================================================================
 
-@OpenForTesting
+//@OpenForTesting
 class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
                          private val service: PokemonService = PokemonNetwork.pokemonApiService,
                          private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
@@ -107,13 +49,11 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
         }*/
     }
 
-    override var homeStartup = true
-
     /**
      * Gets both flavor text for current language and version and also the pokemon's name, we do it together
      * in order to save in calls to the api.
      */
-    override suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String, version : String,
+    /*override suspend fun getFlavorTextAndNameFirstTime(pokid : Int, language: String, version : String,
                                                        newPokemonCallback: (versions: List<String>, flavorAndName : Pair<String,String>) -> Unit
     ) {
         withContext(dispatchers.io()) {
@@ -134,43 +74,26 @@ class PokemonRepository @VisibleForTesting constructor(private val database: MyD
             }
             //return@withContext Pair(newVersionList,flavorAndName)
         }
-    }
+    }*/
 
-    val currentSpecieDetail = MutableLiveData<NetworkSpeciesDetail?>()
+    //val flavorMap = MutableLiveData<Map<String,String>>()
 
-    suspend fun getFlavorTextAndNameFirstTimeReturns(pokid : Int, language: String)
-    : Pair<List<String>, Pair<String,String>> {
-        withContext(dispatchers.io()) {
-            Timber.i("doing getSpecieFlavor")
-            print("doing getSpecieFlavor")
+    override suspend fun getFlavorTextAndNameFirstTimeReturns(pokid : Int, language: String)
+    : Pair<Map<String, String>, String> {
+        return withContext(dispatchers.io()) {
+            wrapEspressoIdlingResource {
+                writeLine()
+                Timber.i("getflavortextandname called")
+                Timber.i("doing getSpecieFlavor")
+                print("doing getSpecieFlavor")
 
-            val specieDetail = service.getSpecieDetail(pokid).await()
-            currentSpecieDetail.value = specieDetail
-            val newVersionList = specieDetail.extractAvailableVersions(language)
-            val flavorAndName = specieDetail.extractFlavorTextAndName(language,newVersionList.first())
-            Timber.i("versions: homeStartup is true, sending versions to viewmodel")
-            print("after homeStartup versions are ${newVersionList}")
-            Timber.i("after homeStartup versions are ${newVersionList}")
-            Timber.i("and flavor and name are $flavorAndName")
-            Timber.i("AllversionsFlavors = ${specieDetail.printAllVersionFlavors(language)}")
-
-            // get the real version list
-            return@withContext Pair(newVersionList,flavorAndName)
-            //return@withContext Pair(newVersionList,flavorAndName)
+                val specieDetail = service.getSpecieDetail(pokid).await()
+                val flavors = specieDetail.extractAllVersionsAndFlavors(language)
+                val name = specieDetail.extractName(language)
+                Pair(flavors,name)
+            }
         }
     }
-
-    suspend fun getFlavorTextNormally(pokid : Int, language: String, version : String) : String {
-        return currentSpecieDetail.value?.let {
-            it.extractFlavorText(language, version)
-        } ?: ""
-    }
-
-    override val _flavorTextAndName = MutableLiveData<Pair<String,String>>()
-    override val flavorTextAndName : LiveData<Pair<String,String>>
-    get() = _flavorTextAndName
-
-
 
 
     //=======================================================

@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingResource
+import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -50,6 +51,7 @@ class DataBindingIdlingResource2 : IdlingResource {
 
     override fun isIdleNow(): Boolean {
         val idle = !getBindings().any { it.hasPendingBindings() }
+        Timber.d("data binding is idle ${idle}")
         @Suppress("LiftReturnOrAssignment")
         if (idle) {
             if (wasNotIdle) {

@@ -3,6 +3,7 @@ package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 import android.app.Application
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.MyApplication
+import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
@@ -24,6 +25,6 @@ class PokemonListViewModel(
         Timber.i("Text is $newText")
     }
 
-    val pokemonList = Transformations.switchMap(_searchText) {repository.searchPokemons(it)}
+    val pokemonList = Transformations.switchMap(_searchText) {repository.searchPokemons(it,boundaryCallback = PokemonBoundaryCallback(repository,dispatchers))}
 
 }

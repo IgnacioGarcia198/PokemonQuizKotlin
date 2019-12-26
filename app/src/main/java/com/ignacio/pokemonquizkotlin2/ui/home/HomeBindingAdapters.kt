@@ -138,56 +138,6 @@ import timber.log.Timber
     }
 
 
-/*@BindingAdapter("responseState")
-fun getResponseState(layout : ConstraintLayout, responseState: PokemonResponseState){
-    //val img = layout.findViewById<ImageView>(R.id.errorImage)
-    //val txt = layout.findViewById<TextView>(R.id.errorText)
-    //lateinit var errorLayout : ConstraintLayout
-    when (responseState) {
-        PokemonResponseState.NETWORK_ERROR -> {
-            showErrorView(layout, R.drawable.ic_cloud_off_black_24dp,R.string.network_error_msg)
-        }
-        PokemonResponseState.DB_ERROR -> {
-            showErrorView(layout, errorLayout,)
-        }
-        else -> layout.visibility = View.GONE
-    }
-
-}
-
-private fun showErrorView(
-    layout: ConstraintLayout,
- img : Int, txt : Int) {
-    var errorLayout1 = errorLayout
-    if (layout.findViewById<ConstraintLayout>(R.id.errorLayout) == null) {
-        errorLayout1 = LayoutInflater.from(layout.context).inflate(
-            R.layout.error_layout, layout, false
-        )
-                as ConstraintLayout
-        layout.addView(errorLayout1)
-        layout.isClickable = false
-    }
-    //layout.visibility = View.VISIBLE
-    errorLayout1.findViewById<ImageView>(R.id.errorImage)
-        .setImageResource(img)
-    errorLayout1.findViewById<TextView>(R.id.errorText).setText(txt)
-}
-
-
-@BindingAdapter("responseState")
-fun getResponseState(img : ImageView, responseState: PokemonResponseState){
-    if(responseState == PokemonResponseState.NETWORK_ERROR) {
-        img.setImageResource(R.drawable.ic_cloud_off_black_24dp)
-    }
-    else if(responseState == PokemonResponseState.DB_ERROR) {
-        img.setImageResource(R.drawable.ic_broken_image_black_24dp)
-
-    }
-
-}*/
-
-//}
-
 
 
 

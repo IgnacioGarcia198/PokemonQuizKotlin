@@ -7,55 +7,55 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class NetworkSpeciesDetail(
     @Json(name = "base_happiness")
-    val baseHappiness: Int,
+    val baseHappiness: Int = 0,
     @Json(name = "capture_rate")
-    val captureRate: Int,
+    val captureRate: Int =0,
     @Json(name = "color")
-    val color: NameUrlPair,
+    val color: NameUrlPair?,
     @Json(name = "egg_groups")
-    val eggGroups: List<NameUrlPair>,
+    val eggGroups: List<NameUrlPair?>?,
     @Json(name = "evolution_chain")
-    val evolutionChain: EvolutionChain,
+    val evolutionChain: EvolutionChain?,
     @Json(name = "evolves_from_species")
     val evolvesFromSpecies: NameUrlPair?,
     @Json(name = "flavor_text_entries")
     val flavorTextEntries: List<FlavorTextEntry>,
     @Json(name = "form_descriptions")
-    val formDescriptions: List<Any>,
+    val formDescriptions: List<Any>?,
     @Json(name = "forms_switchable")
-    val formsSwitchable: Boolean,
+    val formsSwitchable: Boolean = false,
     @Json(name = "gender_rate")
-    val genderRate: Int,
+    val genderRate: Int = 0,
     @Json(name = "genera")
-    val genera: List<Genera>,
+    val genera: List<Genera?>?,
     @Json(name = "generation")
-    val generation: NameUrlPair,
+    val generation: NameUrlPair?,
     @Json(name = "growth_rate")
-    val growthRate: NameUrlPair,
+    val growthRate: NameUrlPair?,
     @Json(name = "habitat")
-    val habitat: NameUrlPair,
+    val habitat: NameUrlPair?,
     @Json(name = "has_gender_differences")
-    val hasGenderDifferences: Boolean,
+    val hasGenderDifferences: Boolean?,
     @Json(name = "hatch_counter")
-    val hatchCounter: Int,
+    val hatchCounter: Int = 0,
     @Json(name = "id")
     val id: Int,
     @Json(name = "is_baby")
-    val isBaby: Boolean,
+    val isBaby: Boolean= false,
     @Json(name = "name")
     val name: String,
     @Json(name = "names")
     val names: List<Name>,
     @Json(name = "order")
-    val order: Int,
+    val order: Int = 0,
     @Json(name = "pal_park_encounters")
-    val palParkEncounters: List<PalParkEncounter>,
+    val palParkEncounters: List<PalParkEncounter?>?,
     @Json(name = "pokedex_numbers")
-    val pokedexNumbers: List<PokedexNumber>,
+    val pokedexNumbers: List<PokedexNumber?>?,
     @Json(name = "shape")
-    val shape: NameUrlPair,
+    val shape: NameUrlPair?,
     @Json(name = "varieties")
-    val varieties: List<Variety>
+    val varieties: List<Variety?>?
 )
 
 @JsonClass(generateAdapter = true)

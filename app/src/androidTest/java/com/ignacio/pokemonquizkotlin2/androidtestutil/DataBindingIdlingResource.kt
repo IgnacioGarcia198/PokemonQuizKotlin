@@ -48,7 +48,7 @@ class DataBindingIdlingResource(
     override fun isIdleNow(): Boolean {
         val idle = !getBindings().any { it.hasPendingBindings() }
         Timber.d("data binding is idle ${idle}")
-        println("data binding is idle ${idle}")
+        //println("data binding is idle ${idle}")
         @Suppress("LiftReturnOrAssignment")
         if (idle) {
             if (wasNotIdle) {
@@ -74,15 +74,19 @@ class DataBindingIdlingResource(
      * Find all binding classes in all currently available fragments.
      */
     private fun getBindings(): List<ViewDataBinding> {
-        return (activityTestRule.activity as? FragmentActivity)
+        val fragments = (activityTestRule.activity as? FragmentActivity)
             ?.supportFragmentManager
             ?.fragments
-            ?.mapNotNull {
-                it.view?.let { view ->
-                    DataBindingUtil.getBinding<ViewDataBinding>(
-                        view
-                    )
-                }
+
+        val bindings =
+            fragments?.mapNotNull {
+                it.view?.getBinding()
             } ?: emptyList()
+        val childrenBindings = fragments?.flatMap { it.childFragmentManager.fragments }
+            ?.mapNotNull { it.view?.getBinding() } ?: emptyList()
+
+        return bindings + childrenBindings
     }
 }
+
+private fun View.getBinding(): ViewDataBinding? = DataBindingUtil.getBinding(this)
