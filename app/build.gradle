@@ -131,6 +131,11 @@ dependencies {
     //implementation 'androidx.work:work-runtime:2.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    // Dagger - in this branch
+    def dagger_version = "2.25.3"
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
 
     // Dependencies for local unit tests
     def archTestingVersion = '2.1.0'
