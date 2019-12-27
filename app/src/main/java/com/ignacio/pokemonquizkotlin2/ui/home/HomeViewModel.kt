@@ -13,19 +13,19 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.HashMap
 
 @OpenForTesting
-class HomeViewModel(
+class HomeViewModel @Inject constructor(
     app : Application,
-    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
-    val sharedPref: SharedPreferences = sharedPreferences
+    repository: PokemonRepositoryInterface,
+    val sharedPref: SharedPreferences
 ) : BaseViewModel(app,repository) {
 
     companion object {

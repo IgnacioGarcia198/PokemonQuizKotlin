@@ -3,8 +3,9 @@ package com.ignacio.pokemonquizkotlin2.ui.choosequiz
 import android.app.Application
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.R
+import javax.inject.Inject
 
-class ChooseQuizViewModel(val app:Application) : AndroidViewModel(app) {
+class ChooseQuizViewModel @Inject constructor(val app:Application) : AndroidViewModel(app) {
 
     private val _questionsOrTime = MutableLiveData<Boolean>(true)
     val questionsOrTime : LiveData<Boolean> = _questionsOrTime

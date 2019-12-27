@@ -12,10 +12,8 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.asDomainModel
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
@@ -24,19 +22,21 @@ import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 const val NUMBER_OF_ANSWERS = 4
 
 
-class PlayViewModel(
+class PlayViewModel @Inject constructor(
     app : Application,
-    private val questionsOrTime : Boolean = true,
-    private val limitValue : Int = 0,
-    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
-    val sharedPref: SharedPreferences = sharedPreferences,
-    val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
-) : BaseViewModel(app,repository) {
+    repository: PokemonRepositoryInterface,
+    val sharedPref: SharedPreferences
 
+) : BaseViewModel(app,repository) {
+    private var questionsOrTime : Boolean = true
+    private var limitValue : Int = 0
+
+    val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
     // we will show the fragment just as we start.
     private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
     /*val showChooseQuizFragment : LiveData<Boolean>
@@ -94,9 +94,17 @@ class PlayViewModel(
     /**
      * All content of init() is moved to initForUnitTest() in order to make testing easier.
      */
-    init {
+    /*init {
         // we comment this line for unit-testing this viewmodel.
         initForUnitTest()
+    }*/
+
+    fun setParams(questionsOrTime: Boolean, gameLenght : Int) {
+        if(questionsOrTime != this.questionsOrTime || gameLenght != this.limitValue) {
+            this.questionsOrTime = questionsOrTime
+            this.limitValue = gameLenght
+            initForUnitTest()
+        }
     }
 
     final fun initForUnitTest() {

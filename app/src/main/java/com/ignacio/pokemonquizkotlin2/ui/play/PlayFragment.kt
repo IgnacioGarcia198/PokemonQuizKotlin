@@ -21,22 +21,19 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
+import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
-import com.ignacio.pokemonquizkotlin2.ui.BaseFragment
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.PlayViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
 
 @OpenForTesting
-class PlayFragment : Fragment() {
+class PlayFragment : Fragment(), Injectable {
 
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var playViewModel: PlayViewModel
     private lateinit var gameToast : Toast
     private lateinit var toastCountDown : CountDownTimer
@@ -51,7 +48,8 @@ class PlayFragment : Fragment() {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         val args = PlayFragmentArgs.fromBundle(arguments!!)
         //playViewModel.initGame(args.questionsOrTime,args.gameLength)
-        playViewModel = provideViewModel(args.questionsOrTime,args.gameLength)
+        playViewModel = provideViewModel()
+        playViewModel.setParams(args.questionsOrTime,args.gameLength)
             //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
@@ -129,11 +127,8 @@ class PlayFragment : Fragment() {
 
 
     // override this method in a subclass for testing.
-    fun provideViewModel(questionsOrTime: Boolean, gameLength : Int) : PlayViewModel {
-        return ViewModelProvider(this, PlayViewModelFactory(
-            requireActivity().application,questionsOrTime = questionsOrTime, limitValue = gameLength
-        )
-        ).get(PlayViewModel::class.java)
+    fun provideViewModel() : PlayViewModel {
+        return ViewModelProvider(this,viewModelFactory).get(PlayViewModel::class.java)
     }
 
 }

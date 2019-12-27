@@ -1,17 +1,18 @@
 package com.ignacio.pokemonquizkotlin2.data
 
+import android.content.SharedPreferences
 import androidx.paging.PagedList
 
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import com.ignacio.pokemonquizkotlin2.OpenClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 import java.util.Calendar
+import javax.inject.Inject
 
 /**
  * PagedList.BoundaryCallback class to know when to trigger the Network request for more data
@@ -21,7 +22,8 @@ class PokemonBoundaryCallback
 //private int dbupdated;
 
 internal constructor(private val repository: PokemonRepositoryInterface,
-                     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
+                        private val dispatchers: DispatcherProvider,
+                    private val sharedPreferences: SharedPreferences) :
     PagedList.BoundaryCallback<DatabasePokemon>() {
     // Avoid triggering multiple requests in the same time
     private var isRequestInProgress = false

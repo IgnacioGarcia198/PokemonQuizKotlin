@@ -20,13 +20,16 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.Delayed
+import javax.inject.Inject
 
 //==============================================================================================
 
 //@OpenForTesting
-class PokemonRepository @VisibleForTesting constructor(private val database: MyDatabase,
-                         private val service: PokemonService = PokemonNetwork.pokemonApiService,
-                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) :
+class PokemonRepository @Inject constructor(
+    private val database: MyDatabase,
+    private val service: PokemonService = PokemonNetwork.pokemonApiService,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+) :
     PokemonRepositoryInterface {
     //=======================================================
     // PART FOR HOMEVIEWMODEL

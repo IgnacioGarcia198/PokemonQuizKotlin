@@ -17,23 +17,24 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
+import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
 @OpenForTesting
-class HomeFragment() : Fragment() {
+class HomeFragment() : Fragment(), Injectable {
     // I did this for testing, so that I can use a mocked viewmodel naturally.
     // to take into account now: Its possible that we want to test Fragment with viewmodel altogether
     // since we test viewmodel alone in unittest, and the fragment is just interface!
     // in that regard, this would not be necessary. I would also like to adapt this to a more modern approach
     //by using the viewmodels<> thing. (Not so necessary but)
 
-    @VisibleForTesting lateinit var homeViewModel: HomeViewModel
+    @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
+    lateinit var homeViewModel: HomeViewModel
     private var currentId: Int = 0
 
     /*override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,9 +145,7 @@ class HomeFragment() : Fragment() {
 
     // override this method in a subclass for testing.
     fun provideViewModel() : HomeViewModel {
-        return ViewModelProvider(this,BaseViewModelFactory(
-           requireActivity().application
-        )).get(HomeViewModel::class.java)
+        return ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
     }
 
 }

@@ -9,16 +9,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
-import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentGameRecordsBinding
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.GameRecordsViewModelFactory
+import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 
-class GameRecordsFragment : Fragment() {
+class GameRecordsFragment : Fragment(), Injectable {
 
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: GameRecordsViewModel
 
     override fun onCreateView(
@@ -28,25 +26,23 @@ class GameRecordsFragment : Fragment() {
     ): View? {
         val args = GameRecordsFragmentArgs.fromBundle(arguments!!)
         val binding = FragmentGameRecordsBinding.inflate(inflater)
-        viewModel = provideViewModel(args.lastRecord)
-
+        viewModel = provideViewModel()
+        viewModel.setRecord(args.lastRecord)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
-        val adapter = GameRecordsAdapter(getDatabase(context!!.applicationContext), args.lastRecord)
-        binding.recordRecyclerView.adapter = adapter
+        //val adapter = GameRecordsAdapter(getDatabase(context!!.applicationContext), args.lastRecord)
+        //binding.recordRecyclerView.adapter = adapter
 
         viewModel.allRecords.observe(viewLifecycleOwner, Observer {
-            adapter.fixAndSubmitList(it)
+            //adapter.fixAndSubmitList(it)
         })
 
         return binding.root
     }
 
     // override this method in a subclass for testing.
-    fun provideViewModel(lastRecord : GameRecord) : GameRecordsViewModel {
-        return ViewModelProvider(this, GameRecordsViewModelFactory(
-            requireActivity().application, lastRecord = lastRecord
-        )
-        ).get(GameRecordsViewModel::class.java)
+    fun provideViewModel() : GameRecordsViewModel {
+        return ViewModelProvider(this,viewModelFactory)
+        .get(GameRecordsViewModel::class.java)
     }
 }

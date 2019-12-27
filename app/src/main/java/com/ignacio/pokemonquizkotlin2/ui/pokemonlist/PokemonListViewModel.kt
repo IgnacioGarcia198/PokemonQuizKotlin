@@ -1,19 +1,22 @@
 package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
-import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import timber.log.Timber
+import javax.inject.Inject
 
-class PokemonListViewModel(
+class PokemonListViewModel @Inject constructor(
     app:Application,
-    repository: PokemonRepositoryInterface = (app as MyApplication).repository
+    repository: PokemonRepositoryInterface,
+    dispatchers : DispatcherProvider,
+    sharedPref : SharedPreferences
     ) : BaseViewModel(app,repository) {
     //lateinit var pokemonList : LiveData<PagedList<DatabasePokemon>>
 
@@ -25,6 +28,6 @@ class PokemonListViewModel(
         Timber.i("Text is $newText")
     }
 
-    val pokemonList = Transformations.switchMap(_searchText) {repository.searchPokemons(it,boundaryCallback = PokemonBoundaryCallback(repository,dispatchers))}
+    val pokemonList = Transformations.switchMap(_searchText) {repository.searchPokemons(it,boundaryCallback = PokemonBoundaryCallback(repository,dispatchers,sharedPref))}
 
 }

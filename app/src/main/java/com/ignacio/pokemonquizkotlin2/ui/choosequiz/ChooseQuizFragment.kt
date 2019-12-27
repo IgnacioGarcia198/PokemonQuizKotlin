@@ -17,12 +17,13 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentChooseQuizBinding
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
+import com.ignacio.pokemonquizkotlin2.di.Injectable
+import javax.inject.Inject
 
 
-class ChooseQuizFragment : Fragment() {
-
+class ChooseQuizFragment : Fragment(), Injectable {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: ChooseQuizViewModel
 
     override fun onCreateView(
@@ -73,7 +74,7 @@ class ChooseQuizFragment : Fragment() {
     }
 
     fun provideViewModel() : ChooseQuizViewModel {
-        return ViewModelProvider(this).get(ChooseQuizViewModel::class.java)
+        return ViewModelProvider(this, viewModelFactory).get(ChooseQuizViewModel::class.java)
     }
 
 }

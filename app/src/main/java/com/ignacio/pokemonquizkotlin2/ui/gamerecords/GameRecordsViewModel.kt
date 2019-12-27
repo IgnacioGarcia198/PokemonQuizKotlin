@@ -6,27 +6,33 @@ import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
+import javax.inject.Inject
 
-class GameRecordsViewModel(
+class GameRecordsViewModel @Inject constructor(
     app : Application,
-    lastRecord: GameRecord,
-    repository: PokemonRepositoryInterface = (app as MyApplication).repository,
+    repository: PokemonRepositoryInterface,
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : BaseViewModel(app,repository) {
 
 
     val allRecords = repository.getAllRecords()
 
-    init {
+    /*init {
         saveRecord(lastRecord)
+    }*/
+    private lateinit var lastRecord: GameRecord
+
+    fun setRecord(record: GameRecord) {
+        if(record != lastRecord) {
+            lastRecord = record
+            saveRecord(record)
+        }
     }
 
     fun saveRecord(record : GameRecord) {

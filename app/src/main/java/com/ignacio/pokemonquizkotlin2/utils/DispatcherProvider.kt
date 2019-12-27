@@ -2,6 +2,7 @@ package com.ignacio.pokemonquizkotlin2.utils
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
 interface DispatcherProvider {
 
@@ -12,4 +13,4 @@ interface DispatcherProvider {
 
 }
 
-class DefaultDispatcherProvider : DispatcherProvider
+class DefaultDispatcherProvider @Inject constructor() : DispatcherProvider

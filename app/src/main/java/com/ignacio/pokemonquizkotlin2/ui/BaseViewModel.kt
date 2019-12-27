@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
-import com.ignacio.pokemonquizkotlin2.db.getDatabase
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider

@@ -14,12 +14,11 @@ import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
+import com.ignacio.pokemonquizkotlin2.di.Injectable
 
-class PokemonListFragment : Fragment() {
+class PokemonListFragment : Fragment(),Injectable {
 
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var pokemonListViewModel: PokemonListViewModel
 
     override fun onCreateView(
@@ -53,8 +52,6 @@ class PokemonListFragment : Fragment() {
 
     // override this method in a subclass for testing.
     fun provideViewModel() : PokemonListViewModel {
-        return ViewModelProvider(this,BaseViewModelFactory(
-            requireActivity().application
-        )).get(PokemonListViewModel::class.java)
+        return ViewModelProvider(this,viewModelFactory).get(PokemonListViewModel::class.java)
     }
 }

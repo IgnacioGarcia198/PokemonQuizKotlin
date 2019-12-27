@@ -14,7 +14,7 @@ fun networkIsOk(context: Context) : Boolean {
     return activeNetwork?.isConnectedOrConnecting == true
 }
 
-internal lateinit var sharedPreferences : SharedPreferences
+const val PREFERENCE_FILE_NAME = "customPrefs.pref"
 const val FRESH_TIMEOUT_IN_MINUTES = 43200 // ONE WEEK
 const val LAST_DB_REFRESH = "lastDbRefresh"
 const val LAST_PAGING_POKEMON_ID_KEY = "lastOfset"
