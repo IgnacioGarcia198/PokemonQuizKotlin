@@ -34,17 +34,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.ClassCastException
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class GameRecordsAdapter(private val database: MyDatabase, private val lastRecord: GameRecord,
-                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
-) : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
+class GameRecordsAdapter : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
+
     private val HEADER_ITEM = 1
     private val RECORD_ITEM = 2
-
-
-    private val adapterScope = CoroutineScope(dispatchers.default())
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
@@ -61,7 +59,7 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
     }
 
 
-    fun fixAndSubmitList(list: List<GameRecord>) {
+    /*fun fixAndSubmitList(list: List<GameRecord>) {
         val outputList : MutableList<RecordItem> = mutableListOf(RecordItem.Header)
         adapterScope.launch {
             if(list.isNotEmpty()) {
@@ -75,7 +73,7 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
                 submitList(outputList)
             }
         }
-    }
+    }*/
 
     override fun getItemViewType(position: Int): Int {
         return when(getItem(position)) {
@@ -100,7 +98,7 @@ class GameRecordsAdapter(private val database: MyDatabase, private val lastRecor
 
         fun bind(position: Int, recordItem: RecordItem.GameRecordItem) {
             val record = recordItem.record
-            val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm", Locale.getDefault())
+            val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
             when(position) {
                 AVG_POSITION -> {
                     binding.title.setText(R.string.averages_title)

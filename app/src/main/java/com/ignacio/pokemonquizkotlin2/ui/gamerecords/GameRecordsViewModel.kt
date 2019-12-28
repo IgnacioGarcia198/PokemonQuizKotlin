@@ -21,7 +21,7 @@ class GameRecordsViewModel @Inject constructor(
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : BaseViewModel(app,repository) {
 
 
-    val allRecords = repository.getAllRecords()
+    //val allRecords = repository.getAllRecords()
 
     /*init {
         saveRecord(lastRecord)
@@ -29,9 +29,10 @@ class GameRecordsViewModel @Inject constructor(
     private lateinit var lastRecord: GameRecord
 
     fun setRecord(record: GameRecord) {
-        if(record != lastRecord) {
+        if(!::lastRecord.isInitialized || record != lastRecord) {
             lastRecord = record
             saveRecord(record)
+            getFixedListForAdapter(record)
         }
     }
 
@@ -48,6 +49,18 @@ class GameRecordsViewModel @Inject constructor(
                 repository.changeResponseState(PokemonResponseState.DB_ERROR)
             }
         }
+    }
+
+    private val _fixedList = MutableLiveData<List<RecordItem>>()
+    val fixedList : LiveData<List<RecordItem>>
+    get() = _fixedList
+
+    fun getFixedListForAdapter(lastRecord: GameRecord) {
+        //val thelist = repository.getAllRecordsPlain()
+        viewModelScope.launch {
+            _fixedList.postValue(repository.getFixedListForAdapter(lastRecord))
+        }
+
     }
 
 

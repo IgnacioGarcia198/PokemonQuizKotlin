@@ -15,9 +15,12 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
 import com.ignacio.pokemonquizkotlin2.di.Injectable
+import com.ignacio.pokemonquizkotlin2.ui.PokemonViewModelFactory
+import javax.inject.Inject
 
 class PokemonListFragment : Fragment(),Injectable {
 
+    @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var pokemonListViewModel: PokemonListViewModel
 

@@ -7,7 +7,7 @@
     <string name="wrong_answers">Wrong answers</string>
     <string name="initial_score">0</string>
     <string name="guess_the_pokemon_s_name">Guess the pokemon\'s name!</string>
-    <string name="last_result">Last result:</string>
+    <string name="last_result">Last</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_choose_quiz">Choose a Quiz</string>

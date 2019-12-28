@@ -370,8 +370,8 @@ class PlayViewModel @Inject constructor(
         _showRecords.value = GameRecord(
             gameMode = questionsOrTime,
             gameLength = limitValue,
-            questionsPerSecond = speed,
-            hitRate = hitRate,
+            questionsPerSecond = speed.roundTo(3),
+            hitRate = hitRate.roundTo(3),
             recordTime = Date()
         )
 

@@ -7,6 +7,7 @@ import androidx.paging.PagedList
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
+import com.ignacio.pokemonquizkotlin2.ui.gamerecords.RecordItem
 import kotlinx.coroutines.Deferred
 
 interface PokemonRepositoryInterface {
@@ -82,7 +83,11 @@ interface PokemonRepositoryInterface {
 
     fun getAllRecords() : LiveData<List<GameRecord>>
 
+    suspend fun getAllRecordsPlain() : List<GameRecord>
+
     suspend fun deleteRecord(gameRecord: GameRecord)
 
     suspend fun deleteAllRecords()
+
+    suspend fun getFixedListForAdapter(lastRecord : GameRecord) : List<RecordItem>
 }

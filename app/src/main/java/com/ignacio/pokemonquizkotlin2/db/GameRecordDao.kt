@@ -9,7 +9,7 @@ interface GameRecordDao {
     @get:Query("SELECT * FROM gameRecordTable")
     val allGameRecordsLiveData: LiveData<List<GameRecord>>
 
-    @get:Query("SELECT * FROM gameRecordTable")
+    @get:Query("SELECT * FROM gameRecordTable ORDER BY hitRate DESC, questionsPerSecond DESC")
     val allGameRecords: List<GameRecord>
 
     @get:Query("SELECT * FROM gameRecordTable LIMIT 1")

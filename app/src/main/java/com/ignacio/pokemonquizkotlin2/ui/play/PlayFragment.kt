@@ -26,6 +26,7 @@ import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.right_toast3.view.*
 import timber.log.Timber
+import javax.inject.Inject
 
 @OpenForTesting
 class PlayFragment : Fragment(), Injectable {
@@ -33,7 +34,7 @@ class PlayFragment : Fragment(), Injectable {
     companion object {
         const val toastDurationInMilliSeconds = 500L
     }
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var playViewModel: PlayViewModel
     private lateinit var gameToast : Toast
     private lateinit var toastCountDown : CountDownTimer

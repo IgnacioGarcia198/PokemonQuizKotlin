@@ -10,15 +10,15 @@ import androidx.paging.PagedList
 import com.ignacio.pokemonquizkotlin2.data.api.*
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.*
-import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
-import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
-import com.ignacio.pokemonquizkotlin2.utils.wrapEspressoIdlingResource
-import com.ignacio.pokemonquizkotlin2.utils.writeLine
+import com.ignacio.pokemonquizkotlin2.ui.gamerecords.RecordItem
+import com.ignacio.pokemonquizkotlin2.utils.*
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.concurrent.Delayed
 import javax.inject.Inject
 
@@ -222,6 +222,12 @@ class PokemonRepository @Inject constructor(
         return database.gameRecordDao.allGameRecordsLiveData
     }
 
+    override suspend fun getAllRecordsPlain() : List<GameRecord> {
+        return withContext(dispatchers.io()) {
+            database.gameRecordDao.allGameRecords
+        }
+    }
+
     override suspend fun deleteRecord(gameRecord: GameRecord) {
         withContext(dispatchers.io()) {
             database.gameRecordDao.delete(gameRecord)
@@ -233,5 +239,25 @@ class PokemonRepository @Inject constructor(
             database.gameRecordDao.deleteAllGameRecords()
         }
     }
+
+    override suspend fun getFixedListForAdapter(lastRecord : GameRecord) : List<RecordItem> {
+        val outputList : MutableList<RecordItem> = mutableListOf(RecordItem.Header)
+        return withContext(dispatchers.io()) {
+            val allRecords = getAllRecordsPlain()
+
+
+            val averagesRow = GameRecord(questionsPerSecond = database.gameRecordDao.averageSpeed.roundTo(3),
+                hitRate = database.gameRecordDao.averageHitRate.roundTo(3))
+            outputList.add(RecordItem.GameRecordItem(lastRecord))
+            outputList.add(RecordItem.GameRecordItem(averagesRow))
+            outputList.addAll(allRecords.map { RecordItem.GameRecordItem(it) })
+            //if(list.isNotEmpty()) {
+
+            //}
+            outputList
+        }
+    }
+
+
 
 }
