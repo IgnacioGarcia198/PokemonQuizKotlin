@@ -39,6 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".sound.BackgroundSoundService" android:enabled="true" />
     </application>
 
 </manifest>

@@ -1,21 +1,31 @@
 package com.ignacio.pokemonquizkotlin2
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import androidx.navigation.findNavController
-import androidx.drawerlayout.widget.DrawerLayout
+import android.os.IBinder
+import android.os.PowerManager
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.view.Menu
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.navigation.ui.*
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.ignacio.pokemonquizkotlin2.databinding.ActivityMainBinding
+import com.ignacio.pokemonquizkotlin2.sound.BackgroundSoundService
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
@@ -43,6 +53,12 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         //setupActionBarWithNavController(this, navController, drawerLayout)
         binding.navView.setupWithNavController(navController)
 
+
+        //BIND Music Service
+        doBindService()
+        val music = Intent()
+        music.setClass(this, BackgroundSoundService::class.java)
+        startService(music)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,5 +72,65 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         return NavigationUI.navigateUp(navController,drawer_layout) || super.onSupportNavigateUp()
     }
 
+
+    //Bind/Unbind music service
+    private var mIsBound = false
+    private var mServ: BackgroundSoundService? = null
+    private val Scon: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            mServ = (binder as BackgroundSoundService.ServiceBinder).service
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mServ = null
+        }
+    }
+
+    fun doBindService() {
+        bindService(
+            Intent(this, BackgroundSoundService::class.java),
+            Scon, Context.BIND_AUTO_CREATE
+        )
+        mIsBound = true
+    }
+
+    fun doUnbindService() {
+        if (mIsBound) {
+            unbindService(Scon)
+            mIsBound = false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mServ != null) {
+            mServ!!.resumeMusic()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //Detect idle screen
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        var isScreenOn = false
+        //if (pm != null) {
+            isScreenOn = pm.isScreenOn
+        //}
+        if (!isScreenOn) {
+            if (mServ != null) {
+                mServ!!.pauseMusic()
+            }
+        }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //UNBIND music service
+        doUnbindService()
+        val music = Intent()
+        music.setClass(this, BackgroundSoundService::class.java)
+        stopService(music)
+    }
 
 }

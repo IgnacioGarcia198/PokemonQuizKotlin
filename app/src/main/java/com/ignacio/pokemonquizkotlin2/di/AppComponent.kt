@@ -26,5 +26,5 @@ interface AppComponent {
     }
 
     fun inject(myApp: MyApplication)
-    fun sharedPreferences() : SharedPreferences
+    //fun sharedPreferences() : SharedPreferences
 }
