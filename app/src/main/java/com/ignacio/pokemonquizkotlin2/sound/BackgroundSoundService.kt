@@ -2,17 +2,99 @@ package com.ignacio.pokemonquizkotlin2.sound
 
 import android.app.Service
 import android.content.Intent
-import android.content.res.AssetFileDescriptor
 import android.media.MediaPlayer
-import android.os.Binder
 import android.os.IBinder
 import android.widget.Toast
+import androidx.annotation.Nullable
+import android.os.Binder
+import com.ignacio.pokemonquizkotlin2.R
 import timber.log.Timber
 
 
 class BackgroundSoundService : Service(), MediaPlayer.OnErrorListener {
-    private val mBinder: IBinder = ServiceBinder()
-    internal lateinit var player: MediaPlayer
+    private var length = 0
+    private var mediaPlayer: MediaPlayer? = null
+    enum class PlayerState {PLAYING, PAUSED, STOPPED}
+    var playerState: PlayerState = PlayerState.STOPPED
+    private set
+
+    // This is the object that receives interactions from clients.
+    private val mBinder = LocalBinder()
+    inner class LocalBinder : Binder() {
+        val service: BackgroundSoundService = this@BackgroundSoundService
+    }
+
+    @Nullable
+    override fun onBind(intent: Intent): IBinder? {
+        return mBinder
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.pokemonbgm)
+        mediaPlayer?.isLooping = true // Set looping
+        mediaPlayer?.setVolume(100f, 100f)
+    }
+
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Timber.e("==== start command")
+        mediaPlayer?.let {
+           it.start()
+           playerState = PlayerState.PLAYING
+        }
+        return startId
+    }
+
+    override fun onStart(intent: Intent, startId: Int) {}
+    override fun onDestroy() {
+        stopMusic()
+    }
+
+    fun stopMusic() {
+        mediaPlayer?.let {
+            it.stop()
+            it.release()
+            playerState = PlayerState.STOPPED
+        }
+    }
+
+    override fun onLowMemory() {}
+
+    override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        stopMusic()
+        return false
+    }
+
+    fun pauseMusic() {
+        mediaPlayer?.apply {
+            if (isPlaying) {
+                pause()
+                length = currentPosition
+                playerState = PlayerState.PAUSED
+            }
+        }
+    }
+
+    fun resumeMusic() {
+        mediaPlayer?.apply {
+            seekTo(length)
+            start()
+            playerState = PlayerState.PLAYING
+        }
+    }
+
+    fun startMusic() {
+        mediaPlayer?.apply {
+            setOnErrorListener(this@BackgroundSoundService)
+            start()
+            playerState = PlayerState.PLAYING
+        }
+    }
+
+
+
+    /*internal lateinit var player: MediaPlayer
     private var length = 0
     override fun onBind(arg0: Intent): IBinder? {
 
@@ -126,5 +208,5 @@ class BackgroundSoundService : Service(), MediaPlayer.OnErrorListener {
             //}
         //}
         return false
-    }
+    }*/
 }

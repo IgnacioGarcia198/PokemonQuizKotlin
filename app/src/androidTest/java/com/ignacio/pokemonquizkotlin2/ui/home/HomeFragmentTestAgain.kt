@@ -36,8 +36,6 @@ import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetai
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
 import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
-import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
-import com.ignacio.pokemonquizkotlin2.utils.sharedPreferences
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
 import kotlinx.android.synthetic.main.fragment_home.view.*
