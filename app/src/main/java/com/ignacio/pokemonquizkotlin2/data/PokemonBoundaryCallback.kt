@@ -82,7 +82,7 @@ internal constructor(private val repository: PokemonRepositoryInterface,
                     }
                 }
                 catch (e:Exception) {
-                    if(repository.pokemons.value!!.isEmpty()) {
+                    if(repository.pokemons.value.isNullOrEmpty()) {
                         repository.changeResponseState(PokemonResponseState.NETWORK_ERROR.setFatal(dbEmpty))
                     }
                 }

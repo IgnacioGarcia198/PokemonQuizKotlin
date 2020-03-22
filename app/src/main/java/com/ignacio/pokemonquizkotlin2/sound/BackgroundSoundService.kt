@@ -35,14 +35,15 @@ class BackgroundSoundService : Service(), MediaPlayer.OnErrorListener {
         mediaPlayer = MediaPlayer.create(this, R.raw.pokemonbgm)
         mediaPlayer?.isLooping = true // Set looping
         mediaPlayer?.setVolume(100f, 100f)
+        mediaPlayer?.setOnErrorListener(this@BackgroundSoundService)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Timber.e("==== start command")
-        mediaPlayer?.let {
+        /*mediaPlayer?.let {
            it.start()
            playerState = PlayerState.PLAYING
-        }
+        }*/
         return startId
     }
 
@@ -86,7 +87,7 @@ class BackgroundSoundService : Service(), MediaPlayer.OnErrorListener {
 
     fun startMusic() {
         mediaPlayer?.apply {
-            setOnErrorListener(this@BackgroundSoundService)
+
             start()
             playerState = PlayerState.PLAYING
         }

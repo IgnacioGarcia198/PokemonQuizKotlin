@@ -21,6 +21,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.ignacio.pokemonquizkotlin2.databinding.ActivityMainBinding
+import com.ignacio.pokemonquizkotlin2.sound.BackgroundSoundService
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -30,22 +31,16 @@ import javax.inject.Inject
 import com.ignacio.pokemonquizkotlin2.sound.BackgroundSoundService.LocalBinder
 import timber.log.Timber
 // TODO FIX ITS ALWAYS STARTING PLAYER ON CONFIG CHANGES.
-class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErrorListener {
+class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
-    //private var backgroundSoundService : BackgroundSoundService? = null
+    private var backgroundSoundService : BackgroundSoundService? = null
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
 
     override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
-    //private var mIsBound: Boolean = false
-    private var buttonIsPlaying: Boolean = false
+    private var mIsBound: Boolean = false
+    private var buttonIsPlaying: Boolean = true
     private var firsttime = true
-
-    private var length = 0
-    private var mediaPlayer: MediaPlayer? = null
-    enum class PlayerState {PLAYING, PAUSED, STOPPED}
-    var playerState: PlayerState = PlayerState.STOPPED
-        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,15 +67,15 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
             buttonIsPlaying = it.getBoolean("buttonIsPlaying", false)
             firsttime = it.getBoolean("firsttime", true)
         }
-        //doBindService()
+        doBindService()
 
     }
 
-    private fun createMediaPlayer() {
+    /*private fun createMediaPlayer() {
         mediaPlayer = MediaPlayer.create(this, R.raw.pokemonbgm)
         mediaPlayer?.isLooping = true // Set looping
         mediaPlayer?.setVolume(100f, 100f)
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -91,15 +86,24 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
 
         menu?.let {
-            menu.findItem(R.id.action_play_music).icon =
-            if(mediaPlayer != null && playerState == PlayerState.PLAYING) {
-                ContextCompat.getDrawable(
-                    this@MainActivity, R.drawable.ic_pause_circle_outline_black_48dp)
+
+            backgroundSoundService?.let {
+                val bgmitem = menu.findItem(R.id.action_play_music)
+                with(bgmitem) {
+                    if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
+                        icon = ContextCompat.getDrawable(
+                            this@MainActivity, R.drawable.ic_music_note_white_48dp)
+                        title = getString(R.string.pause_bgm)
+                    }
+                    else {
+                        icon = ContextCompat.getDrawable(
+                            this@MainActivity, R.drawable.ic_music_note_gray_48dp)
+                        title = getString(R.string.play_bgm)
+                    }
+                }
+
             }
-            else {
-                ContextCompat.getDrawable(
-                    this@MainActivity, R.drawable.ic_play_circle_outline_black_48dp)
-            }
+
             return true
         }
 
@@ -110,10 +114,20 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
         when(item.itemId) {
             R.id.action_settings -> {return true}
             R.id.action_play_music -> {
-                if(mediaPlayer != null && playerState == PlayerState.PLAYING) {
-                    pauseMusic()
+                backgroundSoundService?.let {
+                    if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
+                        Timber.e("==== pausing music from menu")
+                        pauseMusic()
+                        buttonIsPlaying = false
+                    }
+                    else {
+                        Timber.e("==== resuming music from menu")
+                        resumeMusic()
+                        buttonIsPlaying = true
+                    }
+                    Timber.e("==== buttonisplaying is $buttonIsPlaying")
                 }
-                else resumeMusic()
+
                 return true
             }
         }
@@ -126,14 +140,10 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
     }
 
     fun stopMusic() {
-        mediaPlayer?.let {
-            it.stop()
-            it.release()
-            playerState = PlayerState.STOPPED
-        }
+        backgroundSoundService?.stopMusic()
     }
 
-    /*private val musicServiceConnection = object : ServiceConnection {
+    private val musicServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             backgroundSoundService = null
             invalidateOptionsMenu()
@@ -144,65 +154,42 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
                 if(name.className == BackgroundSoundService::class.java.name) {
                     backgroundSoundService = (service as BackgroundSoundService.LocalBinder).service
                     backgroundSoundService?.let {
-                        if(firsttime && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
-                            startMusic()
+                        Timber.e("==== buttonisplaying is $buttonIsPlaying and backgroundsound state is ${it.playerState}")
+                        if(firsttime && buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
+                            Timber.e("==== resuming music in onservice connected")
+                            resumeMusic()
                             firsttime = false
                         }
                     }
                 }
             }
         }
-    }*/
+    }
 
     private fun startMusic() {
-        mediaPlayer?.apply {
-            setOnErrorListener(this@MainActivity)
-            start()
-            playerState = PlayerState.PLAYING
-        }
-        invalidateOptionsMenu()
-        buttonIsPlaying = true
+        backgroundSoundService?.startMusic()
     }
 
     private fun resumeMusic() {
-        if(buttonIsPlaying && playerState != PlayerState.PLAYING) {
-            mediaPlayer?.apply {
-                seekTo(length)
-                start()
-                playerState = PlayerState.PLAYING
-            }
-            invalidateOptionsMenu()
-            buttonIsPlaying = true
-        }
-
+        backgroundSoundService?.resumeMusic()
+        invalidateOptionsMenu()
     }
 
     private fun pauseMusic() {
         if(!isChangingConfigurations) {
-            mediaPlayer?.apply {
-                if (isPlaying) {
-                    pause()
-                    length = currentPosition
-                    playerState = PlayerState.PAUSED
-                }
-            }
+            backgroundSoundService?.pauseMusic()
             invalidateOptionsMenu()
-            buttonIsPlaying = false
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        createMediaPlayer()
-        startMusic()
     }
 
     override fun onResume() {
         super.onResume()
-        createMediaPlayer()
-        startMusic()
-
-        //resumeMusic()
+        backgroundSoundService?.let {
+            if(buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
+                Timber.e("==== resuming music in onresume")
+                resumeMusic()
+            }
+        }
     }
 
     override fun onAttachedToWindow() {
@@ -213,14 +200,16 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
     override fun onStop() {
         super.onStop()
         pauseMusic()
+        if(!isChangingConfigurations) stopMusic()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if(!isChangingConfigurations) stopMusic()
+        if(!isChangingConfigurations)
+        doUnbindService()
     }
 
-    /*fun doBindService() {
+    fun doBindService() {
         bindService(Intent(this, BackgroundSoundService::class.java),
         musicServiceConnection,
         Context.BIND_AUTO_CREATE)
@@ -233,21 +222,12 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, MediaPlayer.OnErro
             unbindService(musicServiceConnection)
             mIsBound = false
         }
-    }*/
-
-    override fun onPause() {
-        super.onPause()
-        pauseMusic()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.e("==== saving instance state: buttonisplaying = $buttonIsPlaying")
         outState.putBoolean("buttonIsPlaying", buttonIsPlaying)
         outState.putBoolean("firsttime", firsttime)
-    }
-
-    override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        stopMusic()
-        return false
     }
 }
