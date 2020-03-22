@@ -78,11 +78,11 @@ class PlayViewModelTest {
         whenever(mockPreferences.getLong(LAST_DB_REFRESH,0)).doReturn(Date().time/60000-30*24*60)
     }
 
-    fun stubAllPokemonInRepository() {
+    /*fun stubAllPokemonInRepository() {
         whenever(repository.pokemons).doReturn (
             MutableLiveData(allPokemonsResponse!!.asDatabaseModel(0,-1).asDomainModel())
         )
-    }
+    }*/
 
     fun stubInternetIsOk() {
         val connectivityManager : ConnectivityManager = mock()
@@ -109,7 +109,7 @@ class PlayViewModelTest {
         //viewModel = PlayViewModel(myApplication,true,10,repository,mockPreferences)
     }
 
-    @Suppress("UNCHECKED_CAST")
+    /*@Suppress("UNCHECKED_CAST")
     @Test
     fun refreshPokemonCallsItsMethods() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = PlayViewModel(myApplication,true,10,repository,mockPreferences)
@@ -474,7 +474,7 @@ class PlayViewModelTest {
         }
 
     }
-
+    */
 
 
 

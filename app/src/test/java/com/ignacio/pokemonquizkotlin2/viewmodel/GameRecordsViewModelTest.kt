@@ -54,7 +54,7 @@ class GameRecordsViewModelTest {
 
     }
 
-    @Test
+    /*@Test
     fun saveRecordOnCreateTest() {
         //viewModel.saveRecord(gameRecordList[0])
         viewModel = GameRecordsViewModel(myApplication, gameRecordList[0],repository)
@@ -71,7 +71,7 @@ class GameRecordsViewModelTest {
 
         verify(repository,times(1)).getAllRecords()
 
-    }
+    }*/
 
     @After
     fun tearDown() {

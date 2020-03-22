@@ -28,7 +28,9 @@ data class NameUrlPair(
 fun NetworkPokemonContainer.asDatabaseModel(offset : Int = 0, limit : Int = -1) : List<DatabasePokemon> {
     var i = offset+1
     val thelimit = if(limit == -1) HomeViewModel.DOWNLOAD_SIZE else limit
-    return results.subList(offset,offset+thelimit).map {
+    Timber.e("==== asdbmodel sublist from $offset to ${offset+thelimit}")
+    return results.map {
+        Timber.e("==== asdbmodel mapping $it")
         DatabasePokemon(i++, it!!.name,usedAsQuestion = false)
     }
 }

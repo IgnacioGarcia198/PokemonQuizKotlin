@@ -107,6 +107,7 @@ class PokemonRepository @Inject constructor(
         Timber.i("refreshpokemon is called")
         withContext(dispatchers.io()) {
             val pokemonContainer = service.getPokemonList(offset,limit).await()
+            Timber.e("==== pokemoncontainer: $pokemonContainer")
             database.pokemonDao.insertAll(pokemonContainer.asDatabaseModel(offset,limit))
             withContext(dispatchers.main()) {
                 callback()
