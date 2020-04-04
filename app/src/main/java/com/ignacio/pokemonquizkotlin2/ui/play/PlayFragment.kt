@@ -48,10 +48,8 @@ class PlayFragment : Fragment(), Injectable {
     ): View? {
         val binding = FragmentPlayBinding.inflate(inflater,container,false)
         val args = PlayFragmentArgs.fromBundle(arguments!!)
-        //playViewModel.initGame(args.questionsOrTime,args.gameLength)
         playViewModel = provideViewModel()
         playViewModel.setParams(args.questionsOrTime,args.gameLength)
-            //ViewModelProviders.of(this).get(PlayViewModel::class.java)
         binding.viewModel = playViewModel
         binding.lifecycleOwner = this
 
@@ -87,11 +85,6 @@ class PlayFragment : Fragment(), Injectable {
                 playViewModel.showRecordsDone()
             }
         })
-
-        /*playViewModel.getResponseState().observe(this, Observer {
-            addOrRemoveErrorMsg(binding.root as ViewGroup,it)
-        })*/
-
 
         return binding.root
     }

@@ -91,14 +91,6 @@ class PlayViewModel @Inject constructor(
     val timeString : LiveData<String>
         get() = _timeString
 
-    /**
-     * All content of init() is moved to initForUnitTest() in order to make testing easier.
-     */
-    /*init {
-        // we comment this line for unit-testing this viewmodel.
-        initForUnitTest()
-    }*/
-
     fun setParams(questionsOrTime: Boolean, gameLenght : Int) {
         if(questionsOrTime != this.questionsOrTime || gameLenght != this.limitValue) {
             this.questionsOrTime = questionsOrTime
@@ -107,7 +99,12 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    final fun initForUnitTest() {
+    /**
+     * We do this instead of normal init() because of using Dagger, passing values with setParams()
+     * is much easier for dependency injection when we talk about ViewModels.
+     */
+    @VisibleForTesting
+    fun initForUnitTest() {
         _showChooseQuizFragment.value = true // show fragment just started
 
         var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
@@ -166,16 +163,12 @@ class PlayViewModel @Inject constructor(
     var currentAnimationTime = 0L
 
     fun initGame() {
-        //this.questionsOrTime = questionsOrTime
-        //this.limitValue = limitValue
-
         if(questionsOrTime) { // questions game
             startQuestionsGame()
         }
         else { // time game
            startTimeGame()
         }
-
     }
 
     fun startQuestionsGame() {
@@ -212,10 +205,6 @@ class PlayViewModel @Inject constructor(
         nextRound()
     }
 
-    // game course:
-    //================
-    // one round
-    //================
     // index where we hide right answer
     var rightAnswerIndex : Int = 0
     // id of the pokemon used as question
@@ -223,26 +212,18 @@ class PlayViewModel @Inject constructor(
 
 
     @VisibleForTesting fun nextRound() {
-        //_radiogroupEnabled.value = false
-        Timber.i("Launching nextRound coroutine")
-
         _radiogroupEnabled.postValue(false)
         _imageVisible.postValue(View.INVISIBLE)
         _progressbarVisible.postValue(View.VISIBLE)
-        //Timber.i("progressbar changing text to ${app.getString(R.string.loading)}")
         _progressbarText.postValue(app.getString(R.string.loading))
 
 
         viewModelScope.launch {
-            //var nextQuestionPokemon : Pokemon?
-            // answerList : List<String>
             wrapEspressoIdlingResource {
                 try {
                     repository.changeResponseState(PokemonResponseState.LOADING)
                     var nextQuestionPokemon =
                         repository.getNextRoundQuestionPokemon()?.asDomainModel()
-                    //Timber.i("next pokemon is $nextQuestionPok")
-                    //var nextQuestionPokemon = nextQuestionPok.asDomainModel()
                     Timber.i("next pokemon is $nextQuestionPokemon")
                     if (nextQuestionPokemon == null && networkIsOk(app)) {
                         Timber.i("all pokemon used, resetting...")
@@ -252,17 +233,13 @@ class PlayViewModel @Inject constructor(
                     }
                     repository.updateUsedAsQuestion(nextQuestionPokemon!!.id, true)
 
-                    // make function in Repository and inside it update pokemon in db (used as true).
-
-
                     questionPokemonId = nextQuestionPokemon.id
                     Timber.i("next id is $questionPokemonId")
 
-                    // start gettin image from Glide...
+                    // start getting image from Glide...
                     _nextRoundQuestionPokemonId.postValue(questionPokemonId)
 
                     // get answer pokemon names from db and show them
-                    //_gameState.value = GameState.GETTING_ANSWERS
                     val answerList = repository.getNextRoundAnswers(
                         questionPokemonId,
                         NUMBER_OF_ANSWERS - 1
@@ -287,7 +264,6 @@ class PlayViewModel @Inject constructor(
 
     fun onAnimationMaxed() {
         // start next round!
-        //withContext(dispatchers.main()) {
         viewModelScope.launch {
             wrapEspressoIdlingResource {
                 withContext(dispatchers.default()) {
@@ -334,13 +310,11 @@ class PlayViewModel @Inject constructor(
             // right answer
             _rightAnswersCount.value = _rightAnswersCount.value!!+1
             _lastResult.value = true
-            //_gameState.value = GameState.RIGHT_ANSWER
         }
         else {
             // wrong answer
             _wrongAnswersCount.value = _wrongAnswersCount.value!!+1
             _lastResult.value = false
-            //_gameState.value = GameState.WRONG_ANSWER
         }
     }
 
@@ -368,6 +342,7 @@ class PlayViewModel @Inject constructor(
             if(questionsOrTime) roundNumber.toFloat() / timer.elapsedTime
             else roundNumber.toFloat() / limitValue
 
+        // go to game records fragment
         _showRecords.value = GameRecord(
             gameMode = questionsOrTime,
             gameLength = limitValue,
@@ -375,9 +350,6 @@ class PlayViewModel @Inject constructor(
             hitRate = hitRate.roundTo(3),
             recordTime = Date()
         )
-
-        //roundNumber = 0
-        // go to game records fragment
     }
 
     // for showing records fragment

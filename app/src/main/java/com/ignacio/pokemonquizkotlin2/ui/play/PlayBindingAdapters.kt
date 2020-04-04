@@ -38,16 +38,6 @@ failCallback : () -> Unit = {}) {
                     isFirstResource: Boolean
                 ): Boolean {
                     failCallback()
-
-                    /*with(imgView.context) {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.no_internet_notice),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }*/
-
-
                     return false
                 }
                 // TODO LETS THINK ABOUT EXTRACTING FUNCTION FOR LOADING IMAGES WITH GLIDE...
@@ -59,9 +49,7 @@ failCallback : () -> Unit = {}) {
                     dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
-
                     successCallback()
-
                     return false
                 }
             })
@@ -73,31 +61,13 @@ failCallback : () -> Unit = {}) {
     }
 }
 
-/*@BindingAdapter("gameState")
-fun bindProgressBarText(customProgressBar: CustomProgressBar, gameState: GameState?) {
-    gameState?.let {
-        when(gameState) {
-            GameState.REFRESHING_POKEMON -> customProgressBar.text =
-                customProgressBar.context.getString(R.string.refreshing_pokemon_msg)
-            GameState.GETTING_QUESTION -> {
-                customProgressBar.visibility = View.VISIBLE
-                customProgressBar.text = customProgressBar.context.getString(R.string.loading)
-            }
-            //GameState.WAITING_CHOICE -> customProgressBar.visibility = View.INVISIBLE
-            else -> customProgressBar.visibility == View.INVISIBLE
-        }
-    }
-}*/
-
 @BindingAdapter("answerList")
 fun bindRadioGroup(radioGroup: RadioGroup, answerList: List<String>) {
     Timber.i("answer list length: ${answerList.size}")
     if(answerList.isNotEmpty() && radioGroup.childCount != 0) {
         for((i, answer : String) in answerList.withIndex()) {
-                //Timber.i("radiogroup has ${radioGroup.childCount} children")
                 (radioGroup.getChildAt(i) as RadioButton).text = answer
             }
-        //radioGroup.check(-1)
     }
 }
 
@@ -150,13 +120,7 @@ fun setAnimationLevel(textView: TextView, level : Float, maxListener : () -> Uni
     textView.height = newHeight
     Timber.i("new height in textview is ${textView.height}")
     if(newHeight != 0 && newHeight >= totalHeight) {
-        //reset after 100ms or so
-        //val scope = CoroutineScope(dispatchers.default())
-
-            //withContext(dispatchers.main()) {
-                maxListener()
-            //}
-        //}
+        maxListener()
     }
 }
 
