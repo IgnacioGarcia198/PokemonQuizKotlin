@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.ignacio.pokemonquizkotlin2.ui.play.PlayViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:responseState="@{viewModel.responseState}">
+
+
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#ff80ab"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:animationLevel="@{viewModel.animationLevel}"
+            app:maxListener="@{viewModel::onAnimationMaxed}" />
+
+        <ImageView
+            android:id="@+id/questionImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            tools:visibility="invisible"
+            android:contentDescription="@string/game_pokemon_image_content_desc"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            android:visibility="@{viewModel.imageVisible}"
+            app:pokemonId="@{viewModel.nextRoundQuestionPokemonId}"
+            app:onSuccess="@{viewModel::onLoadImageSuccess}"
+            app:onFail="@{viewModel::onLoadImageFailed}"
+            />
+
+        <com.ignacio.pokemonquizkotlin2.ui.CustomProgressBar
+            android:id="@+id/radioGroupProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            android:visibility="@{viewModel.progressbarVisible}"
+            tools:visibility="visible"
+            app:text="@{viewModel.progressbarText}"
+            />
+
+        <RadioGroup
+            android:id="@+id/customRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/radioGroupProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintTop_toTopOf="@+id/radioGroupProgressBar"
+            answerList="@{viewModel.nextRoundAnswers}"
+            onOptionSelected="@{viewModel}"
+            app:enabled="@{viewModel.radiogroupEnabled}"
+            />
+
+        <TextView
+            android:id="@+id/rightAnswersTitle"
+            style="@style/AnswerCounterPrompt.Right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="32dp"
+            android:text="@string/right_answers"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toTopOf="@+id/rightAnswersTV"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/wrongAnswersTitle"
+            style="@style/AnswerCounterPrompt.Wrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="@string/wrong_answers"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toTopOf="@+id/wrongAnswersTV"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/wrongAnswersTV"
+            style="@style/AnswerCounterStyle.Wrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            tools:text="@string/initial_score"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/radioGroupProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/wrongAnswersTitle"
+            app:layout_constraintStart_toStartOf="@+id/wrongAnswersTitle"
+            android:text="@{viewModel.wrongAnswersCount.toString()}"/>
+
+        <TextView
+            android:id="@+id/rightAnswersTV"
+            style="@style/AnswerCounterStyle.Right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:includeFontPadding="false"
+            tools:text="@string/initial_score"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toTopOf="@+id/wrongAnswersTitle"
+            app:layout_constraintEnd_toEndOf="@+id/rightAnswersTitle"
+            app:layout_constraintStart_toStartOf="@+id/rightAnswersTitle"
+            android:text="@{viewModel.rightAnswersCount.toString()}"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/guess_the_pokemon_s_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lastResultTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="@string/last_result"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorPrimaryLight"
+            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintTop_toBottomOf="@+id/gameTimeTV"
+            app:lastResult="@{viewModel.lastResult}" />
+
+        <TextView
+            android:id="@+id/gameTimeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintTop_toBottomOf="@+id/customRadioGroup"
+            android:text="@{viewModel.timeString}"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
