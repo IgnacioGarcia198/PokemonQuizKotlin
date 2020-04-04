@@ -31,10 +31,10 @@ class PlayViewModel @Inject constructor(
     app : Application,
     repository: PokemonRepositoryInterface,
     val sharedPref: SharedPreferences
-
 ) : BaseViewModel(app,repository) {
     private var questionsOrTime : Boolean = true
     private var limitValue : Int = 0
+    var lastResultShown = false
 
     val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
     // we will show the fragment just as we start.

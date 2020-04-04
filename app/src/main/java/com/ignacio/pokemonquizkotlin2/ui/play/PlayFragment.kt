@@ -63,9 +63,11 @@ class PlayFragment : Fragment(), Injectable {
         initToastTimer()
 
         playViewModel.lastResult.observe(viewLifecycleOwner, Observer {
-            Timber.i("lastResult is ${playViewModel.lastResult.value}")
-            it?.let {
-                showResult(it)
+            if(!playViewModel.lastResultShown) {
+                Timber.i("lastResult is ${playViewModel.lastResult.value}")
+                it?.let {
+                    showResult(it)
+                }
             }
         })
 
@@ -108,8 +110,8 @@ class PlayFragment : Fragment(), Injectable {
         }
         gameToast.view = layout
         gameToast.show()
+        playViewModel.lastResultShown = true
         toastCountDown.start()
-
     }
 
     private fun initToastTimer() {
