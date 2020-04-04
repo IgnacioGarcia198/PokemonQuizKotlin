@@ -40,7 +40,8 @@ failCallback : () -> Unit = {}) {
                     failCallback()
                     return false
                 }
-                // TODO LETS THINK ABOUT EXTRACTING FUNCTION FOR LOADING IMAGES WITH GLIDE...
+                // TODO LETS THINK ABOUT EXTRACTING FUNCTION FOR LOADING IMAGES WITH GLIDE... AS STATIC METHODS OR STH.
+                // TODO SHOULD CHANGE TO FRESCO FROM FB IN CASE GLIDE GIVES MORE PROBLEMS. WILL TRY IT IN A BRANCH.
 
                 override fun onResourceReady(
                     resource: Drawable,

@@ -110,14 +110,13 @@ class PlayViewModel @Inject constructor(
         var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
         if(!dateIsFresh(lastRefreshMinutes)) {
             // if we have to update pokemon, show such message in the progressbar's textview
-            //_gameState.value = GameState.REFRESHING_POKEMON
             Timber.i("calling refresh pokemon")
             refreshPokemon()
         }
         else {
             val lastId = sharedPref.getInt(LAST_PAGING_POKEMON_ID_KEY,0)
             if(lastId < HomeViewModel.DOWNLOAD_SIZE) {
-                refreshPokemon(lastId + 1, HomeViewModel.DOWNLOAD_SIZE - lastId)
+                refreshPokemon(lastId + 1)
             }
             else {
                 initGame()
@@ -126,9 +125,10 @@ class PlayViewModel @Inject constructor(
     }
 
     @VisibleForTesting
-    fun refreshPokemon(offset : Int = 0, limit : Int = -1) {
+    fun refreshPokemon(offset : Int = 0, limit : Int = HomeViewModel.DOWNLOAD_SIZE - offset) {
         viewModelScope.launch {
             try {
+                Timber.e("==== refreshing pokemons from $offset, quantity: $limit")
                 _imageVisible.postValue(View.INVISIBLE)
                 _progressbarVisible.postValue(View.VISIBLE)
                 _progressbarText.postValue(app.getString(R.string.refreshing_pokemon_msg))

@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
          * FROM THE DATABASE AND RESET THE lastRefresh VARIABLE. ORIGINAL VALUE IS 897 FOR THE LITTLE SPRITES
          * AND 720 FOR THE ARTWORK IMAGES.
          */
-        const val DOWNLOAD_SIZE = 720//897
+        const val DOWNLOAD_SIZE = 721//897
 
     }
 
