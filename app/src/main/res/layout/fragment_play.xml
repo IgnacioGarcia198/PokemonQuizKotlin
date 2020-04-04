@@ -32,10 +32,10 @@
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="1:1"
             android:contentDescription="@string/game_pokemon_image_content_desc"
-            app:layout_constraintBottom_toTopOf="@+id/guideline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintBottom_toTopOf="@id/guideline6"
             tools:visibility="invisible"
             android:visibility="@{viewModel.imageVisible}"
             app:pokemonId="@{viewModel.nextRoundQuestionPokemonId}"
@@ -47,15 +47,14 @@
             android:id="@+id/radioGroupProgressBar"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="@{viewModel.progressbarVisible}"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintBottom_toTopOf="@+id/guideline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
-            android:visibility="@{viewModel.progressbarVisible}"
-            tools:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/guideline6"
             app:text="@{viewModel.progressbarText}"
-            />
+            tools:visibility="visible" />
 
         <RadioGroup
             android:id="@+id/customRadioGroup"
@@ -161,7 +160,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.46" />
+            app:layout_constraintGuide_percent="0.6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

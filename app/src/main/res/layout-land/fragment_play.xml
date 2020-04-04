@@ -34,7 +34,7 @@
             tools:visibility="invisible"
             android:contentDescription="@string/game_pokemon_image_content_desc"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
             android:visibility="@{viewModel.imageVisible}"
@@ -47,11 +47,10 @@
             android:id="@+id/radioGroupProgressBar"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/guideline7"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="@{viewModel.progressbarVisible}"
             tools:visibility="visible"
             app:text="@{viewModel.progressbarText}"
@@ -63,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/radioGroupProgressBar"
-            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toEndOf="@+id/radioGroupProgressBar"
             app:layout_constraintTop_toTopOf="@+id/radioGroupProgressBar"
             app:onOptionSelected="@{viewModel}"
             app:answerList="@{viewModel.nextRoundAnswers}"
@@ -76,11 +75,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="32dp"
             android:text="@string/right_answers"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toTopOf="@+id/rightAnswersTV"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/rightAnswersTV"
+            app:layout_constraintStart_toStartOf="@+id/rightAnswersTV" />
 
         <TextView
             android:id="@+id/wrongAnswersTitle"
@@ -111,14 +110,13 @@
             style="@style/AnswerCounterStyle.Right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:includeFontPadding="false"
-            tools:text="@string/initial_score"
+            android:text="@{viewModel.rightAnswersCount.toString()}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toTopOf="@+id/wrongAnswersTitle"
-            app:layout_constraintEnd_toEndOf="@+id/rightAnswersTitle"
-            app:layout_constraintStart_toStartOf="@+id/rightAnswersTitle"
-            android:text="@{viewModel.rightAnswersCount.toString()}"/>
+            app:layout_constraintEnd_toEndOf="@+id/wrongAnswersTitle"
+            app:layout_constraintStart_toStartOf="@+id/wrongAnswersTitle"
+            tools:text="@string/initial_score" />
 
         <TextView
             android:id="@+id/textView3"
@@ -135,15 +133,15 @@
             android:id="@+id/lastResultTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:drawablePadding="10dp"
             android:gravity="center"
             android:text="@string/last_result"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/colorPrimaryLight"
-            app:layout_constraintStart_toStartOf="@+id/guideline7"
-            app:layout_constraintTop_toBottomOf="@+id/gameTimeTV"
+            app:layout_constraintStart_toEndOf="@+id/gameTimeTV"
+            app:layout_constraintTop_toBottomOf="@+id/customRadioGroup"
             app:lastResult="@{viewModel.lastResult}" />
 
         <TextView
@@ -151,8 +149,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toStartOf="@+id/customRadioGroup"
             app:layout_constraintTop_toBottomOf="@+id/customRadioGroup"
             android:text="@{viewModel.timeString}"/>
 
