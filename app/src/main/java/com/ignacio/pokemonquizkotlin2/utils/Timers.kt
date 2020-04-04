@@ -51,6 +51,9 @@ abstract class CountBaseTimer constructor(val interval : Long) {
     }
 
     fun start() { // do not reset before start...
+        if(timerState == TimerState.STARTED) {
+            return
+        }
         if(timerState == TimerState.PAUSED) { // restarting from pause
             base += SystemClock.elapsedRealtime() - pauseTime
         }
