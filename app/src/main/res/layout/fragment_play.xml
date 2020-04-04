@@ -64,8 +64,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline6"
-            answerList="@{viewModel.nextRoundAnswers}"
-            onOptionSelected="@{viewModel}"
+            app:onOptionSelected="@{viewModel}"
+            app:answerList="@{viewModel.nextRoundAnswers}"
             app:enabled="@{viewModel.radiogroupEnabled}"
             />
 

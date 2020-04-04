@@ -329,6 +329,7 @@ class PlayViewModel @Inject constructor(
         Timber.i("on answer choser: $index")
         timer.pause()
         resetAnimation()
+        lastResultShown = false
         if(index == rightAnswerIndex) {
             // right answer
             _rightAnswersCount.value = _rightAnswersCount.value!!+1

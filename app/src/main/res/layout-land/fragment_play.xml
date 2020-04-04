@@ -65,8 +65,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/radioGroupProgressBar"
             app:layout_constraintStart_toStartOf="@+id/guideline7"
             app:layout_constraintTop_toTopOf="@+id/radioGroupProgressBar"
-            answerList="@{viewModel.nextRoundAnswers}"
-            onOptionSelected="@{viewModel}"
+            app:onOptionSelected="@{viewModel}"
+            app:answerList="@{viewModel.nextRoundAnswers}"
             app:enabled="@{viewModel.radiogroupEnabled}"
             />
 
