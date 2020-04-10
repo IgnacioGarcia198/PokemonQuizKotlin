@@ -17,7 +17,6 @@
 package com.ignacio.pokemonquizkotlin2.androidtestutil
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.rule.ActivityTestRule
-import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 

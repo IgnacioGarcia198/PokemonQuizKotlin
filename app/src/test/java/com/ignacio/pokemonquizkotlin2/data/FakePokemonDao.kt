@@ -1,12 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.paging.DataSource
-import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.db.PokemonDao
-import java.util.*
-
 class FakePokemonDao /*(val pokemonList : MutableList<DatabasePokemon>) : PokemonDao {
     override fun getAllPokemonsFromRoom(): DataSource.Factory<Int, DatabasePokemon> {
 

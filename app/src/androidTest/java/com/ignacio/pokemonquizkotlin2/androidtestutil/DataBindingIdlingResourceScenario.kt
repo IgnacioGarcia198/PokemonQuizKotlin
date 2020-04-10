@@ -51,7 +51,7 @@ class DataBindingIdlingResource2 : IdlingResource {
 
     override fun isIdleNow(): Boolean {
         val idle = !getBindings().any { it.hasPendingBindings() }
-        Timber.d("data binding is idle ${idle}")
+        Timber.d("data binding is idle $idle")
         @Suppress("LiftReturnOrAssignment")
         if (idle) {
             if (wasNotIdle) {

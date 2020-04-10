@@ -2,10 +2,9 @@ package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
 import android.app.Application
 import android.content.SharedPreferences
-import androidx.lifecycle.*
-import com.ignacio.pokemonquizkotlin2.MyApplication
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider

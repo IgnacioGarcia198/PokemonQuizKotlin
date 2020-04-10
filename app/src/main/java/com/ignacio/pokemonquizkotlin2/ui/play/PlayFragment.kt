@@ -1,6 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
@@ -8,18 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.VisibleForTesting
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import com.ignacio.pokemonquizkotlin2.OpenClass
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPlayBinding
 import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting

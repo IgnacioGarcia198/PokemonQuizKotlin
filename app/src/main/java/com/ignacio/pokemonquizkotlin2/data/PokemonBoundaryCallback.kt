@@ -2,17 +2,17 @@ package com.ignacio.pokemonquizkotlin2.data
 
 import android.content.SharedPreferences
 import androidx.paging.PagedList
-
+import com.ignacio.pokemonquizkotlin2.OpenClass
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.ignacio.pokemonquizkotlin2.utils.*
-import com.ignacio.pokemonquizkotlin2.OpenClass
+import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
+import com.ignacio.pokemonquizkotlin2.utils.LAST_DB_REFRESH
+import com.ignacio.pokemonquizkotlin2.utils.LAST_PAGING_POKEMON_ID_KEY
+import com.ignacio.pokemonquizkotlin2.utils.dateIsFresh
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
-import java.util.Calendar
-import javax.inject.Inject
+import java.util.*
 
 /**
  * PagedList.BoundaryCallback class to know when to trigger the Network request for more data
@@ -22,7 +22,7 @@ class PokemonBoundaryCallback
 //private int dbupdated;
 
 internal constructor(private val repository: PokemonRepositoryInterface,
-                        private val dispatchers: DispatcherProvider,
+                        dispatchers: DispatcherProvider,
                     private val sharedPreferences: SharedPreferences) :
     PagedList.BoundaryCallback<DatabasePokemon>() {
     // Avoid triggering multiple requests in the same time
@@ -116,7 +116,7 @@ internal constructor(private val repository: PokemonRepositoryInterface,
         Timber.i("onItemAtEndLoaded: Started")
         //if(itemAtEnd)
         if(itemAtEnd.id < HomeViewModel.DOWNLOAD_SIZE - NETWORK_PAGE_SIZE) {
-            Timber.i("Getting ${NETWORK_PAGE_SIZE}")
+            Timber.i("Getting $NETWORK_PAGE_SIZE")
             requestAndSaveData()
             sharedPreferences.edit().putInt(LAST_PAGING_POKEMON_ID_KEY,itemAtEnd.id).apply()
         }

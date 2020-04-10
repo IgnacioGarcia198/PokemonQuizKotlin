@@ -153,11 +153,9 @@ class PokemonRepository @Inject constructor(
             .build()
 
         // Get the Live Paged list
-        val data = LivePagedListBuilder(pokemonsResult, pagedConfig)
+        return LivePagedListBuilder(pokemonsResult, pagedConfig)
             .setBoundaryCallback(boundaryCallback)
             .build()
-
-        return data
     }
 
     //============================================

@@ -4,36 +4,31 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.api.*
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
+import com.ignacio.pokemonquizkotlin2.data.api.PokemonService
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
+import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
+import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
+import com.ignacio.pokemonquizkotlin2.ui.play.PlayViewModel
+import com.ignacio.pokemonquizkotlin2.utils.LAST_DB_REFRESH
+import com.ignacio.pokemonquizkotlin2.utils.LAST_PAGING_POKEMON_ID_KEY
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.TestRule
 import retrofit2.converter.moshi.MoshiConverterFactory
-import org.junit.After
 import java.util.*
-import androidx.lifecycle.MutableLiveData
-import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
-import com.ignacio.pokemonquizkotlin2.db.asDomainModel
-import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
-import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
-import com.ignacio.pokemonquizkotlin2.ui.play.NUMBER_OF_ANSWERS
-import com.ignacio.pokemonquizkotlin2.ui.play.PlayViewModel
-import com.ignacio.pokemonquizkotlin2.utils.*
-import kotlinx.coroutines.test.runBlockingTest
 
 
 @ExperimentalCoroutinesApi

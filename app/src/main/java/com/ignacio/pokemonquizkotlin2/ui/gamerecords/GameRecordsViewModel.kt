@@ -1,24 +1,22 @@
 package com.ignacio.pokemonquizkotlin2.ui.gamerecords
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.ignacio.pokemonquizkotlin2.MyApplication
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
-import kotlinx.coroutines.*
-import timber.log.Timber
+import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
 class GameRecordsViewModel @Inject constructor(
     app : Application,
-    repository: PokemonRepositoryInterface,
-    dispatchers: DispatcherProvider = DefaultDispatcherProvider()) : BaseViewModel(app,repository) {
+    repository: PokemonRepositoryInterface
+) : BaseViewModel(app,repository) {
 
 
     //val allRecords = repository.getAllRecords()

@@ -3,10 +3,7 @@ package com.ignacio.pokemonquizkotlin2.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
-import android.widget.TextView
 import com.ignacio.pokemonquizkotlin2.R
 import kotlinx.android.synthetic.main.custom_progress_bar.view.*
 import timber.log.Timber

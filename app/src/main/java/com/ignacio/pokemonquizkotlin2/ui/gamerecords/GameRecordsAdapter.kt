@@ -24,20 +24,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.db.GameRecord
-import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.databinding.RecordsRowBinding
-import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
-import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.ClassCastException
-import java.lang.RuntimeException
+import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
 
 class GameRecordsAdapter : ListAdapter<RecordItem, RecyclerView.ViewHolder>(RecordDiffCallback()) {
 

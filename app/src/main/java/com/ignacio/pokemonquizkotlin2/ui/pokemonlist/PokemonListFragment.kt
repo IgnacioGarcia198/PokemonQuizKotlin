@@ -1,21 +1,16 @@
 package com.ignacio.pokemonquizkotlin2.ui.pokemonlist
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentPokemonlistBinding
 import com.ignacio.pokemonquizkotlin2.di.Injectable
-import com.ignacio.pokemonquizkotlin2.ui.PokemonViewModelFactory
 import javax.inject.Inject
 
 class PokemonListFragment : Fragment(),Injectable {

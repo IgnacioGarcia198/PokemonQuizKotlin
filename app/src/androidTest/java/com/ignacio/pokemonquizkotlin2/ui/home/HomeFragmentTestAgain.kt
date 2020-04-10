@@ -1,15 +1,11 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -24,33 +20,22 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource
-import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResourceRule
 import com.ignacio.pokemonquizkotlin2.androidtestutil.EspressoTestUtil
-import com.ignacio.pokemonquizkotlin2.androidtestutil.ViewModelUtil
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
-import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.nhaarman.mockitokotlin2.*
 import com.squareup.moshi.Moshi
-import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.internal.util.MockUtil
-import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.io.IOException
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)

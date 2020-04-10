@@ -1,7 +1,6 @@
 package com.ignacio.pokemonquizkotlin2.di
 
 import android.app.Application
-import android.content.SharedPreferences
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import dagger.BindsInstance
 import dagger.Component

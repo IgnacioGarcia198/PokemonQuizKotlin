@@ -1,7 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.data
 
-import org.junit.Assert.*
-
 class PokemonBoundaryCallbackTest {
 
     @org.junit.Test

@@ -40,7 +40,7 @@ class DataTransferObjectsKtTest {
 
         //When: Do the actual action on the object you're testing. For this test, it means calling getActiveAndCompletedStats.
         val databasePokemonsFull : List<DatabasePokemon> = testPokemonContainer!!.asDatabaseModel(0,-1)
-        val databasePokemons20to40 : List<DatabasePokemon> = testPokemonContainer!!.asDatabaseModel(21, 20)
+        val databasePokemons20to40 : List<DatabasePokemon> = testPokemonContainer.asDatabaseModel(21, 20)
 
 
         //Then: This is where you actually check what happens when you do the action where you check if the test passed or failed. This is usually a number of assert function calls.

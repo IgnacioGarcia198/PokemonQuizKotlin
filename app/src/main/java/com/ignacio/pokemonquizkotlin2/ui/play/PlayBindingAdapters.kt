@@ -1,11 +1,11 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
 import android.graphics.drawable.Drawable
-import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.children
-import androidx.core.view.iterator
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -14,9 +14,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.ui.CustomProgressBar
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Runnable
 import timber.log.Timber
 
 @BindingAdapter("pokemonId", "onSuccess", "onFail", requireAll = false)

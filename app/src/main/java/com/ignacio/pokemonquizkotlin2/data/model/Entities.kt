@@ -1,11 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.data.model
 
-import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import java.util.*
-
 // pokemon
 data class Pokemon (
     val id : Int = 0,

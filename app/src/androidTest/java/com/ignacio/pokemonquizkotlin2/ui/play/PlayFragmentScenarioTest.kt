@@ -1,24 +1,15 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -26,23 +17,16 @@ import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource2
 import com.ignacio.pokemonquizkotlin2.androidtestutil.EspressoTestUtil
 import com.ignacio.pokemonquizkotlin2.androidtestutil.monitorFragment
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.ServiceLocator
-import com.ignacio.pokemonquizkotlin2.data.api.PokemonNetwork
 import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.db.PokemonDao
 import com.ignacio.pokemonquizkotlin2.ui.PlayViewModelFactory
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.EspressoIdlingResource
-import com.nhaarman.mockitokotlin2.isNotNull
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -50,7 +34,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Spy
 
 
 @MediumTest
@@ -212,10 +195,7 @@ class PlayFragmentScenarioTest {
             }
 
             override fun matchesSafely(item: TextView?): Boolean {
-                return item?.text?.let {
-                    it.matches(regex.toRegex())
-                } ?: false
-
+                return item?.text?.matches(regex.toRegex()) ?: false
             }
 
         }

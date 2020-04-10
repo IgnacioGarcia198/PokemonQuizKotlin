@@ -7,13 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ignacio.pokemonquizkotlin2.MyApplication
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentGameRecordsBinding
-import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.di.Injectable
-import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import javax.inject.Inject
 
 class GameRecordsFragment : Fragment(), Injectable {

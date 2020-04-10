@@ -1,38 +1,24 @@
 package com.ignacio.pokemonquizkotlin2.ui.play
 
-import android.content.Context
-import android.graphics.drawable.Drawable
-import android.os.Bundle
-import com.ignacio.pokemonquizkotlin2.R
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.doOnLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import androidx.fragment.app.testing.launchFragment
-import androidx.navigation.NavController
-import androidx.test.annotation.UiThreadTest
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-
 import com.ignacio.pokemonquizkotlin2.testing.SingleFragmentActivity
-import com.nhaarman.mockitokotlin2.*
-import junit.framework.Assert.*
+import com.nhaarman.mockitokotlin2.mock
+import junit.framework.Assert.assertEquals
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.mockito.Mockito.*
 import timber.log.Timber
 
 

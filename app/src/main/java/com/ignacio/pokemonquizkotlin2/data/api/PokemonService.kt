@@ -37,7 +37,7 @@ object PokemonNetwork {
     } else {
         HttpLoggingInterceptor.Level.NONE
     }
-    val loggingInterceptor = HttpLoggingInterceptor().setLevel(level)
+    val loggingInterceptor = HttpLoggingInterceptor().apply { level = level }
     // Configure retrofit to parse JSON and use coroutines
     val okHttp = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)

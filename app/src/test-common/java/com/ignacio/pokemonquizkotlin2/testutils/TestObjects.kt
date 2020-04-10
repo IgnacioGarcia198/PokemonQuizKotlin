@@ -1,7 +1,5 @@
 package com.ignacio.pokemonquizkotlin2.testutils
 
-import android.os.Build
-import com.ignacio.pokemonquizkotlin2.BuildConfig
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
@@ -9,7 +7,6 @@ import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetai
 import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import com.ignacio.pokemonquizkotlin2.utils.writeLineTest
 import com.squareup.moshi.Moshi
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 object TestObjects {
     val moshi = Moshi.Builder().build()

@@ -3,19 +3,18 @@ package com.ignacio.pokemonquizkotlin2.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.api.*
+import com.ignacio.pokemonquizkotlin2.data.api.PokemonService
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.ui.gamerecords.GameRecordsViewModel
-import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.*
+import com.nhaarman.mockitokotlin2.mock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.TestRule
-import org.junit.After
 import java.util.*
 
 

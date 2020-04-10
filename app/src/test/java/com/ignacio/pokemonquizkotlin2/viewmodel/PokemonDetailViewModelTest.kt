@@ -1,32 +1,32 @@
 package com.ignacio.pokemonquizkotlin2.viewmodel
 
 import android.content.SharedPreferences
-import android.view.View
-import android.widget.TextView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.platform.app.InstrumentationRegistry
 import com.ignacio.pokemonquizkotlin2.MyApplication
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
-import com.ignacio.pokemonquizkotlin2.data.api.*
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
+import com.ignacio.pokemonquizkotlin2.data.api.PokemonService
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.testutils.observeOnce
 import com.ignacio.pokemonquizkotlin2.testutils.test
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import retrofit2.converter.moshi.MoshiConverterFactory
-import org.junit.After
 import java.util.*
 
 

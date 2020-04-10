@@ -1,25 +1,16 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.os.Bundle
-import android.view.View
-import android.widget.Spinner
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -27,23 +18,18 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.androidtestutil.DataBindingIdlingResource2
 import com.ignacio.pokemonquizkotlin2.androidtestutil.FakeRepository
-import com.ignacio.pokemonquizkotlin2.androidtestutil.ViewModelUtil
 import com.ignacio.pokemonquizkotlin2.androidtestutil.monitorFragment
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.api.extractFlavorText
-import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModelFactory
 import com.ignacio.pokemonquizkotlin2.utils.EspressoIdlingResource
 import com.ignacio.pokemonquizkotlin2.utils.writeLine
-import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.resetMain
-import org.hamcrest.CoreMatchers
-import org.hamcrest.CoreMatchers.*
-import org.junit.*
+import org.hamcrest.CoreMatchers.anything
+import org.hamcrest.CoreMatchers.not
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import timber.log.Timber
 
@@ -127,33 +113,35 @@ class HomeFragmentScenarioTest {
 
         onView(withId(R.id.textView7)).check(matches(not(isDisplayed())))
             //.check(matches(ViewMatchers.withText(getString(R.string.today_s_pokemon_is))))
-        onView(withId(R.id.pokNameTV)).check(matches(ViewMatchers.isDisplayed()))//.check(matches(withText("Bulbasaur")))
-        onView(withId(R.id.mainImageView)).check(matches(ViewMatchers.isDisplayed()))
-        onView(withId(R.id.textSelectPrompt)).check(matches(ViewMatchers.isDisplayed()))
-            .check(matches(ViewMatchers.withText(getString(R.string.text_from_version_prompt))))
-        onView(withId(R.id.spinner)).check(matches(ViewMatchers.isDisplayed()))
-        onView(withId(R.id.flavorTextView)).check(matches(ViewMatchers.isDisplayed()))
-        onView(withId(R.id.spinner)).check(matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.pokNameTV)).check(matches(isDisplayed()))//.check(matches(withText("Bulbasaur")))
+        onView(withId(R.id.mainImageView)).check(matches(isDisplayed()))
+        onView(withId(R.id.textSelectPrompt)).check(matches(isDisplayed()))
+            .check(matches(withText(getString(R.string.text_from_version_prompt))))
+        onView(withId(R.id.spinner)).check(matches(isDisplayed()))
+        onView(withId(R.id.flavorTextView)).check(matches(isDisplayed()))
+        onView(withId(R.id.spinner)).check(matches(isDisplayed()))
         onView(withId(R.id.spinner)).check(matches(withSpinnerText(
             FakeRepository.speciesDetail!!.flavorTextEntries[0].version.name
         )))
 
-        onView(withId(R.id.flavorTextView)).check(matches(ViewMatchers.isDisplayed()))
-            .check(matches(ViewMatchers.withText(HomeFragmentTestAgain.theflavorAndName.first)))
+        onView(withId(R.id.flavorTextView)).check(matches(isDisplayed()))
+            .check(matches(withText(HomeFragmentTestAgain.theflavorAndName.first)))
 
     }
 
     @Test
     fun selectVersion() {
-        onView(withId(R.id.spinner)).perform(ViewActions.click())
+        onView(withId(R.id.spinner)).perform(click())
         //onView(allOf(withId(android.R.id.text1), withText("y"))).perform(click()) // all of them do the same :)
         //onData(allOf(`is`(instanceOf(String::class.java)),
         //    `is`("y"))).perform(click())
-        Espresso.onData(anything()).atPosition(2).perform(ViewActions.click())
-        onView(withId(R.id.spinner)).check(matches(ViewMatchers.withSpinnerText(
-            FakeRepository.theversions[2])))
+        onData(anything()).atPosition(2).perform(click())
+        onView(withId(R.id.spinner)).check(matches(
+            withSpinnerText(
+            FakeRepository.theversions[2])
+        ))
 
-        onView(withId(R.id.flavorTextView)).check(matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.flavorTextView)).check(matches(isDisplayed()))
             .check(matches(withText(FakeRepository.speciesDetail!!.extractFlavorText("en","y"))))
         writeLine()
         Timber.i("test function is finish")

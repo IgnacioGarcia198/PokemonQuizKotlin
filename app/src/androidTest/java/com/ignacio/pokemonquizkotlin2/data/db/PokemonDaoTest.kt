@@ -65,7 +65,7 @@ class PokemonDaoTest {
         val result = pokemonDao.getAllPokemon()
         result.test()
             .assertHasValue()
-            .assertValue { it : List<DatabasePokemon> -> it == pokemonList }
+            .assertValue { it == pokemonList }
 
         result.observeOnce {
             assertThat(it==pokemonList, `is`(true))

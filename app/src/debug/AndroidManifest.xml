@@ -19,8 +19,8 @@
     package="com.ignacio.pokemonquizkotlin2">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <application tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".testing.SingleFragmentActivity"></activity>
+    <application tools:ignore="GoogleAppIndexingWarning" android:fullBackupContent="false">
+        <activity android:name=".testing.SingleFragmentActivity"/>
     </application>
 
 </manifest>

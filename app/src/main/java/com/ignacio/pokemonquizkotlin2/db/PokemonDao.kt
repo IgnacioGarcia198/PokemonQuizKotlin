@@ -37,8 +37,8 @@ interface PokemonDao {
 
     // for paging
     @Query("SELECT * FROM pokemonTable")
-    abstract fun getAllPokemonsFromRoom(): DataSource.Factory<Int, DatabasePokemon>
+    fun getAllPokemonsFromRoom(): DataSource.Factory<Int, DatabasePokemon>
 
     @Query("SELECT * FROM pokemonTable WHERE name LIKE :name")
-    abstract fun findPokemonsByNameInRoom(name: String): DataSource.Factory<Int, DatabasePokemon>
+    fun findPokemonsByNameInRoom(name: String): DataSource.Factory<Int, DatabasePokemon>
 }

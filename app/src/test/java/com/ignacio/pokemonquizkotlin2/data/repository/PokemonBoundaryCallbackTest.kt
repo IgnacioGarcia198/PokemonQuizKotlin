@@ -2,27 +2,32 @@ package com.ignacio.pokemonquizkotlin2.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.api.*
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
+import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
+import com.ignacio.pokemonquizkotlin2.data.api.PokemonService
+import com.ignacio.pokemonquizkotlin2.data.api.asDatabaseModel
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.db.GameRecordDao
 import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.db.PokemonDao
 import com.ignacio.pokemonquizkotlin2.testutils.CoroutineTestRule
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import com.squareup.moshi.Moshi
-import junit.framework.Assert.assertEquals
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.`is`
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import retrofit2.converter.moshi.MoshiConverterFactory
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
 
 
 @ExperimentalCoroutinesApi

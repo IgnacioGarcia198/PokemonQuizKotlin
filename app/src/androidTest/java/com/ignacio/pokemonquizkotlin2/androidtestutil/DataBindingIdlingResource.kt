@@ -47,9 +47,7 @@ class DataBindingIdlingResource(
 
     override fun isIdleNow(): Boolean {
         val idle = !getBindings().any { it.hasPendingBindings() }
-        Timber.d("data binding is idle ${idle}")
-        //println("data binding is idle ${idle}")
-        @Suppress("LiftReturnOrAssignment")
+        Timber.d("data binding is idle $idle")
         if (idle) {
             if (wasNotIdle) {
                 // notify observers to avoid espresso race detector

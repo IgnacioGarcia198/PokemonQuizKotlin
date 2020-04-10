@@ -1,17 +1,13 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
-import android.content.Context
 import android.graphics.drawable.Drawable
-import com.ignacio.pokemonquizkotlin2.R
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnLayout
-import androidx.databinding.BindingAdapter
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -19,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
 import com.ignacio.pokemonquizkotlin2.MyApplication
+import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.nhaarman.mockitokotlin2.*
@@ -26,10 +23,6 @@ import junit.framework.Assert.*
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.mock
-import timber.log.Timber
 
 
 @RunWith(AndroidJUnit4::class)

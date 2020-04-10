@@ -1,15 +1,14 @@
 package com.ignacio.pokemonquizkotlin2.utils
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Build
 import timber.log.Timber
 import java.util.*
 
 fun networkIsOk(context: Context) : Boolean {
     val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    // TODO CHANGE DEPRECATED, USE NEW WAY.
     val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
     return activeNetwork?.isConnectedOrConnecting == true
 }

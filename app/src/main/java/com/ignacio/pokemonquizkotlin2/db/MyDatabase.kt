@@ -1,7 +1,8 @@
 package com.ignacio.pokemonquizkotlin2.db
 
-import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(entities = [DatabasePokemon::class, GameRecord::class],version = 1,exportSchema = false)
 @TypeConverters(DateConverter::class)

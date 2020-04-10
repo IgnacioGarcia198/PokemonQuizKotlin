@@ -9,8 +9,6 @@ import com.ignacio.pokemonquizkotlin2.data.api.PokemonService
 import com.ignacio.pokemonquizkotlin2.db.GameRecordDao
 import com.ignacio.pokemonquizkotlin2.db.MyDatabase
 import com.ignacio.pokemonquizkotlin2.db.PokemonDao
-import com.ignacio.pokemonquizkotlin2.ui.gamerecords.GameRecordsAdapter
-import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.PREFERENCE_FILE_NAME
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module

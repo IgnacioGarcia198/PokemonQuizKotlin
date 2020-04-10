@@ -67,7 +67,6 @@ class GameRecordDaoTest {
         result.test()
             .assertHasValue()
             .assertValue {
-                it : List<GameRecord> ->
                 var b = true
                 gameRecordList.forEachIndexed { index, gameRecord ->
                     val current = it[index]

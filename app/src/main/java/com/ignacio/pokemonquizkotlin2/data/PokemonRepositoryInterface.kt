@@ -8,7 +8,6 @@ import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.ui.gamerecords.RecordItem
-import kotlinx.coroutines.Deferred
 
 interface PokemonRepositoryInterface {
     val _responseState: MutableLiveData<PokemonResponseState>

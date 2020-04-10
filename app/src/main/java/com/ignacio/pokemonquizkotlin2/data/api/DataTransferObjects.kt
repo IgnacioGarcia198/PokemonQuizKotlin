@@ -27,7 +27,6 @@ data class NameUrlPair(
 
 fun NetworkPokemonContainer.asDatabaseModel(offset : Int = 0, limit : Int = -1) : List<DatabasePokemon> {
     var i = offset+1
-    val thelimit = if(limit == -1) HomeViewModel.DOWNLOAD_SIZE else limit
     return results.map {
         DatabasePokemon(i++, it!!.name,usedAsQuestion = false)
     }
@@ -41,11 +40,8 @@ fun NetworkSpeciesDetail.extractAvailableVersions(language: String) : List<Strin
 fun NetworkSpeciesDetail.extractFlavorTextAndName(language : String, version : String) : Pair<String,String> {
     return Pair(
         flavorTextEntries.filter {
-            Timber.i("extractFlavorTextAndName: ${it.toString()}")
-            if(it.language.name == language && it.version.name == version) {
-                Timber.i("flavor entry selected: ${it.flavorText}")}
             it.language.name == language && it.version.name == version
-        }.map { cleanSpaces(it.flavorText) }.joinToString(separator = "\n"),
+        }.joinToString(separator = "\n") { cleanSpaces(it.flavorText) },
         names.find { it.language.name == language }!!.name)
 }
 

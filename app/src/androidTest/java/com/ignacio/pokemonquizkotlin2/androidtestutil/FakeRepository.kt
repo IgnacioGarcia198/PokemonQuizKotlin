@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PagedList
-import androidx.room.paging.LimitOffsetDataSource
 import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
@@ -16,6 +15,7 @@ import com.ignacio.pokemonquizkotlin2.db.DatabasePokemon
 import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
+import com.ignacio.pokemonquizkotlin2.ui.gamerecords.RecordItem
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.wrapEspressoIdlingResource
@@ -70,7 +70,7 @@ class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispat
         return withContext(dispatchers.io()) {
             wrapEspressoIdlingResource {
                 delay(500)
-                Pair(speciesDetail!!.extractAllVersionsAndFlavors(language), speciesDetail!!.extractName(language))
+                Pair(speciesDetail!!.extractAllVersionsAndFlavors(language), speciesDetail.extractName(language))
             }
         }
     }
@@ -79,7 +79,7 @@ class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispat
         withContext(dispatchers.io()) {
             wrapEspressoIdlingResource {
                 _pokemons.postValue(allPokemonsResponse!!.asDatabaseModel().asDomainModel())
-                dbpoklist.addAll(allPokemonsResponse!!.asDatabaseModel())
+                dbpoklist.addAll(allPokemonsResponse.asDatabaseModel())
             }
         }
     }
@@ -156,6 +156,10 @@ class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispat
         }
     }
 
+    override suspend fun getAllRecordsPlain(): List<GameRecord> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override suspend fun deleteRecord(gameRecord: GameRecord) {
         withContext(dispatchers.io()) {
             delay(500)
@@ -168,5 +172,9 @@ class FakeRepository(private val dispatchers: DispatcherProvider = DefaultDispat
             delay(500)
             dbRecordList.clear()
         }
+    }
+
+    override suspend fun getFixedListForAdapter(lastRecord: GameRecord): List<RecordItem> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -1,4 +1,4 @@
-package com.ignacio.pokemonquizkotlin2.utils.testutils;
+package com.ignacio.pokemonquizkotlin2.testutils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;

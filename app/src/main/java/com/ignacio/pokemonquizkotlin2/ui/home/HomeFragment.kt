@@ -19,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @OpenForTesting
-class HomeFragment() : Fragment(), Injectable {
+class HomeFragment : Fragment(), Injectable {
     // I did this for testing, so that I can use a mocked viewmodel naturally.
 
     @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
@@ -55,7 +55,7 @@ class HomeFragment() : Fragment(), Injectable {
             var x2: Float = 0f
             val MIN_DISTANCE = 150
 
-            binding.root.setOnTouchListener { v, event ->
+            binding.root.setOnTouchListener { _, event ->
                 val action: Int = event!!.action
                 var result = true
                 when (action) {
