@@ -65,16 +65,18 @@ class HomeFragment() : Fragment(), Injectable {
 
         args  = HomeFragmentArgs.fromBundle(arguments!!)
 
-        homeViewModel.initPush(args.newId)
+
+        savedInstanceState?.let {
+            currentId = it.getInt("currentIdLiveData", args.newId)
+        }?:let { currentId = args.newId}
+        homeViewModel.initPush(currentId)
+
         writeLine()
         Timber.i("after initpush")
         if(args.newId > 0) {
             var x1: Float = 0f
             var x2: Float = 0f
             val MIN_DISTANCE = 150
-            currentId = args.newId
-            val initialX = binding.mainImageView.x
-
 
             binding.root.setOnTouchListener { v, event ->
                 val action: Int = event!!.action
@@ -116,10 +118,6 @@ class HomeFragment() : Fragment(), Injectable {
                     else -> result = false
                 }
                 result
-            }
-
-            savedInstanceState?.let {
-                currentId = it.getInt("currentIdLiveData",args.newId)
             }
         }
 
