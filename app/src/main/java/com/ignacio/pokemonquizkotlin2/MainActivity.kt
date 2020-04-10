@@ -5,9 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.media.MediaPlayer
 import android.os.IBinder
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -28,9 +26,7 @@ import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import javax.inject.Inject
-import com.ignacio.pokemonquizkotlin2.sound.BackgroundSoundService.LocalBinder
-import timber.log.Timber
-// TODO FIX ITS ALWAYS STARTING PLAYER ON CONFIG CHANGES.
+
 class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
     private var backgroundSoundService : BackgroundSoundService? = null
@@ -115,19 +111,14 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
             R.id.action_settings -> {return true}
             R.id.action_play_music -> {
                 backgroundSoundService?.let {
-                    if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
-                        Timber.e("==== pausing music from menu")
+                    buttonIsPlaying = if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
                         pauseMusic()
-                        buttonIsPlaying = false
-                    }
-                    else {
-                        Timber.e("==== resuming music from menu")
+                        false
+                    } else {
                         resumeMusic()
-                        buttonIsPlaying = true
+                        true
                     }
-                    Timber.e("==== buttonisplaying is $buttonIsPlaying")
                 }
-
                 return true
             }
         }
@@ -154,9 +145,7 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
                 if(name.className == BackgroundSoundService::class.java.name) {
                     backgroundSoundService = (service as BackgroundSoundService.LocalBinder).service
                     backgroundSoundService?.let {
-                        Timber.e("==== buttonisplaying is $buttonIsPlaying and backgroundsound state is ${it.playerState}")
                         if(firsttime && buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
-                            Timber.e("==== resuming music in onservice connected")
                             resumeMusic()
                             firsttime = false
                         }
@@ -186,7 +175,6 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         super.onResume()
         backgroundSoundService?.let {
             if(buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
-                Timber.e("==== resuming music in onresume")
                 resumeMusic()
             }
         }
@@ -226,7 +214,6 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Timber.e("==== saving instance state: buttonisplaying = $buttonIsPlaying")
         outState.putBoolean("buttonIsPlaying", buttonIsPlaying)
         outState.putBoolean("firsttime", firsttime)
     }

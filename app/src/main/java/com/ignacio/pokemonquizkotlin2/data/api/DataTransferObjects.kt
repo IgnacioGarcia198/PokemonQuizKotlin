@@ -28,9 +28,7 @@ data class NameUrlPair(
 fun NetworkPokemonContainer.asDatabaseModel(offset : Int = 0, limit : Int = -1) : List<DatabasePokemon> {
     var i = offset+1
     val thelimit = if(limit == -1) HomeViewModel.DOWNLOAD_SIZE else limit
-    Timber.e("==== asdbmodel sublist from $offset to ${offset+thelimit}")
     return results.map {
-        Timber.e("==== asdbmodel mapping $it")
         DatabasePokemon(i++, it!!.name,usedAsQuestion = false)
     }
 }
@@ -66,10 +64,8 @@ fun NetworkSpeciesDetail.extractName(language: String) : String {
 }
 
 fun NetworkSpeciesDetail.extractAllVersionsAndFlavors(language: String) : Map<String,String> {
-    //Timber.i(
     return flavorTextEntries.asSequence().filter { it.language.name == language }
         .map { it.version.name to cleanSpaces(it.flavorText)}.toMap()
-    //)
 }
 
 private fun cleanSpaces(s: String): String {
@@ -81,9 +77,6 @@ private fun cleanSpaces(s: String): String {
 
 fun NetworkSpeciesDetail.extractFlavorText(language : String, version : String) : String {
     return flavorTextEntries.filter {
-            Timber.i("extractFlavorTextAndName: ${it.toString()}")
-            if(it.language.name == language && it.version.name == version) {
-                Timber.i("flavor entry selected: ${it.flavorText}")}
-            it.language.name == language && it.version.name == version
-        }.map { cleanSpaces(it.flavorText) }.joinToString(separator = "\n")
+        it.language.name == language && it.version.name == version
+    }.joinToString(separator = "\n") { cleanSpaces(it.flavorText) }
 }

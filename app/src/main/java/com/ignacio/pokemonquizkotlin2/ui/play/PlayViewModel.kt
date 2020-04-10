@@ -37,18 +37,8 @@ class PlayViewModel @Inject constructor(
     var lastResultShown = false
 
     val sdf : SimpleDateFormat = SimpleDateFormat("mm:ss",Locale.getDefault())
-    // we will show the fragment just as we start.
-    private val _showChooseQuizFragment = MutableLiveData<Boolean>(false)
-    /*val showChooseQuizFragment : LiveData<Boolean>
-    get() = _showChooseQuizFragment*/
 
-    /*fun chooseQuizShown() {
-        _showChooseQuizFragment.value = false
-    }*/
-
-    //private val questionsOrTime = false
     @VisibleForTesting var roundNumber = 0
-    //private var currentTime = 0L
     private var animationTotalTime = 4000L
 
     private val _nextRoundQuestionPokemonId = MutableLiveData<Int>(0)
@@ -105,7 +95,6 @@ class PlayViewModel @Inject constructor(
      */
     @VisibleForTesting
     fun initForUnitTest() {
-        _showChooseQuizFragment.value = true // show fragment just started
 
         var lastRefreshMinutes = sharedPref.getLong(LAST_DB_REFRESH,0)
         if(!dateIsFresh(lastRefreshMinutes)) {
@@ -128,7 +117,6 @@ class PlayViewModel @Inject constructor(
     fun refreshPokemon(offset : Int = 0, limit : Int = HomeViewModel.DOWNLOAD_SIZE - offset) {
         viewModelScope.launch {
             try {
-                Timber.e("==== refreshing pokemons from $offset, quantity: $limit")
                 _imageVisible.postValue(View.INVISIBLE)
                 _progressbarVisible.postValue(View.VISIBLE)
                 _progressbarText.postValue(app.getString(R.string.refreshing_pokemon_msg))
