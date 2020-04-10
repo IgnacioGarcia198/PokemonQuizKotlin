@@ -1,78 +1,55 @@
 package com.ignacio.pokemonquizkotlin2.ui.home
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.VisibleForTesting
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.ignacio.pokemonquizkotlin2.MainActivity
 import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
 import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
-import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.properties.Delegates
-import kotlin.reflect.KProperty
 
 @OpenForTesting
 class HomeFragment() : Fragment(), Injectable {
     // I did this for testing, so that I can use a mocked viewmodel naturally.
-    // to take into account now: Its possible that we want to test Fragment with viewmodel altogether
-    // since we test viewmodel alone in unittest, and the fragment is just interface!
-    // in that regard, this would not be necessary. I would also like to adapt this to a more modern approach
-    //by using the viewmodels<> thing. (Not so necessary but)
 
     @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
     lateinit var homeViewModel: HomeViewModel
     private var currentId: Int = 0
-
-    /*override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.d("viewmodelfactory created")
-        viewModelFactory = HomeViewModelFactory(activity!!.application,
-            PokemonRepository.getDefaultRepository(context!!))
-        homeViewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
-
-    }*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var args :HomeFragmentArgs
-
 
         val binding : FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home,
             container,false)
-        //homeViewModel =
+        var args :HomeFragmentArgs = HomeFragmentArgs.fromBundle(arguments!!)
+
         binding.lifecycleOwner = this
         homeViewModel = provideViewModel() //
-        writeLine()
-        Timber.i("viewmodel is $homeViewModel")
         binding.viewModel = homeViewModel
-
-        args  = HomeFragmentArgs.fromBundle(arguments!!)
-
 
         savedInstanceState?.let {
             currentId = it.getInt("currentIdLiveData", args.newId)
         }?:let { currentId = args.newId}
         homeViewModel.initPush(currentId)
 
-        writeLine()
-        Timber.i("after initpush")
+        (requireActivity() as MainActivity).supportActionBar?.setTitle(
+            if(currentId == 0) R.string.home_fragment_title
+            else R.string.pokemon_detail_fragment_title
+        )
+
         if(args.newId > 0) {
             var x1: Float = 0f
             var x2: Float = 0f

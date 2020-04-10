@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_daily_pokemon"
         android:name="com.ignacio.pokemonquizkotlin2.ui.home.HomeFragment"
-        android:label="@string/menu_daily_pokemon"
+        android:label="@string/home_fragment_title"
         tools:layout="@layout/fragment_home" >
         <argument
             android:name="newId"
@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/nav_play"
         android:name="com.ignacio.pokemonquizkotlin2.ui.play.PlayFragment"
-        android:label="@string/menu_play"
+        android:label="@string/play_fragment_title"
         tools:layout="@layout/fragment_play" >
         <argument
             android:name="questionsOrTime"
@@ -36,7 +36,7 @@
     <fragment
         android:id="@+id/nav_pokemon_list"
         android:name="com.ignacio.pokemonquizkotlin2.ui.pokemonlist.PokemonListFragment"
-        android:label="@string/menu_pokemon_list"
+        android:label="@string/pokemon_list_fragment_title"
         tools:layout="@layout/fragment_pokemonlist" >
         <action
             android:id="@+id/action_nav_pokemon_list_to_nav_daily_pokemon"
@@ -46,7 +46,7 @@
     <fragment
         android:id="@+id/nav_game_records"
         android:name="com.ignacio.pokemonquizkotlin2.ui.gamerecords.GameRecordsFragment"
-        android:label="@string/menu_tools"
+        android:label="@string/game_records_fragment_title"
         tools:layout="@layout/fragment_game_records" >
         <argument
             android:name="lastRecord"
@@ -54,33 +54,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_share"
-        android:name="com.ignacio.pokemonquizkotlin2.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
-
-    <fragment
-        android:id="@+id/nav_send"
-        android:name="com.ignacio.pokemonquizkotlin2.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
-    <fragment
         android:id="@+id/nav_choose_quiz"
         android:name="com.ignacio.pokemonquizkotlin2.ui.choosequiz.ChooseQuizFragment"
-        android:label="ChooseQuizFragment" >
+        android:label="@string/choose_quiz_fragment_title" >
         <action
             android:id="@+id/action_nav_choose_quiz_to_nav_play"
             app:destination="@+id/nav_play"
             app:popUpTo="@+id/nav_daily_pokemon" />
     </fragment>
-    <fragment
-        android:id="@+id/pokemonDetailFragment"
-        android:name="com.ignacio.pokemonquizkotlin2.ui.pokemondetail.PokemonDetailFragment"
-        android:label="PokemonDetailFragment" >
-        <argument
-            android:name="id"
-            app:argType="integer" />
-    </fragment>
-
 
 </navigation>

@@ -1,5 +1,38 @@
 <resources>
-    <string name="app_name">Pokemon Quiz Kotlin 2</string>
+    <string name="app_name">Pokemon Quiz Kotlin</string>
+
+    <!-- Navigation drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Author</string>
+    <string name="nav_header_subtitle">ignaciogarcia198@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+
+    <!-- String constants -->
+    <string name="pokemon_image_url" translatable="false">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/%d.png</string>
+    <string name="shared_pref_filename" translatable="false">pokemonSharedPreferences</string>
+
+
+    <!-- Screen titles -->
+    <string name="play_fragment_title">Play</string>
+    <string name="home_fragment_title">Daily Pokemon</string>
+    <string name="game_records_fragment_title">Game Records</string>
+    <string name="pokemon_list_fragment_title">Pokemon List</string>
+    <string name="choose_quiz_fragment_title">Choose Quiz</string>
+
+
+    <!-- Menu titles -->
+    <string name="play_bgm">Play BGM</string>
+    <string name="pause_bgm">Pause BGM</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="menu_daily_pokemon">Daily Pokemon</string>
+    <string name="menu_play">Play Game</string>
+    <string name="menu_pokemon_list">Pokemon List</string>
+
+
+    <!-- Play fragment -->
     <string name="item_image_content_desc">Image of the pokemon</string>
     <string name="custom_radio_group_content_description">Question:</string>
     <string name="select_right_answer_accessibility">Select the right answer</string>
@@ -8,11 +41,16 @@
     <string name="initial_score">0</string>
     <string name="guess_the_pokemon_s_name">Guess the pokemon\'s name!</string>
     <string name="last_result">Last</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_choose_quiz">Choose a Quiz</string>
-    <string name="game_activity_title">Pokemon Quiz</string>
+    <string name="game_time">time: %01d:%02d</string>
+    <string name="game_pokemon_image_content_desc">Can you guess the name of the pokemon shown in the image?</string>
+    <string name="refreshing_pokemon_msg">Refreshing pokemon…</string>
+    <string name="loading">Loading…</string>
+    <string name="retrying">Retrying…</string>
+    <string name="marubatsu_toast_content_desc">Result of last pokemon guess</string>
+    <string name="downloading_pokemon_dialog">Downloading pokemon…</string>
 
+
+    <!-- Choose quiz fragment -->
     <string-array name="questions_number_options">
         <item>10 questions</item>
         <item>20 questions</item>
@@ -43,39 +81,77 @@
         <item>300</item>
     </integer-array>
 
-    <string-array name="records_column_names">
-        <item>Title</item>
-        <item>Speed</item>
-        <item>Hit Rate</item>
-        <item>Date</item>
-        <item>Game Mode</item>
-        <item>Time\/Questions</item>
-    </string-array>
-    <string name="game_time">time: %01d:%02d</string>
-    <string name="title_activity_pokemon_list">PokemonListActivity</string>
-    <string name="pokemon_search_hint">Type a pokemon name&#8230;</string>
-    <string name="today_s_pokemon_is">Today\'s pokemon is&#8230;</string>
-
-    <string name="notification_channel_name">Job Service Notification</string>
-    <string name="notification_channel_description">Notifications from job service</string>
-    <string name="daily_notif_title">Daily pokemon</string>
-    <string name="viewholder_no_data_yet">Not data yet</string>
-
-    <string name="choose_quiz_title">Choose a quiz</string>
-    <string name="no_internet_notice">No internet connection, please try later</string>
-    <string name="could_not_load_some_pokemon_bad_internet">Could not load some pokemon due to a bad internet connection, try again later...</string>
-    <string name="game_pokemon_image_content_desc">Can you guess the name of the pokemon shown in the image?</string>
     <string name="by_number_of_questions_game">By number of questions</string>
     <string name="by_time_game">By time</string>
     <string name="start_quiz_button">Start Quiz</string>
+
+
+    <!-- Game records fragment -->
+    <string-array name="records_column_names">
+        <item>@string/records_column_name_title</item>
+        <item>@string/records_column_name_speed</item>
+        <item>@string/records_column_name_hit_rate</item>
+        <item>@string/records_column_name_date</item>
+        <item>@string/records_column_name_game_mode</item>
+        <item>@string/records_column_name_timequestionsrate</item>
+    </string-array>
+    <string name="records_column_name_title">Title</string>
+    <string name="records_column_name_speed">Speed</string>
+    <string name="records_column_name_hit_rate">Hit Rate</string>
+    <string name="records_column_name_date">Date</string>
+    <string name="records_column_name_game_mode">Game Mode</string>
+    <string name="records_column_name_timequestionsrate">Time\/Questions</string>
+
+    <string name="record_title">Record</string>
+    <string name="records_header_title">Title</string>
+    <string name="records_header_speed">Speed</string>
+    <string name="records_header_hit_rate">Hit Rate</string>
+    <string name="records_header_date">Date</string>
+    <string name="records_header_game_mode">Game Mode</string>
+    <string name="records_header_game_length">Game Length</string>
+    <string name="game_mode_questions">Questions</string>
+    <string name="game_mode_time">Time</string>
+    <string name="record_default_title">Record</string>
+    <string name="averages_title">Averages</string>
+    <string name="record_row_record">Record</string>
+    <string name="empty_record" translatable="false">---</string>
+
+
+    <!-- Pokemon list fragment -->
+    <string name="pokemon_search_hint">Type a pokemon name&#8230;</string>
+    <string name="viewholder_no_data_yet">Not data yet</string>
+    <string name="type_pokemon_name_hint">Type pokemon name</string>
+
+
+    <!-- Home fragment -->
+    <string name="today_s_pokemon_is">Today\'s pokemon is&#8230;</string>
+    <string name="current_pokemon_image">Current pokemon\'s image</string>
+    <string name="text_from_version_prompt">Text from version:</string>
     <string name="today_s_pokemon_image">Today\'s pokemon image</string>
-    <string name="marubatsu_toast_content_desc">Result of last pokemon guess</string>
-    <string name="empty_record">---</string>
-    <string name="retrying">Retrying...</string>
+    <!-- Pokemon detail -->
+    <string name="pokemon_detail_fragment_title">Pokemon Detail</string>
+
+
+    <!-- Error and feedback strings -->
+    <string name="no_internet_notice">No internet connection, please try later</string>
+    <string name="could_not_load_some_pokemon_bad_internet">Could not load some pokemon due to a bad internet connection, try again later…</string>
+    <string name="network_error_msg">Sorry, there was a network error. Please try later.</string>
+    <string name="db_error_msg">Sorry, there was a database error. Please try later.</string>
+    <string name="error_screen">Error Screen</string>
+    <string name="could_not_load_images">Could not load some images due to a network error.\n
+    Please try again with a better connection.</string>
     <string name="problem_loading_pokemon_bad_network">Sorry, there was a problem loading the pokemon! Network is bad, try again later</string>
-    <string name="bad_internet_connection">Sorry, bad network connection. Please try later.</string>
-    <string name="downloading_pokemon_dialog">Downloading pokemon...</string>
     <string name="error_downloading_pokemon">Sorry, there was an error on downloading pokemon. Please try later.</string>
+    <string name="bad_internet_connection">Sorry, bad network connection. Please try later.</string>
+
+
+    <!-- Notification strings -->
+    <string name="notification_channel_name">Job Service Notification</string>
+    <string name="notification_channel_description">Notifications from job service</string>
+    <string name="daily_notif_title">Daily pokemon</string>
+
+
+    <!-- PREFERENCE STRINGS -->
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
@@ -89,47 +165,15 @@
     <string name="notifications_summary_off">Notifications are disabled</string>
     <string name="notifications_summary_on">Notifications are enabled</string>
     <string name="daily_notifications_switch_title">Daily Pokemon Notifications</string>
-    <string name="record_row_record">Record</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Author</string>
-    <string name="nav_header_subtitle">ignaciogarcia198@gmail.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
-    <string name="menu_daily_pokemon">Daily Pokemon</string>
-    <string name="menu_play">Play</string>
-    <string name="menu_pokemon_list">Pokemon List</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
-    <string name="pokemon_image_url">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/%d.png</string>
-    <string name="text_from_version_prompt">Text from version:</string>
-    <string name="shared_pref_filename">pokemonSharedPreferences</string>
-    <string name="refreshing_pokemon_msg">Refreshing pokemon…</string>
-    <string name="loading">Loading…</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="record_title">Record</string>
-    <string name="records_header_title">Title</string>
-    <string name="records_header_speed">Speed</string>
-    <string name="records_header_hit_rate">Hit Rate</string>
-    <string name="records_header_date">Date</string>
-    <string name="records_header_game_mode">Game Mode</string>
-    <string name="records_header_game_length">Game Length</string>
-    <string name="game_mode_questions">Questions</string>
-    <string name="game_mode_time">Time</string>
-    <string name="record_default_title">Record</string>
-    <string name="averages_title">Averages</string>
-    <string name="type_pokemon_name_hint">Type pokemon name</string>
-    <string name="network_error_msg">Sorry, there was a network error. Please try later.</string>
-    <string name="db_error_msg">Sorry, there was a database error. Please try later.</string>
-    <string name="error_screen">Error Screen</string>
-    <string name="could_not_load_images">Could not load some images due to a network error.\n
-    Please try again with a better connection.</string>
-    <string name="current_pokemon_image">Current pokemon\'s image</string>
-    <string name="play_bgm">Play BGM</string>
-    <string name="pause_bgm">Pause BGM</string>
+
+
+
+
+
+
+
+
 
 </resources>

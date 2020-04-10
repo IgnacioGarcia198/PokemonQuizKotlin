@@ -2,13 +2,8 @@ package com.ignacio.pokemonquizkotlin2.ui.home
 
 import android.app.Application
 import android.content.SharedPreferences
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
-import androidx.lifecycle.Transformations.map
-import com.ignacio.pokemonquizkotlin2.MyApplication
-import com.ignacio.pokemonquizkotlin2.R
-import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.data.PokemonResponseState
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
@@ -19,7 +14,6 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 @OpenForTesting
 class HomeViewModel @Inject constructor(
