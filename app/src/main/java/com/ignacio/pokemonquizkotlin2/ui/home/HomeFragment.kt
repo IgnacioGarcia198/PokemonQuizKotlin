@@ -8,22 +8,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ignacio.pokemonquizkotlin2.MainActivity
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentHomeBinding
-import com.ignacio.pokemonquizkotlin2.di.Injectable
 import com.ignacio.pokemonquizkotlin2.testing.OpenForTesting
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
 @OpenForTesting
-class HomeFragment : Fragment(), Injectable {
-    // I did this for testing, so that I can use a mocked viewmodel naturally.
+@AndroidEntryPoint
+class HomeFragment : Fragment() {
 
-    @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
-    lateinit var homeViewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModels()
     private var currentId: Int = 0
 
     override fun onCreateView(
@@ -32,25 +33,26 @@ class HomeFragment : Fragment(), Injectable {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding : FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home,
-            container,false)
-        var args :HomeFragmentArgs = HomeFragmentArgs.fromBundle(arguments!!)
+        val binding: FragmentHomeBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_home,
+            container, false
+        )
+        val args: HomeFragmentArgs = HomeFragmentArgs.fromBundle(arguments!!)
 
         binding.lifecycleOwner = this
-        homeViewModel = provideViewModel() //
         binding.viewModel = homeViewModel
 
         savedInstanceState?.let {
             currentId = it.getInt("currentIdLiveData", args.newId)
-        }?:let { currentId = args.newId}
+        } ?: let { currentId = args.newId }
         homeViewModel.initPush(currentId)
 
         (requireActivity() as MainActivity).supportActionBar?.setTitle(
-            if(currentId == 0) R.string.home_fragment_title
+            if (currentId == 0) R.string.home_fragment_title
             else R.string.pokemon_detail_fragment_title
         )
 
-        if(args.newId > 0) {
+        if (args.newId > 0) {
             var x1: Float = 0f
             var x2: Float = 0f
             val MIN_DISTANCE = 150
@@ -69,22 +71,19 @@ class HomeFragment : Fragment(), Injectable {
 
                         x2 = event.x
 
-                        if(x1-x2 > MIN_DISTANCE) {
-                            currentId = if(currentId == HomeViewModel.DOWNLOAD_SIZE) {
+                        if (x1 - x2 > MIN_DISTANCE) {
+                            currentId = if (currentId == HomeViewModel.DOWNLOAD_SIZE) {
                                 1
-                            }
-                            else {
+                            } else {
                                 currentId + 1
                             }
                             homeViewModel.initPush(currentId)
 
-                        }
-                        else if(x2-x1 > MIN_DISTANCE) {
+                        } else if (x2 - x1 > MIN_DISTANCE) {
 
-                            currentId = if(currentId == 1) {
+                            currentId = if (currentId == 1) {
                                 HomeViewModel.DOWNLOAD_SIZE
-                            }
-                            else {
+                            } else {
                                 currentId - 1
                             }
                             homeViewModel.initPush(currentId)
@@ -100,7 +99,7 @@ class HomeFragment : Fragment(), Injectable {
 
 
         homeViewModel.showError.observe(viewLifecycleOwner, Observer {
-            if(it) {
+            if (it) {
                 Toast.makeText(
                     context,
                     context!!.getString(R.string.could_not_load_images),
@@ -117,10 +116,4 @@ class HomeFragment : Fragment(), Injectable {
         super.onSaveInstanceState(outState)
         outState.putInt("currentIdLiveData", currentId)
     }
-
-    // override this method in a subclass for testing.
-    fun provideViewModel() : HomeViewModel {
-        return ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
-    }
-
 }

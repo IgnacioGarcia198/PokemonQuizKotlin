@@ -4,10 +4,12 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonRepository
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-    // Makes Dagger provide PokemonRepository when a PokemonRepositoryInterface type is requested
     @Binds
     abstract fun provideRepository(repository: PokemonRepository): PokemonRepositoryInterface
 }

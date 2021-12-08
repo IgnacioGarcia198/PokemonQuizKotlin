@@ -1,118 +1,110 @@
 package com.ignacio.pokemonquizkotlin2.data.api.speciesdetail
 
 import com.ignacio.pokemonquizkotlin2.data.api.NameUrlPair
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkSpeciesDetail(
-    @Json(name = "base_happiness")
+    @SerialName("base_happiness")
     val baseHappiness: Int = 0,
-    @Json(name = "capture_rate")
+    @SerialName("capture_rate")
     val captureRate: Int =0,
-    @Json(name = "color")
+    @SerialName("color")
     val color: NameUrlPair?,
-    @Json(name = "egg_groups")
+    @SerialName("egg_groups")
     val eggGroups: List<NameUrlPair?>?,
-    @Json(name = "evolution_chain")
+    @SerialName("evolution_chain")
     val evolutionChain: EvolutionChain?,
-    @Json(name = "evolves_from_species")
+    @SerialName("evolves_from_species")
     val evolvesFromSpecies: NameUrlPair?,
-    @Json(name = "flavor_text_entries")
+    @SerialName("flavor_text_entries")
     val flavorTextEntries: List<FlavorTextEntry>,
-    @Json(name = "form_descriptions")
-    val formDescriptions: List<Any>?,
-    @Json(name = "forms_switchable")
+    @SerialName("form_descriptions")
+    val formDescriptions: List<@Contextual Any>?,
+    @SerialName("forms_switchable")
     val formsSwitchable: Boolean = false,
-    @Json(name = "gender_rate")
+    @SerialName("gender_rate")
     val genderRate: Int = 0,
-    @Json(name = "genera")
+    @SerialName("genera")
     val genera: List<Genera?>?,
-    @Json(name = "generation")
+    @SerialName("generation")
     val generation: NameUrlPair?,
-    @Json(name = "growth_rate")
+    @SerialName("growth_rate")
     val growthRate: NameUrlPair?,
-    @Json(name = "habitat")
+    @SerialName("habitat")
     val habitat: NameUrlPair?,
-    @Json(name = "has_gender_differences")
+    @SerialName("has_gender_differences")
     val hasGenderDifferences: Boolean?,
-    @Json(name = "hatch_counter")
+    @SerialName("hatch_counter")
     val hatchCounter: Int = 0,
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
-    @Json(name = "is_baby")
+    @SerialName("is_baby")
     val isBaby: Boolean= false,
-    @Json(name = "name")
+    @SerialName("name")
     val name: String,
-    @Json(name = "names")
+    @SerialName("names")
     val names: List<Name>,
-    @Json(name = "order")
+    @SerialName("order")
     val order: Int = 0,
-    @Json(name = "pal_park_encounters")
+    @SerialName("pal_park_encounters")
     val palParkEncounters: List<PalParkEncounter?>?,
-    @Json(name = "pokedex_numbers")
+    @SerialName("pokedex_numbers")
     val pokedexNumbers: List<PokedexNumber?>?,
-    @Json(name = "shape")
+    @SerialName("shape")
     val shape: NameUrlPair?,
-    @Json(name = "varieties")
+    @SerialName("varieties")
     val varieties: List<Variety?>?
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class EvolutionChain(
-    @Json(name = "url")
     val url: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class FlavorTextEntry(
-    @Json(name = "flavor_text")
+    @SerialName("flavor_text")
     val flavorText: String,
-    @Json(name = "language")
+    @SerialName("language")
     val language: NameUrlPair,
-    @Json(name = "version")
+    @SerialName("version")
     val version: NameUrlPair
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Genera(
-    @Json(name = "genus")
     val genus: String,
-    @Json(name = "language")
     val language: NameUrlPair
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Name(
-    @Json(name = "language")
     val language: NameUrlPair,
-    @Json(name = "name")
     val name: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class PalParkEncounter(
-    @Json(name = "area")
     val area: NameUrlPair,
-    @Json(name = "base_score")
+    @SerialName("base_score")
     val baseScore: Int,
-    @Json(name = "rate")
     val rate: Int
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class PokedexNumber(
-    @Json(name = "entry_number")
+    @SerialName("entry_number")
     val entryNumber: Int,
-    @Json(name = "pokedex")
     val pokedex: NameUrlPair
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Variety(
-    @Json(name = "is_default")
+    @SerialName("is_default")
     val isDefault: Boolean,
-    @Json(name = "pokemon")
     val pokemon: NameUrlPair
 )
 

@@ -14,6 +14,7 @@ import com.ignacio.pokemonquizkotlin2.db.asDomainModel
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.ui.home.HomeViewModel
 import com.ignacio.pokemonquizkotlin2.utils.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,6 +27,7 @@ import javax.inject.Inject
 const val NUMBER_OF_ANSWERS = 4
 
 
+@HiltViewModel
 class PlayViewModel @Inject constructor(
     app : Application,
     repository: PokemonRepositoryInterface,

@@ -8,9 +8,11 @@ import com.ignacio.pokemonquizkotlin2.data.PokemonBoundaryCallback
 import com.ignacio.pokemonquizkotlin2.data.PokemonRepositoryInterface
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import javax.inject.Inject
 
+@HiltViewModel
 class PokemonListViewModel @Inject constructor(
     app:Application,
     repository: PokemonRepositoryInterface,

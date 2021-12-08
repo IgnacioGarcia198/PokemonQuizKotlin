@@ -9,10 +9,12 @@ import com.ignacio.pokemonquizkotlin2.db.GameRecord
 import com.ignacio.pokemonquizkotlin2.ui.BaseViewModel
 import com.ignacio.pokemonquizkotlin2.utils.DefaultDispatcherProvider
 import com.ignacio.pokemonquizkotlin2.utils.DispatcherProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
+@HiltViewModel
 class GameRecordsViewModel @Inject constructor(
     app : Application,
     repository: PokemonRepositoryInterface
@@ -60,8 +62,4 @@ class GameRecordsViewModel @Inject constructor(
         }
 
     }
-
-
-
-
 }

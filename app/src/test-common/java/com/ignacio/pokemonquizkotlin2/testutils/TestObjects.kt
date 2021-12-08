@@ -1,30 +1,35 @@
 package com.ignacio.pokemonquizkotlin2.testutils
 
 import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainer
-import com.ignacio.pokemonquizkotlin2.data.api.NetworkPokemonContainerJsonAdapter
 import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetail
-import com.ignacio.pokemonquizkotlin2.data.api.speciesdetail.NetworkSpeciesDetailJsonAdapter
 import com.ignacio.pokemonquizkotlin2.utils.writeLine
 import com.ignacio.pokemonquizkotlin2.utils.writeLineTest
-import com.squareup.moshi.Moshi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 object TestObjects {
-    val moshi = Moshi.Builder().build()
 
-    fun getBulbasaurDetailResponseTest() : NetworkSpeciesDetail? {
-        val bulbasaurPokDetailResponse = ClassLoader.getSystemClassLoader().getResource("bulbasaurDetailResponse.json")!!.readText()
+    fun getBulbasaurDetailResponseTest(): NetworkSpeciesDetail {
+        val bulbasaurPokDetailResponse =
+            ClassLoader.getSystemClassLoader().getResource("bulbasaurDetailResponse.json")!!
+                .readText()
         writeLineTest()
         writeLine()
         println(bulbasaurPokDetailResponse)
-        return NetworkSpeciesDetailJsonAdapter(moshi).fromJson(bulbasaurPokDetailResponse)
+        return Json.decodeFromString(bulbasaurPokDetailResponse)
     }
 
-    fun getAllThePokemonsResponseTest() : NetworkPokemonContainer? {
-        return NetworkPokemonContainerJsonAdapter(moshi).fromJson(ClassLoader.getSystemClassLoader().getResource("allPokemonsResponse.json")!!.readText())
+    fun getAllThePokemonsResponseTest(): NetworkPokemonContainer {
+        return Json.decodeFromString(
+            ClassLoader.getSystemClassLoader().getResource("allPokemonsResponse.json")!!.readText()
+        )
     }
 
-    fun getPokemonsFrom42To81ResponseTest() : NetworkPokemonContainer? {
-        return NetworkPokemonContainerJsonAdapter(moshi).fromJson(ClassLoader.getSystemClassLoader().getResource("pokemonsFrom42To81Response.json")!!.readText())
+    fun getPokemonsFrom42To81ResponseTest(): NetworkPokemonContainer? {
+        return Json.decodeFromString(
+            ClassLoader.getSystemClassLoader().getResource("pokemonsFrom42To81Response.json")!!
+                .readText()
+        )
     }
 
 
@@ -39,20 +44,73 @@ object TestObjects {
 
     //val moshi = Moshi.Builder().build()
 
-    val speciesDetail: NetworkSpeciesDetail? = NetworkSpeciesDetailJsonAdapter(moshi)
-        .fromJson(speciesDetailResponseText)
+    val speciesDetail: NetworkSpeciesDetail = Json.decodeFromString(speciesDetailResponseText)
 
-    val allPokemonsResponse : NetworkPokemonContainer? = NetworkPokemonContainerJsonAdapter(moshi)
-        .fromJson(allPokemonsResponseText)
+    val allPokemonsResponse: NetworkPokemonContainer =
+        Json.decodeFromString(allPokemonsResponseText)
 
     // with parameters 41,40
-    val partialPokemonsResponse : NetworkPokemonContainer? = NetworkPokemonContainerJsonAdapter(moshi)
-        .fromJson(pokemonsFrom42To81ResponseText)
+    val partialPokemonsResponse: NetworkPokemonContainer =
+        Json.decodeFromString(pokemonsFrom42To81ResponseText)
 
-    val theversions = listOf("alpha-sapphire", "omega-ruby", "y", "x", "white-2", "black-2", "white", "black", "soulsilver", "heartgold", "platinum", "pearl", "diamond", "leafgreen", "firered", "emerald", "sapphire", "ruby", "crystal", "silver", "gold", "yellow", "blue", "red")
-    val theflavorAndName : Pair<String,String> = Pair("Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "Bulbasaur")
-    val theflavorTexts = "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON."
-    val flavorsMap = mapOf("alpha-sapphire" to "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "omega-ruby" to "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "y" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "x" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.", "white-2" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "black-2" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "white" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "black" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "soulsilver" to "It carries a seed on its back right from birth. As it grows older, the seed also grows larger.", "heartgold" to "The seed on its back is filled with nutrients. The seed grows steadily larger as its body grows.", "platinum" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "pearl" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "diamond" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.", "leafgreen" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.", "firered" to "There is a plant seed on its back right from the day this POKéMON is born. The seed slowly grows larger.", "emerald" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "sapphire" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "ruby" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.", "crystal" to "While it is young, it uses the nutrients that are stored in the seeds on its back in order to grow.", "silver" to "It carries a seed on its back right from birth. As it grows older, the seed also grows larger.", "gold" to "The seed on its back is filled with nutrients. The seed grows steadily larger as its body grows.", "yellow" to "It can go for days without eating a single morsel. In the bulb on its back, it stores energy.", "blue" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.", "red" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.")
+    val theversions = listOf(
+        "alpha-sapphire",
+        "omega-ruby",
+        "y",
+        "x",
+        "white-2",
+        "black-2",
+        "white",
+        "black",
+        "soulsilver",
+        "heartgold",
+        "platinum",
+        "pearl",
+        "diamond",
+        "leafgreen",
+        "firered",
+        "emerald",
+        "sapphire",
+        "ruby",
+        "crystal",
+        "silver",
+        "gold",
+        "yellow",
+        "blue",
+        "red"
+    )
+    val theflavorAndName: Pair<String, String> = Pair(
+        "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "Bulbasaur"
+    )
+    val theflavorTexts =
+        "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON."
+    val flavorsMap = mapOf(
+        "alpha-sapphire" to "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "omega-ruby" to "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "y" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "x" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
+        "white-2" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "black-2" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "white" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "black" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "soulsilver" to "It carries a seed on its back right from birth. As it grows older, the seed also grows larger.",
+        "heartgold" to "The seed on its back is filled with nutrients. The seed grows steadily larger as its body grows.",
+        "platinum" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "pearl" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "diamond" to "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        "leafgreen" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.",
+        "firered" to "There is a plant seed on its back right from the day this POKéMON is born. The seed slowly grows larger.",
+        "emerald" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "sapphire" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "ruby" to "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+        "crystal" to "While it is young, it uses the nutrients that are stored in the seeds on its back in order to grow.",
+        "silver" to "It carries a seed on its back right from birth. As it grows older, the seed also grows larger.",
+        "gold" to "The seed on its back is filled with nutrients. The seed grows steadily larger as its body grows.",
+        "yellow" to "It can go for days without eating a single morsel. In the bulb on its back, it stores energy.",
+        "blue" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.",
+        "red" to "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON."
+    )
 
 
 }

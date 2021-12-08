@@ -21,9 +21,11 @@ import java.util.*
 class PokemonBoundaryCallback
 //private int dbupdated;
 
-internal constructor(private val repository: PokemonRepositoryInterface,
-                        dispatchers: DispatcherProvider,
-                    private val sharedPreferences: SharedPreferences) :
+internal constructor(
+    private val repository: PokemonRepositoryInterface,
+    dispatchers: DispatcherProvider,
+    private val sharedPreferences: SharedPreferences
+) :
     PagedList.BoundaryCallback<DatabasePokemon>() {
     // Avoid triggering multiple requests in the same time
     private var isRequestInProgress = false
@@ -56,7 +58,7 @@ internal constructor(private val repository: PokemonRepositoryInterface,
      *
      *
      */
-    private fun requestAndSaveData(howMany : Int = NETWORK_PAGE_SIZE, dbEmpty : Boolean = false) {
+    private fun requestAndSaveData(howMany: Int = NETWORK_PAGE_SIZE, dbEmpty: Boolean = false) {
         //Exiting if the request is in progress
         Timber.i("lastOffset: $lastOffset")
         if (isRequestInProgress) return
@@ -67,29 +69,31 @@ internal constructor(private val repository: PokemonRepositoryInterface,
         //Calling the client API to retrieve the Repos for the given search query
         coroutineScope.launch {
             //withContext(dispatchers.io()) {
-                try {
-                    repository.changeResponseState(PokemonResponseState.LOADING)
-                    Timber.i("requestandsave try calling refresh")
-                    repository.refreshPokemonPlay(lastOffset, howMany) {
-                        repository.changeResponseState(PokemonResponseState.DONE)
-                        Timber.i("response in boundarycallback is good")
-                        //Updating the last requested page number when the request was successful
-                        //and the results were inserted successfully
-                        lastOffset += NETWORK_PAGE_SIZE
-                        Timber.i("last Offset: $lastOffset; page size: $NETWORK_PAGE_SIZE")
-                        // update last refresh date
-                        updateLastRefresh()
-                    }
+            try {
+                repository.changeResponseState(PokemonResponseState.LOADING)
+                Timber.i("requestandsave try calling refresh")
+                repository.refreshPokemonPlay(lastOffset, howMany) {
+                    repository.changeResponseState(PokemonResponseState.DONE)
+                    Timber.i("response in boundarycallback is good")
+                    //Updating the last requested page number when the request was successful
+                    //and the results were inserted successfully
+                    lastOffset += NETWORK_PAGE_SIZE
+                    Timber.i("last Offset: $lastOffset; page size: $NETWORK_PAGE_SIZE")
+                    // update last refresh date
+                    updateLastRefresh()
                 }
-                catch (e:Exception) {
-                    if(repository.pokemons.value.isNullOrEmpty()) {
-                        repository.changeResponseState(PokemonResponseState.NETWORK_ERROR.setFatal(dbEmpty))
-                    }
+            } catch (e: Exception) {
+                if (repository.pokemons.value.isNullOrEmpty()) {
+                    repository.changeResponseState(
+                        PokemonResponseState.NETWORK_ERROR.setFatal(
+                            dbEmpty
+                        )
+                    )
                 }
-                finally {
-                    //Mark the request progress as completed
-                    isRequestInProgress = false
-                }
+            } finally {
+                //Mark the request progress as completed
+                isRequestInProgress = false
+            }
             //}
 
         }
@@ -115,22 +119,19 @@ internal constructor(private val repository: PokemonRepositoryInterface,
     override fun onItemAtEndLoaded(itemAtEnd: DatabasePokemon) {
         Timber.i("onItemAtEndLoaded: Started")
         //if(itemAtEnd)
-        if(itemAtEnd.id < HomeViewModel.DOWNLOAD_SIZE - NETWORK_PAGE_SIZE) {
+        if (itemAtEnd.id < HomeViewModel.DOWNLOAD_SIZE - NETWORK_PAGE_SIZE) {
             Timber.i("Getting $NETWORK_PAGE_SIZE")
             requestAndSaveData()
-            sharedPreferences.edit().putInt(LAST_PAGING_POKEMON_ID_KEY,itemAtEnd.id).apply()
-        }
-        else if(itemAtEnd.id < HomeViewModel.DOWNLOAD_SIZE) {
+            sharedPreferences.edit().putInt(LAST_PAGING_POKEMON_ID_KEY, itemAtEnd.id).apply()
+        } else if (itemAtEnd.id < HomeViewModel.DOWNLOAD_SIZE) {
             Timber.i("Getting ${HomeViewModel.DOWNLOAD_SIZE - lastOffset}")
             requestAndSaveData(HomeViewModel.DOWNLOAD_SIZE - lastOffset)
-            sharedPreferences.edit().putInt(LAST_PAGING_POKEMON_ID_KEY,itemAtEnd.id).apply()
+            sharedPreferences.edit().putInt(LAST_PAGING_POKEMON_ID_KEY, itemAtEnd.id).apply()
         }
 
         // TODO THIS COULD NEED TO BE TRUE INSTEAD...
         // TODO CHECK THAT THE ERROR VALUES ARE UPDATING PROPERLY...
     }
-
-
 
 
     private fun isdbUpToDate(): Int {
@@ -157,7 +158,6 @@ internal constructor(private val repository: PokemonRepositoryInterface,
         editor.putLong(LAST_DB_REFRESH, Calendar.getInstance().timeInMillis / 60000)
         editor.apply()
     }
-
 
 
 }

@@ -29,7 +29,7 @@ interface PokemonDao {
     fun resetUsedAsQuestion()
 
     @Delete
-    fun delete(pokemon : DatabasePokemon)
+    fun delete(pokemon: DatabasePokemon)
 
     @Query("DELETE FROM pokemonTable")
     fun deleteAllPokemon()

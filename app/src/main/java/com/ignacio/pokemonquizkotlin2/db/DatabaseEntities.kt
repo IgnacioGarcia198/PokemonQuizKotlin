@@ -105,16 +105,3 @@ data class GameRecord @Ignore constructor(
         }
     }
 }
-
-/*fun List<DataBaseGameRecord>.asDomainModel(defaultTitle : String) : List<GameRecord> {
-    return map {
-        GameRecord(
-            it.gameMode,
-            it.gameModeValue,
-            it.questionsPerSecond,
-            it.hitRate,
-            it.recordTime,
-            defaultTitle
-        )
-    }
-}*/

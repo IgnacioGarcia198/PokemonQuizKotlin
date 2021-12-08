@@ -1,10 +1,10 @@
 package com.ignacio.pokemonquizkotlin2
 
-import android.os.Bundle
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
@@ -20,20 +20,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.ignacio.pokemonquizkotlin2.databinding.ActivityMainBinding
 import com.ignacio.pokemonquizkotlin2.sound.BackgroundSoundService
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), HasAndroidInjector {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
 
-    private var backgroundSoundService : BackgroundSoundService? = null
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
-
-    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
+    private var backgroundSoundService: BackgroundSoundService? = null
     private var mIsBound: Boolean = false
     private var buttonIsPlaying: Boolean = true
     private var firsttime = true
@@ -86,14 +80,15 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
             backgroundSoundService?.let {
                 val bgmitem = menu.findItem(R.id.action_play_music)
                 with(bgmitem) {
-                    if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
+                    if (it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
                         icon = ContextCompat.getDrawable(
-                            this@MainActivity, R.drawable.ic_music_note_white_48dp)
+                            this@MainActivity, R.drawable.ic_music_note_white_48dp
+                        )
                         title = getString(R.string.pause_bgm)
-                    }
-                    else {
+                    } else {
                         icon = ContextCompat.getDrawable(
-                            this@MainActivity, R.drawable.ic_music_note_gray_48dp)
+                            this@MainActivity, R.drawable.ic_music_note_gray_48dp
+                        )
                         title = getString(R.string.play_bgm)
                     }
                 }
@@ -107,17 +102,20 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.action_settings -> {return true}
+        when (item.itemId) {
+            R.id.action_settings -> {
+                return true
+            }
             R.id.action_play_music -> {
                 backgroundSoundService?.let {
-                    buttonIsPlaying = if(it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
-                        pauseMusic()
-                        false
-                    } else {
-                        resumeMusic()
-                        true
-                    }
+                    buttonIsPlaying =
+                        if (it.playerState == BackgroundSoundService.PlayerState.PLAYING) {
+                            pauseMusic()
+                            false
+                        } else {
+                            resumeMusic()
+                            true
+                        }
                 }
                 return true
             }
@@ -142,10 +140,10 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             name?.let {
-                if(name.className == BackgroundSoundService::class.java.name) {
+                if (name.className == BackgroundSoundService::class.java.name) {
                     backgroundSoundService = (service as BackgroundSoundService.LocalBinder).service
                     backgroundSoundService?.let {
-                        if(firsttime && buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
+                        if (firsttime && buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
                             resumeMusic()
                             firsttime = false
                         }
@@ -165,7 +163,7 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
     }
 
     private fun pauseMusic() {
-        if(!isChangingConfigurations) {
+        if (!isChangingConfigurations) {
             backgroundSoundService?.pauseMusic()
             invalidateOptionsMenu()
         }
@@ -174,7 +172,7 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
     override fun onResume() {
         super.onResume()
         backgroundSoundService?.let {
-            if(buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
+            if (buttonIsPlaying && it.playerState != BackgroundSoundService.PlayerState.PLAYING) {
                 resumeMusic()
             }
         }
@@ -188,19 +186,21 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
     override fun onStop() {
         super.onStop()
         pauseMusic()
-        if(!isChangingConfigurations) stopMusic()
+        if (!isChangingConfigurations) stopMusic()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if(!isChangingConfigurations)
-        doUnbindService()
+        if (!isChangingConfigurations)
+            doUnbindService()
     }
 
     fun doBindService() {
-        bindService(Intent(this, BackgroundSoundService::class.java),
-        musicServiceConnection,
-        Context.BIND_AUTO_CREATE)
+        bindService(
+            Intent(this, BackgroundSoundService::class.java),
+            musicServiceConnection,
+            Context.BIND_AUTO_CREATE
+        )
         mIsBound = true
     }
 

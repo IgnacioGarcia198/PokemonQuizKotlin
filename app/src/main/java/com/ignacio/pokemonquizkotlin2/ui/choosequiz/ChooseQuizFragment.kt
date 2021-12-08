@@ -6,38 +6,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.ignacio.pokemonquizkotlin2.R
 import com.ignacio.pokemonquizkotlin2.databinding.FragmentChooseQuizBinding
-import com.ignacio.pokemonquizkotlin2.di.Injectable
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-
-class ChooseQuizFragment : Fragment(), Injectable {
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var viewModel: ChooseQuizViewModel
+@AndroidEntryPoint
+class ChooseQuizFragment : Fragment() {
+    private val viewModel: ChooseQuizViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         val binding = FragmentChooseQuizBinding.inflate(inflater)
-        viewModel = provideViewModel()
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         viewModel.navigateToPlayFragment.observe(viewLifecycleOwner, Observer {
-            if(it) {
-                val questionsOrTime = viewModel.questionsOrTime.value?:true
+            if (it) {
+                val questionsOrTime = viewModel.questionsOrTime.value ?: true
 
                 val gameLength = viewModel.gameLength
 
                 // here actual navigation
-                findNavController().navigate(ChooseQuizFragmentDirections.actionNavChooseQuizToNavPlay(questionsOrTime, gameLength.value!!))
+                findNavController().navigate(
+                    ChooseQuizFragmentDirections.actionNavChooseQuizToNavPlay(
+                        questionsOrTime,
+                        gameLength.value!!
+                    )
+                )
 
                 viewModel.doneNavigating()
             }
@@ -66,9 +67,4 @@ class ChooseQuizFragment : Fragment(), Injectable {
 
         return binding.root
     }
-
-    private fun provideViewModel() : ChooseQuizViewModel {
-        return ViewModelProvider(this, viewModelFactory).get(ChooseQuizViewModel::class.java)
-    }
-
 }
