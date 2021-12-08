@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.ignacio.pokemonquizkotlin2.data.model.Pokemon
 import java.util.*
@@ -12,7 +13,7 @@ import java.util.*
 // POKEMON DB ENTITIES
 //============================================
 @Entity(tableName = "pokemonTable")
-data class DatabasePokemon (
+data class DatabasePokemon constructor (
     @PrimaryKey
     @NonNull
     val id : Int,
@@ -39,10 +40,7 @@ fun DatabasePokemon.asDomainModel() :Pokemon {
 //=======================================================================
 
 @Entity(tableName = "gameRecordTable")
-data class GameRecord(
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
-    val id: Int = 0,
+data class GameRecord @Ignore constructor(
     val gameMode: Boolean = true, // true for number of questions and false for time limit
     val gameLength: Int = 0, // seconds or number of questions
     val questionsPerSecond: Float = 0f, // seconds for 1 answer
@@ -51,6 +49,29 @@ data class GameRecord(
 
 ) : Parcelable {
 
+    @PrimaryKey(autoGenerate = true)
+    @NonNull
+    var id: Int = 0
+        private set
+
+    constructor(
+        id: Int,
+        gameMode: Boolean,
+        gameLength: Int,
+        questionsPerSecond: Float,
+        hitRate: Float,
+        recordTime: Date
+    ): this(
+        gameMode,
+        gameLength,
+        questionsPerSecond,
+        hitRate,
+        recordTime
+    ) {
+        this.id = id
+    }
+
+    @Ignore
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readByte() != 0.toByte(),
