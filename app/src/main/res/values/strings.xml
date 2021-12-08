@@ -8,7 +8,7 @@
 
 
     <!-- String constants -->
-    <string name="pokemon_image_url" translatable="false">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/%d.png</string>
+    <string name="pokemon_image_url" translatable="false">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/%d.png</string>
 
 
     <!-- Screen titles -->
